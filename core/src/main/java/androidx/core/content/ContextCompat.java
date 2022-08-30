@@ -540,7 +540,7 @@ public class ContextCompat {
         if (permission == null) {
             throw new IllegalArgumentException("permission is null");
         }
-
+        //看到木有，pid，uid出现了
         return context.checkPermission(permission, Process.myPid(), Process.myUid());
     }
 
