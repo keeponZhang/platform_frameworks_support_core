@@ -16,7 +16,7 @@
 
 package androidx.core.graphics;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -46,7 +46,7 @@ import java.util.List;
  * Implementation of the Typeface compat methods for API 24 and above.
  * @hide
  */
-@RestrictTo(LIBRARY_GROUP_PREFIX)
+@RestrictTo(LIBRARY_GROUP)
 @RequiresApi(24)
 class TypefaceCompatApi24Impl extends TypefaceCompatBaseImpl {
     private static final String TAG = "TypefaceCompatApi24Impl";
@@ -55,14 +55,14 @@ class TypefaceCompatApi24Impl extends TypefaceCompatBaseImpl {
     private static final String ADD_FONT_WEIGHT_STYLE_METHOD = "addFontWeightStyle";
     private static final String CREATE_FROM_FAMILIES_WITH_DEFAULT_METHOD =
             "createFromFamiliesWithDefault";
-    private static final Class<?> sFontFamily;
-    private static final Constructor<?> sFontFamilyCtor;
+    private static final Class sFontFamily;
+    private static final Constructor sFontFamilyCtor;
     private static final Method sAddFontWeightStyle;
     private static final Method sCreateFromFamiliesWithDefault;
 
     static {
-        Class<?> fontFamilyClass;
-        Constructor<?> fontFamilyCtor;
+        Class fontFamilyClass;
+        Constructor fontFamilyCtor;
         Method addFontMethod;
         Method createFromFamiliesWithDefaultMethod;
         try {
@@ -102,7 +102,7 @@ class TypefaceCompatApi24Impl extends TypefaceCompatBaseImpl {
         try {
             return sFontFamilyCtor.newInstance();
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -113,7 +113,7 @@ class TypefaceCompatApi24Impl extends TypefaceCompatBaseImpl {
                     family, buffer, ttcIndex, null /* variation axis */, weight, style);
             return result.booleanValue();
         } catch (IllegalAccessException | InvocationTargetException e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -124,18 +124,14 @@ class TypefaceCompatApi24Impl extends TypefaceCompatBaseImpl {
             return (Typeface) sCreateFromFamiliesWithDefault.invoke(
                     null /* static method */, familyArray);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    @Nullable
     public Typeface createFromFontInfo(Context context,
             @Nullable CancellationSignal cancellationSignal, @NonNull FontInfo[] fonts, int style) {
         Object family = newFamily();
-        if (family == null) {
-            return null;
-        }
         SimpleArrayMap<Uri, ByteBuffer> bufferCache = new SimpleArrayMap<>();
 
         for (final FontInfo font : fonts) {
@@ -145,29 +141,19 @@ class TypefaceCompatApi24Impl extends TypefaceCompatBaseImpl {
                 buffer = TypefaceCompatUtil.mmap(context, cancellationSignal, uri);
                 bufferCache.put(uri, buffer);
             }
-            if (buffer == null) {
-                return null;
-            }
             if (!addFontWeightStyle(family, buffer, font.getTtcIndex(), font.getWeight(),
                     font.isItalic())) {
                 return null;
             }
         }
         final Typeface typeface = createFromFamiliesWithDefault(family);
-        if (typeface == null) {
-            return null;
-        }
         return Typeface.create(typeface, style);
     }
 
     @Override
-    @Nullable
     public Typeface createFromFontFamilyFilesResourceEntry(Context context,
             FontFamilyFilesResourceEntry entry, Resources resources, int style) {
         Object family = newFamily();
-        if (family == null) {
-            return null;
-        }
         for (final FontFileResourceEntry e : entry.getEntries()) {
             final ByteBuffer buffer =
                     TypefaceCompatUtil.copyToDirectBuffer(context, resources, e.getResourceId());

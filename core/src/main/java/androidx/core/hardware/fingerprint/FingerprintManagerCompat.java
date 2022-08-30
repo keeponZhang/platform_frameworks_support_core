@@ -36,12 +36,9 @@ import javax.crypto.Mac;
 /**
  * A class that coordinates access to the fingerprint hardware.
  * <p>
- * On platforms before {@link android.os.Build.VERSION_CODES#M}, this class behaves as there would
+ * On platforms before {@link Build.VERSION_CODES#M}, this class behaves as there would
  * be no fingerprint hardware available.
- *
- * @deprecated Use {@code androidx.biometrics.BiometricPrompt} instead.
  */
-@Deprecated
 public final class FingerprintManagerCompat {
 
     private final Context mContext;
@@ -123,10 +120,7 @@ public final class FingerprintManagerCompat {
     @Nullable
     @RequiresApi(23)
     private static FingerprintManager getFingerprintManagerOrNull(@NonNull Context context) {
-        if (Build.VERSION.SDK_INT == 23) {
-            return context.getSystemService(FingerprintManager.class);
-        } else if (Build.VERSION.SDK_INT > 23 && context.getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
             return context.getSystemService(FingerprintManager.class);
         } else {
             return null;

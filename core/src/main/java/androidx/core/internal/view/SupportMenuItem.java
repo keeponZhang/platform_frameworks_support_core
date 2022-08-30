@@ -16,7 +16,7 @@
 
 package androidx.core.internal.view;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
@@ -33,11 +33,11 @@ import androidx.core.view.ActionProvider;
  * This version extends the one available in the framework to ensures that any necessary
  * elements added in later versions of the framework, are available for all platforms.
  *
- * @see android.view.MenuItem
+ * @see MenuItem
  * @hide
  */
-@RestrictTo(LIBRARY_GROUP_PREFIX)
-public interface SupportMenuItem extends android.view.MenuItem {
+@RestrictTo(LIBRARY_GROUP)
+public interface SupportMenuItem extends MenuItem {
     /*
     * These should be kept in sync with attrs.xml enum constants for showAsAction
     */
@@ -112,7 +112,7 @@ public interface SupportMenuItem extends android.view.MenuItem {
      * as an action within a parent.
      *
      * <p><strong>Note:</strong> Setting an action view overrides the action provider
-     * provider set via {@link #setSupportActionProvider(androidx.core.view.ActionProvider)}. </p>
+     * provider set via {@link #setSupportActionProvider(ActionProvider)}. </p>
      *
      * @param view View to use for presenting this item to the user.
      * @return This Item so additional setters can be called.
@@ -127,7 +127,7 @@ public interface SupportMenuItem extends android.view.MenuItem {
      * as an action within a parent.
      *
      * <p><strong>Note:</strong> Setting an action view overrides the action provider
-     * provider set via {@link #setSupportActionProvider(androidx.core.view.ActionProvider)}. </p>
+     * provider set via {@link #setSupportActionProvider(ActionProvider)}. </p>
      *
      * @param resId Layout resource to use for presenting this item to the user.
      * @return This Item so additional setters can be called.
@@ -147,7 +147,7 @@ public interface SupportMenuItem extends android.view.MenuItem {
     View getActionView();
 
     /**
-     * Sets the {@link androidx.core.view.ActionProvider} responsible for creating an action view if
+     * Sets the {@link ActionProvider} responsible for creating an action view if
      * the item is placed on the action bar. The provider also provides a default
      * action invoked if the item is placed in the overflow menu.
      *
@@ -157,7 +157,7 @@ public interface SupportMenuItem extends android.view.MenuItem {
      *
      * @param actionProvider The action provider.
      * @return This Item so additional setters can be called.
-     * @see androidx.core.view.ActionProvider
+     * @see ActionProvider
      */
     SupportMenuItem setSupportActionProvider(ActionProvider actionProvider);
 
@@ -174,8 +174,8 @@ public interface SupportMenuItem extends android.view.MenuItem {
      * Expand the action view associated with this menu item. The menu item must have an action view
      * set, as well as the showAsAction flag {@link #SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW}. If a
      * listener has been set using
-     * {@link #setSupportOnActionExpandListener(MenuItem.OnActionExpandListener)}
-     * it will have its {@link MenuItem.OnActionExpandListener#onMenuItemActionExpand(MenuItem)}
+     * {@link #setSupportOnActionExpandListener(OnActionExpandListener)}
+     * it will have its {@link OnActionExpandListener#onMenuItemActionExpand(MenuItem)}
      * method invoked. The listener may return false from this method to prevent expanding the
      * action view.
      *
@@ -188,8 +188,8 @@ public interface SupportMenuItem extends android.view.MenuItem {
      * Collapse the action view associated with this menu item. The menu item must have an action
      * view set, as well as the showAsAction flag {@link #SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW}. If a
      * listener has been set using
-     * {@link #setSupportOnActionExpandListener(MenuItem.OnActionExpandListener)}
-     * it will have its {@link MenuItem.OnActionExpandListener#onMenuItemActionCollapse(MenuItem)}
+     * {@link #setSupportOnActionExpandListener(OnActionExpandListener)}
+     * it will have its {@link OnActionExpandListener#onMenuItemActionCollapse(MenuItem)}
      * method invoked. The listener may return false from this method to prevent collapsing the
      * action view.
      *
@@ -205,7 +205,7 @@ public interface SupportMenuItem extends android.view.MenuItem {
      * @see #expandActionView()
      * @see #collapseActionView()
      * @see #SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
-     * @see MenuItem.OnActionExpandListener
+     * @see OnActionExpandListener
      */
     @Override
     boolean isActionViewExpanded();
@@ -376,14 +376,4 @@ public interface SupportMenuItem extends android.view.MenuItem {
      */
     @Override
     PorterDuff.Mode getIconTintMode();
-
-    /**
-     * Returns true if {@link #setShowAsAction(int)} was set to {@link #SHOW_AS_ACTION_ALWAYS}.
-     */
-    boolean requiresActionButton();
-
-    /**
-     * Returns true if {@link #setShowAsAction(int)} was set to {@link #SHOW_AS_ACTION_NEVER}.
-     */
-    boolean requiresOverflow();
 }

@@ -20,9 +20,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Helper for accessing features in {@link android.os.Parcelable}.
+ * Helper for accessing features in {@link Parcelable}.
  *
- * @deprecated Use {@link android.os.Parcelable.ClassLoaderCreator} directly.
+ * @deprecated Use {@link Parcelable.ClassLoaderCreator} directly.
  */
 @Deprecated
 public final class ParcelableCompat {
@@ -33,7 +33,7 @@ public final class ParcelableCompat {
      * @param callbacks Creator callbacks implementation.
      * @return New creator.
      *
-     * @deprecated Use {@link android.os.Parcelable.ClassLoaderCreator} directly.
+     * @deprecated Use {@link Parcelable.ClassLoaderCreator} directly.
      */
     @Deprecated
     public static <T> Parcelable.Creator<T> newCreator(

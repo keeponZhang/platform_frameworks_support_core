@@ -16,7 +16,7 @@
 
 package androidx.core.content;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -67,7 +67,7 @@ public final class PermissionChecker {
     public static final int PERMISSION_DENIED_APP_OP =  PackageManager.PERMISSION_DENIED  - 1;
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({PERMISSION_GRANTED,
             PERMISSION_DENIED,
             PERMISSION_DENIED_APP_OP})
@@ -131,8 +131,8 @@ public final class PermissionChecker {
     @PermissionResult
     public static int checkSelfPermission(@NonNull Context context,
             @NonNull String permission) {
-        return checkPermission(context, permission, android.os.Process.myPid(),
-                android.os.Process.myUid(), context.getPackageName());
+        return checkPermission(context, permission, Process.myPid(),
+                Process.myUid(), context.getPackageName());
     }
 
     /**

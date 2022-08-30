@@ -23,7 +23,7 @@ import static android.graphics.drawable.Icon.TYPE_RESOURCE;
 import static android.graphics.drawable.Icon.TYPE_URI;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.app.ActivityManager;
 import android.content.ContentResolver;
@@ -80,7 +80,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 
 /**
- * Helper for accessing features in {@link android.graphics.drawable.Icon}.
+ * Helper for accessing features in {@link Icon}.
  */
 @VersionedParcelize(allowSerialization = true, ignoreParcelables = true, isCustom = true,
         jetifyAs = "android.support.v4.graphics.drawable.IconCompat")
@@ -122,10 +122,9 @@ public class IconCompat extends CustomVersionedParcelable {
     /**
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    @ParcelField(value = 1,
-            defaultValue = "androidx.core.graphics.drawable.IconCompat.TYPE_UNKNOWN")
-    public int mType = TYPE_UNKNOWN;
+    @RestrictTo(LIBRARY)
+    @ParcelField(1)
+    public int mType;
 
     // To avoid adding unnecessary overhead, we have a few basic objects that get repurposed
     // based on the value of mType.
@@ -141,14 +140,14 @@ public class IconCompat extends CustomVersionedParcelable {
      * @hide
      */
     @RestrictTo(LIBRARY)
-    @ParcelField(value = 2, defaultValue = "null")
-    public byte[]          mData = null;
+    @ParcelField(2)
+    public byte[]          mData;
     /**
      * @hide
      */
     @RestrictTo(LIBRARY)
-    @ParcelField(value = 3, defaultValue = "null")
-    public Parcelable      mParcelable = null;
+    @ParcelField(3)
+    public Parcelable      mParcelable;
 
     // TYPE_RESOURCE: resId
     // TYPE_DATA: data offset
@@ -156,22 +155,22 @@ public class IconCompat extends CustomVersionedParcelable {
      * @hide
      */
     @RestrictTo(LIBRARY)
-    @ParcelField(value = 4, defaultValue = "0")
-    public int             mInt1 = 0;
+    @ParcelField(4)
+    public int             mInt1;
 
     // TYPE_DATA: data length
     /**
      * @hide
      */
     @RestrictTo(LIBRARY)
-    @ParcelField(value = 5, defaultValue = "0")
-    public int             mInt2 = 0;
+    @ParcelField(5)
+    public int             mInt2;
 
     /**
      * @hide
      */
     @RestrictTo(LIBRARY)
-    @ParcelField(value = 6, defaultValue = "null")
+    @ParcelField(6)
     public ColorStateList  mTintList = null;
 
     static final PorterDuff.Mode DEFAULT_TINT_MODE = PorterDuff.Mode.SRC_IN; // SRC_IN
@@ -181,15 +180,15 @@ public class IconCompat extends CustomVersionedParcelable {
      * @hide
      */
     @RestrictTo(LIBRARY)
-    @ParcelField(value = 7, defaultValue = "null")
-    public String mTintModeStr = null;
+    @ParcelField(7)
+    public String mTintModeStr;
 
     /**
      * Create an Icon pointing to a drawable resource.
      * @param context The context for the application whose resources should be used to resolve the
      *                given resource ID.
      * @param resId ID of the drawable resource
-     * @see android.graphics.drawable.Icon#createWithResource(Context, int)
+     * @see Icon#createWithResource(Context, int)
      */
     public static IconCompat createWithResource(Context context, @DrawableRes int resId) {
         if (context == null) {
@@ -201,7 +200,7 @@ public class IconCompat extends CustomVersionedParcelable {
     /**
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY)
     public static IconCompat createWithResource(Resources r, String pkg, @DrawableRes int resId) {
         if (pkg == null) {
             throw new IllegalArgumentException("Package must not be null.");
@@ -225,8 +224,8 @@ public class IconCompat extends CustomVersionedParcelable {
 
     /**
      * Create an Icon pointing to a bitmap in memory.
-     * @param bits A valid {@link android.graphics.Bitmap} object
-     * @see android.graphics.drawable.Icon#createWithBitmap(Bitmap)
+     * @param bits A valid {@link Bitmap} object
+     * @see Icon#createWithBitmap(Bitmap)
      */
     public static IconCompat createWithBitmap(Bitmap bits) {
         if (bits == null) {
@@ -240,8 +239,8 @@ public class IconCompat extends CustomVersionedParcelable {
     /**
      * Create an Icon pointing to a bitmap in memory that follows the icon design guideline defined
      * by {@link android.graphics.drawable.AdaptiveIconDrawable}.
-     * @param bits A valid {@link android.graphics.Bitmap} object
-     * @see android.graphics.drawable.Icon#createWithAdaptiveBitmap(Bitmap)
+     * @param bits A valid {@link Bitmap} object
+     * @see Icon#createWithAdaptiveBitmap(Bitmap)
      */
     public static IconCompat createWithAdaptiveBitmap(Bitmap bits) {
         if (bits == null) {
@@ -255,11 +254,11 @@ public class IconCompat extends CustomVersionedParcelable {
     /**
      * Create an Icon pointing to a compressed bitmap stored in a byte array.
      * @param data Byte array storing compressed bitmap data of a type that
-     *             {@link android.graphics.BitmapFactory}
-     *             can decode (see {@link android.graphics.Bitmap.CompressFormat}).
+     *             {@link BitmapFactory}
+     *             can decode (see {@link Bitmap.CompressFormat}).
      * @param offset Offset into <code>data</code> at which the bitmap data starts
      * @param length Length of the bitmap data
-     * @see android.graphics.drawable.Icon#createWithData(byte[], int, int)
+     * @see Icon#createWithData(byte[], int, int)
      */
     public static IconCompat createWithData(byte[] data, int offset, int length) {
         if (data == null) {
@@ -276,7 +275,7 @@ public class IconCompat extends CustomVersionedParcelable {
      * Create an Icon pointing to an image file specified by URI.
      *
      * @param uri A uri referring to local content:// or file:// image data.
-     * @see android.graphics.drawable.Icon#createWithContentUri(String)
+     * @see Icon#createWithContentUri(String)
      */
     public static IconCompat createWithContentUri(String uri) {
         if (uri == null) {
@@ -291,7 +290,7 @@ public class IconCompat extends CustomVersionedParcelable {
      * Create an Icon pointing to an image file specified by URI.
      *
      * @param uri A uri referring to local content:// or file:// image data.
-     * @see android.graphics.drawable.Icon#createWithContentUri(String)
+     * @see Icon#createWithContentUri(String)
      */
     public static IconCompat createWithContentUri(Uri uri) {
         if (uri == null) {
@@ -361,33 +360,6 @@ public class IconCompat extends CustomVersionedParcelable {
             throw new IllegalStateException("called getResId() on " + this);
         }
         return mInt1;
-    }
-
-    /**
-     * Gets the bitmap used to create this icon.
-     * <p>
-     * Only valid for icons of type TYPE_BITMAP.
-     * Note: This bitmap may not be available in the future, and it is
-     * up to the caller to ensure safety if this bitmap is re-used and/or persisted.
-     *
-     * @hide
-     */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    @Nullable
-    public Bitmap getBitmap() {
-        if (mType == TYPE_UNKNOWN && Build.VERSION.SDK_INT >= 23) {
-            if (mObj1 instanceof Bitmap) {
-                return (Bitmap) mObj1;
-            }
-            return null;
-        }
-        if (mType == TYPE_BITMAP) {
-            return (Bitmap) mObj1;
-        } else if (mType == TYPE_ADAPTIVE_BITMAP) {
-            return createLegacyIconFromAdaptiveIcon((Bitmap) mObj1, true);
-        } else {
-            throw new IllegalStateException("called getBitmap() on " + this);
-        }
     }
 
     /**
@@ -484,7 +456,7 @@ public class IconCompat extends CustomVersionedParcelable {
     /**
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public void checkResource(Context context) {
         if (mType == TYPE_RESOURCE) {
             String resPackage = (String) mObj1;
@@ -509,8 +481,8 @@ public class IconCompat extends CustomVersionedParcelable {
      * Returns a Drawable that can be used to draw the image inside this Icon, constructing it
      * if necessary.
      *
-     * @param context {@link android.content.Context Context} in which to load the drawable; used
-     *                to access {@link android.content.res.Resources Resources}, for example.
+     * @param context {@link Context Context} in which to load the drawable; used
+     *                to access {@link Resources Resources}, for example.
      * @return A fresh instance of a drawable for this image, yours to keep.
      */
     public Drawable loadDrawable(Context context) {
@@ -611,7 +583,7 @@ public class IconCompat extends CustomVersionedParcelable {
     /**
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @SuppressWarnings("deprecation")
     public void addToShortcutIntent(@NonNull Intent outIntent, @Nullable Drawable badge,
             @NonNull Context c) {
@@ -703,7 +675,6 @@ public class IconCompat extends CustomVersionedParcelable {
         return bundle;
     }
 
-    @NonNull
     @Override
     public String toString() {
         if (mType == TYPE_UNKNOWN) {
@@ -888,7 +859,7 @@ public class IconCompat extends CustomVersionedParcelable {
      * Creates an IconCompat from an Icon.
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @RequiresApi(23)
     @Nullable
     public static IconCompat createFromIcon(@NonNull Icon icon) {

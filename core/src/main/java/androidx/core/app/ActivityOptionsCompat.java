@@ -32,7 +32,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.util.Pair;
 
 /**
- * Helper for accessing features in {@link android.app.ActivityOptions} in a backwards compatible
+ * Helper for accessing features in {@link ActivityOptions} in a backwards compatible
  * fashion.
  */
 public class ActivityOptionsCompat {
@@ -78,7 +78,7 @@ public class ActivityOptionsCompat {
      * representation.
      * <p/>
      * If the Intent this is being used with has not set its
-     * {@link android.content.Intent#setSourceBounds(android.graphics.Rect)},
+     * {@link android.content.Intent#setSourceBounds(Rect)},
      * those bounds will be filled in for you based on the initial bounds passed
      * in here.
      *
@@ -132,7 +132,7 @@ public class ActivityOptionsCompat {
      * started.
      * <p/>
      * If the Intent this is being used with has not set its
-     * {@link android.content.Intent#setSourceBounds(android.graphics.Rect)},
+     * {@link android.content.Intent#setSourceBounds(Rect)},
      * those bounds will be filled in for you based on the initial thumbnail
      * location and size provided here.
      *
@@ -263,7 +263,7 @@ public class ActivityOptionsCompat {
         }
 
         @Override
-        public void update(@NonNull ActivityOptionsCompat otherOptions) {
+        public void update(ActivityOptionsCompat otherOptions) {
             if (otherOptions instanceof ActivityOptionsCompatImpl) {
                 ActivityOptionsCompatImpl otherImpl =
                         (ActivityOptionsCompatImpl) otherOptions;
@@ -272,13 +272,12 @@ public class ActivityOptionsCompat {
         }
 
         @Override
-        public void requestUsageTimeReport(@NonNull PendingIntent receiver) {
+        public void requestUsageTimeReport(PendingIntent receiver) {
             if (Build.VERSION.SDK_INT >= 23) {
                 mActivityOptions.requestUsageTimeReport(receiver);
             }
         }
 
-        @NonNull
         @Override
         public ActivityOptionsCompat setLaunchBounds(@Nullable Rect screenSpacePixelRect) {
             if (Build.VERSION.SDK_INT < 24) {

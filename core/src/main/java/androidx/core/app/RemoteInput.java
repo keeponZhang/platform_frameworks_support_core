@@ -22,15 +22,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.RestrictTo;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -52,60 +49,21 @@ public final class RemoteInput {
     private static final String EXTRA_DATA_TYPE_RESULTS_DATA =
             "android.remoteinput.dataTypeResultsData";
 
-    /** Extra added to a clip data intent object identifying the {@link Source} of the results. */
-    private static final String EXTRA_RESULTS_SOURCE = "android.remoteinput.resultsSource";
-
-    /** @hide */
-    @IntDef({SOURCE_FREE_FORM_INPUT, SOURCE_CHOICE})
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Source {}
-
-    /** The user manually entered the data. */
-    public static final int SOURCE_FREE_FORM_INPUT = 0;
-
-    /** The user selected one of the choices from {@link #getChoices}. */
-    public static final int SOURCE_CHOICE = 1;
-
-    /** @hide */
-    @IntDef(value = {EDIT_CHOICES_BEFORE_SENDING_AUTO, EDIT_CHOICES_BEFORE_SENDING_DISABLED,
-            EDIT_CHOICES_BEFORE_SENDING_ENABLED})
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface EditChoicesBeforeSending {}
-
-    /** The platform will determine whether choices will be edited before being sent to the app. */
-    public static final int EDIT_CHOICES_BEFORE_SENDING_AUTO = 0;
-
-    /** Tapping on a choice should send the input immediately, without letting the user edit it. */
-    public static final int EDIT_CHOICES_BEFORE_SENDING_DISABLED = 1;
-
-    /** Tapping on a choice should let the user edit the input before it is sent to the app. */
-    public static final int EDIT_CHOICES_BEFORE_SENDING_ENABLED = 2;
-
     private final String mResultKey;
     private final CharSequence mLabel;
     private final CharSequence[] mChoices;
     private final boolean mAllowFreeFormTextInput;
-    @EditChoicesBeforeSending private final int mEditChoicesBeforeSending;
     private final Bundle mExtras;
     private final Set<String> mAllowedDataTypes;
 
     RemoteInput(String resultKey, CharSequence label, CharSequence[] choices,
-            boolean allowFreeFormTextInput, @EditChoicesBeforeSending int editChoicesBeforeSending,
-            Bundle extras, Set<String> allowedDataTypes) {
+            boolean allowFreeFormTextInput, Bundle extras, Set<String> allowedDataTypes) {
         this.mResultKey = resultKey;
         this.mLabel = label;
         this.mChoices = choices;
         this.mAllowFreeFormTextInput = allowFreeFormTextInput;
-        this.mEditChoicesBeforeSending = editChoicesBeforeSending;
         this.mExtras = extras;
         this.mAllowedDataTypes = allowedDataTypes;
-        if (getEditChoicesBeforeSending() == EDIT_CHOICES_BEFORE_SENDING_ENABLED
-                && !getAllowFreeFormInput()) {
-            throw new IllegalArgumentException(
-                "setEditChoicesBeforeSending requires setAllowFreeFormInput");
-        }
     }
 
     /**
@@ -136,7 +94,7 @@ public final class RemoteInput {
 
     /**
      * Returns true if the input only accepts data, meaning {@link #getAllowFreeFormInput}
-     * is false, {@link #getChoices} is null or empty, and {@link #getAllowedDataTypes} is
+     * is false, {@link #getChoices} is null or empty, and {@link #getAllowedDataTypes is
      * non-null and not empty.
      */
     public boolean isDataOnly() {
@@ -157,14 +115,6 @@ public final class RemoteInput {
     }
 
     /**
-     * Gets whether tapping on a choice should let the user edit the input before it is sent to the
-     * app.
-     */
-    @EditChoicesBeforeSending public int getEditChoicesBeforeSending() {
-        return mEditChoicesBeforeSending;
-    }
-
-    /**
      * Get additional metadata carried around with this remote input.
      */
     public Bundle getExtras() {
@@ -172,7 +122,7 @@ public final class RemoteInput {
     }
 
     /**
-     * Builder class for {@link androidx.core.app.RemoteInput} objects.
+     * Builder class for {@link RemoteInput} objects.
      */
     public static final class Builder {
         private final String mResultKey;
@@ -181,11 +131,9 @@ public final class RemoteInput {
         private CharSequence mLabel;
         private CharSequence[] mChoices;
         private boolean mAllowFreeFormTextInput = true;
-        @EditChoicesBeforeSending
-        private int mEditChoicesBeforeSending = EDIT_CHOICES_BEFORE_SENDING_AUTO;
 
         /**
-         * Create a builder object for {@link androidx.core.app.RemoteInput} objects.
+         * Create a builder object for {@link RemoteInput} objects.
          *
          * @param resultKey the Bundle key that refers to this input when collected from the user
          */
@@ -263,19 +211,6 @@ public final class RemoteInput {
         }
 
         /**
-         * Specifies whether tapping on a choice should let the user edit the input before it is
-         * sent to the app. The default is {@link #EDIT_CHOICES_BEFORE_SENDING_AUTO}.
-         *
-         * It cannot be used if {@link #setAllowFreeFormInput} has been set to false.
-         */
-        @NonNull
-        public Builder setEditChoicesBeforeSending(
-                @EditChoicesBeforeSending int editChoicesBeforeSending) {
-            mEditChoicesBeforeSending = editChoicesBeforeSending;
-            return this;
-        }
-
-        /**
          * Merge additional metadata into this builder.
          *
          * <p>Values within the Bundle will replace existing extras values in this Builder.
@@ -302,7 +237,7 @@ public final class RemoteInput {
 
         /**
          * Combine all of the options that have been set and return a new {@link
-         * androidx.core.app.RemoteInput} object.
+         * RemoteInput} object.
          */
         @NonNull
         public RemoteInput build() {
@@ -311,7 +246,6 @@ public final class RemoteInput {
                     mLabel,
                     mChoices,
                     mAllowFreeFormTextInput,
-                    mEditChoicesBeforeSending,
                     mExtras,
                     mAllowedDataTypes);
         }
@@ -360,6 +294,7 @@ public final class RemoteInput {
             }
             return results.isEmpty() ? null : results;
         } else {
+            Log.w(TAG, "RemoteInput is only supported from API Level 16");
             return null;
         }
     }
@@ -382,6 +317,7 @@ public final class RemoteInput {
             }
             return clipDataIntent.getExtras().getParcelable(RemoteInput.EXTRA_RESULTS_DATA);
         } else {
+            Log.w(TAG, "RemoteInput is only supported from API Level 16");
             return null;
         }
     }
@@ -391,7 +327,7 @@ public final class RemoteInput {
      * should only be called by remote input collection services when sending results to a
      * pending intent.
      * @param remoteInputs The remote inputs for which results are being provided
-     * @param intent The intent to add remote inputs to. The {@link android.content.ClipData}
+     * @param intent The intent to add remote inputs to. The {@link ClipData}
      *               field of the intent will be modified to contain the results.
      * @param results A bundle holding the remote input results. This bundle should
      *                be populated with keys matching the result keys specified in
@@ -406,11 +342,7 @@ public final class RemoteInput {
             // results, they wipe out old results and insert the new one. Work around that by
             // preserving old results.
             Bundle existingTextResults =
-                    androidx.core.app.RemoteInput.getResultsFromIntent(intent);
-
-            // We also need to preserve the results source, as it is also cleared.
-            int resultsSource = getResultsSource(intent);
-
+                    RemoteInput.getResultsFromIntent(intent);
             if (existingTextResults == null) {
                 existingTextResults = results;
             } else {
@@ -419,7 +351,7 @@ public final class RemoteInput {
             for (RemoteInput input : remoteInputs) {
                 // Data results are also wiped out. So grab them and add them back in.
                 Map<String, Uri> existingDataResults =
-                        androidx.core.app.RemoteInput.getDataResultsFromIntent(
+                        RemoteInput.getDataResultsFromIntent(
                                 intent, input.getResultKey());
                 RemoteInput[] arr = new RemoteInput[1];
                 arr[0] = input;
@@ -429,9 +361,6 @@ public final class RemoteInput {
                     RemoteInput.addDataResultToIntent(input, intent, existingDataResults);
                 }
             }
-
-            // Now restore the results source.
-            setResultsSource(intent, resultsSource);
         } else if (Build.VERSION.SDK_INT >= 16) {
             Intent clipDataIntent = getClipDataIntentFromIntent(intent);
             if (clipDataIntent == null) {
@@ -450,6 +379,8 @@ public final class RemoteInput {
             }
             clipDataIntent.putExtra(RemoteInput.EXTRA_RESULTS_DATA, resultsBundle);
             intent.setClipData(ClipData.newIntent(RemoteInput.RESULTS_CLIP_LABEL, clipDataIntent));
+        } else {
+            Log.w(TAG, "RemoteInput is only supported from API Level 16");
         }
     }
 
@@ -457,7 +388,7 @@ public final class RemoteInput {
      * Same as {@link #addResultsToIntent} but for setting data results.
      * @param remoteInput The remote input for which results are being provided
      * @param intent The intent to add remote input results to. The
-     *               {@link android.content.ClipData} field of the intent will be
+     *               {@link ClipData} field of the intent will be
      *               modified to contain the results.
      * @param results A map of mime type to the Uri result for that mime type.
      */
@@ -485,58 +416,8 @@ public final class RemoteInput {
                 clipDataIntent.putExtra(getExtraResultsKeyForData(mimeType), resultsBundle);
             }
             intent.setClipData(ClipData.newIntent(RemoteInput.RESULTS_CLIP_LABEL, clipDataIntent));
-        }
-    }
-
-    /**
-     * Set the source of the RemoteInput results. This method should only be called by remote
-     * input collection services (e.g.
-     * {@link android.service.notification.NotificationListenerService})
-     * when sending results to a pending intent.
-     *
-     * @see #SOURCE_FREE_FORM_INPUT
-     * @see #SOURCE_CHOICE
-     *
-     * @param intent The intent to add remote input source to. The {@link ClipData}
-     *               field of the intent will be modified to contain the source.
-     * @param source The source of the results.
-     */
-    public static void setResultsSource(@NonNull Intent intent, @Source int source) {
-        if (Build.VERSION.SDK_INT >= 28) {
-            android.app.RemoteInput.setResultsSource(intent, source);
-        } else if (Build.VERSION.SDK_INT >= 16) {
-            Intent clipDataIntent = getClipDataIntentFromIntent(intent);
-            if (clipDataIntent == null) {
-                clipDataIntent = new Intent();  // First time we've added a result.
-            }
-            clipDataIntent.putExtra(EXTRA_RESULTS_SOURCE, source);
-            intent.setClipData(ClipData.newIntent(RESULTS_CLIP_LABEL, clipDataIntent));
-        }
-    }
-
-    /**
-     * Get the source of the RemoteInput results.
-     *
-     * @see #SOURCE_FREE_FORM_INPUT
-     * @see #SOURCE_CHOICE
-     *
-     * @param intent The intent object that fired in response to an action or content intent
-     *               which also had one or more remote input requested.
-     * @return The source of the results. If no source was set, {@link #SOURCE_FREE_FORM_INPUT} will
-     * be returned.
-     */
-    @Source
-    public static int getResultsSource(@NonNull Intent intent) {
-        if (Build.VERSION.SDK_INT >= 28) {
-            return android.app.RemoteInput.getResultsSource(intent);
-        } else if (Build.VERSION.SDK_INT >= 16) {
-            Intent clipDataIntent = getClipDataIntentFromIntent(intent);
-            if (clipDataIntent == null) {
-                return SOURCE_FREE_FORM_INPUT;
-            }
-            return clipDataIntent.getExtras().getInt(EXTRA_RESULTS_SOURCE, SOURCE_FREE_FORM_INPUT);
         } else {
-            return SOURCE_FREE_FORM_INPUT;
+            Log.w(TAG, "RemoteInput is only supported from API Level 16");
         }
     }
 
@@ -558,16 +439,12 @@ public final class RemoteInput {
 
     @RequiresApi(20)
     static android.app.RemoteInput fromCompat(RemoteInput src) {
-        android.app.RemoteInput.Builder builder =
-                new android.app.RemoteInput.Builder(src.getResultKey())
-                        .setLabel(src.getLabel())
-                        .setChoices(src.getChoices())
-                        .setAllowFreeFormInput(src.getAllowFreeFormInput())
-                        .addExtras(src.getExtras());
-        if (Build.VERSION.SDK_INT >= 29) {
-            builder.setEditChoicesBeforeSending(src.getEditChoicesBeforeSending());
-        }
-        return builder.build();
+        return new android.app.RemoteInput.Builder(src.getResultKey())
+                .setLabel(src.getLabel())
+                .setChoices(src.getChoices())
+                .setAllowFreeFormInput(src.getAllowFreeFormInput())
+                .addExtras(src.getExtras())
+                .build();
     }
 
     @RequiresApi(16)

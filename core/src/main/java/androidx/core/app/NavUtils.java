@@ -157,7 +157,7 @@ public final class NavUtils {
      * element in the application's manifest.
      *
      * @param context Context for looking up the activity component for sourceActivityClass
-     * @param sourceActivityClass {@link java.lang.Class} object for an Activity class
+     * @param sourceActivityClass {@link Class} object for an Activity class
      * @return a new Intent targeting the defined parent activity of sourceActivity
      * @throws NameNotFoundException if the ComponentName for sourceActivityClass is invalid
      */
@@ -238,15 +238,7 @@ public final class NavUtils {
             @NonNull ComponentName componentName)
             throws NameNotFoundException {
         PackageManager pm = context.getPackageManager();
-        int flags = PackageManager.GET_META_DATA;
-        // Check for disabled components to handle cases where the
-        // ComponentName points to a disabled activity-alias.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            flags |= PackageManager.MATCH_DISABLED_COMPONENTS;
-        } else {
-            flags |= PackageManager.GET_DISABLED_COMPONENTS;
-        }
-        ActivityInfo info = pm.getActivityInfo(componentName, flags);
+        ActivityInfo info = pm.getActivityInfo(componentName, PackageManager.GET_META_DATA);
         if (Build.VERSION.SDK_INT >= 16) {
             String result = info.parentActivityName;
             if (result != null) {

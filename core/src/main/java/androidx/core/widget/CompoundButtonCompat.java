@@ -30,7 +30,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import java.lang.reflect.Field;
 
 /**
- * Helper for accessing {@link android.widget.CompoundButton}.
+ * Helper for accessing {@link CompoundButton}.
  */
 public final class CompoundButtonCompat {
     private static final String TAG = "CompoundButtonCompat";

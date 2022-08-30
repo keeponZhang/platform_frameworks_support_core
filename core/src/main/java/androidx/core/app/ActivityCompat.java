@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Helper for accessing features in {@link android.app.Activity}.
+ * Helper for accessing features in {@link Activity}.
  */
 public class ActivityCompat extends ContextCompat {
 
@@ -56,7 +56,7 @@ public class ActivityCompat extends ContextCompat {
 
         /**
          * Callback for the result from requesting permissions. This method
-         * is invoked for every call on {@link #requestPermissions(android.app.Activity,
+         * is invoked for every call on {@link #requestPermissions(Activity,
          * String[], int)}.
          * <p>
          * <strong>Note:</strong> It is possible that the permissions request interaction
@@ -65,13 +65,13 @@ public class ActivityCompat extends ContextCompat {
          * </p>
          *
          * @param requestCode The request code passed in {@link #requestPermissions(
-         * android.app.Activity, String[], int)}
+         * Activity, String[], int)}
          * @param permissions The requested permissions. Never null.
          * @param grantResults The grant results for the corresponding permissions
-         *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-         *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+         *     which is either {@link PackageManager#PERMISSION_GRANTED}
+         *     or {@link PackageManager#PERMISSION_DENIED}. Never null.
          *
-         * @see #requestPermissions(android.app.Activity, String[], int)
+         * @see #requestPermissions(Activity, String[], int)
          */
         void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                 @NonNull int[] grantResults);
@@ -135,7 +135,7 @@ public class ActivityCompat extends ContextCompat {
     /**
      * @hide
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public interface RequestPermissionsRequestCodeValidator {
         void validateRequestPermissionsRequestCode(int requestCode);
     }
@@ -164,7 +164,7 @@ public class ActivityCompat extends ContextCompat {
     /**
      * @hide
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static PermissionCompatDelegate getPermissionCompatDelegate() {
         return sDelegate;
     }
@@ -372,7 +372,7 @@ public class ActivityCompat extends ContextCompat {
 
     /**
      * When {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
-     * android.view.View, String)} was used to start an Activity, <var>callback</var>
+     * View, String)} was used to start an Activity, <var>callback</var>
      * will be called to handle shared elements on the <i>launched</i> Activity. This requires
      * {@link android.view.Window#FEATURE_CONTENT_TRANSITIONS}.
      *
@@ -390,7 +390,7 @@ public class ActivityCompat extends ContextCompat {
 
     /**
      * When {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
-     * android.view.View, String)} was used to start an Activity, <var>callback</var>
+     * View, String)} was used to start an Activity, <var>callback</var>
      * will be called to handle shared elements on the <i>launching</i> Activity. Most
      * calls will only come when returning from the started Activity.
      * This requires {@link android.view.Window#FEATURE_CONTENT_TRANSITIONS}.
@@ -422,9 +422,9 @@ public class ActivityCompat extends ContextCompat {
     /**
      * Requests permissions to be granted to this application. These permissions
      * must be requested in your manifest, they should not be granted to your app,
-     * and they should have protection level {@link
-     * android.content.pm.PermissionInfo#PROTECTION_DANGEROUS dangerous}, regardless
-     * whether they are declared by the platform or a third-party app.
+     * and they should have protection level {@link android.content.pm.PermissionInfo
+     * #PROTECTION_DANGEROUS dangerous}, regardless whether they are declared by
+     * the platform or a third-party app.
      * <p>
      * Normal permissions {@link android.content.pm.PermissionInfo#PROTECTION_NORMAL}
      * are granted at install time if requested in the manifest. Signature permissions
@@ -437,9 +437,9 @@ public class ActivityCompat extends ContextCompat {
      * with UI for accepting them. After the user has accepted or rejected the
      * requested permissions you will receive a callback reporting whether the
      * permissions were granted or not. Your activity has to implement {@link
-     * androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback}
+     * OnRequestPermissionsResultCallback}
      * and the results of permission requests will be delivered to its {@link
-     * androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback#onRequestPermissionsResult(
+     * OnRequestPermissionsResultCallback#onRequestPermissionsResult(
      * int, String[], int[])} method.
      * </p>
      * <p>
@@ -456,7 +456,7 @@ public class ActivityCompat extends ContextCompat {
      * </p>
      * <p>
      * When checking whether you have a permission you should use {@link
-     * #checkSelfPermission(android.content.Context, String)}.
+     * #checkSelfPermission(Context, String)}.
      * </p>
      * <p>
      * Calling this API for permissions already granted to your app would show UI
@@ -471,7 +471,7 @@ public class ActivityCompat extends ContextCompat {
      * {@link OnRequestPermissionsResultCallback#onRequestPermissionsResult(int, String[], int[])}.
      * </p>
      * <p>
-     * The <a href="https://github.com/googlesamples/android-RuntimePermissions">
+     * The <a href="http://developer.android.com/samples/RuntimePermissions/index.html">
      * RuntimePermissions</a> sample app demonstrates how to use this method to
      * request permissions at run time.
      * </p>
@@ -483,8 +483,8 @@ public class ActivityCompat extends ContextCompat {
      *    Should be >= 0.
      *
      * @see OnRequestPermissionsResultCallback#onRequestPermissionsResult(int, String[], int[])
-     * @see #checkSelfPermission(android.content.Context, String)
-     * @see #shouldShowRequestPermissionRationale(android.app.Activity, String)
+     * @see #checkSelfPermission(Context, String)
+     * @see #shouldShowRequestPermissionRationale(Activity, String)
      */
     public static void requestPermissions(final @NonNull Activity activity,
             final @NonNull String[] permissions, final @IntRange(from = 0) int requestCode) {
@@ -540,8 +540,8 @@ public class ActivityCompat extends ContextCompat {
      * @param permission A permission your app wants to request.
      * @return Whether you can show permission rationale UI.
      *
-     * @see #checkSelfPermission(android.content.Context, String)
-     * @see #requestPermissions(android.app.Activity, String[], int)
+     * @see #checkSelfPermission(Context, String)
+     * @see #requestPermissions(Activity, String[], int)
      */
     public static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity,
             @NonNull String permission) {
@@ -553,7 +553,7 @@ public class ActivityCompat extends ContextCompat {
 
     /**
      * Create {@link DragAndDropPermissionsCompat} object bound to this activity and controlling
-     * the access permissions for content URIs associated with the {@link android.view.DragEvent}.
+     * the access permissions for content URIs associated with the {@link DragEvent}.
      * @param dragEvent Drag event to request permission for
      * @return The {@link DragAndDropPermissionsCompat} object used to control access to the content
      * URIs. {@code null} if no content URIs are associated with the event or if permissions could
@@ -563,25 +563,6 @@ public class ActivityCompat extends ContextCompat {
     public static DragAndDropPermissionsCompat requestDragAndDropPermissions(Activity activity,
             DragEvent dragEvent) {
         return DragAndDropPermissionsCompat.request(activity, dragEvent);
-    }
-
-    /**
-     * Cause the given Activity to be recreated with a new instance. This version of the method
-     * allows a consistent behavior across API levels, emulating what happens on Android Pie (and
-     * newer) when running on older platforms.
-     *
-     * @param activity The activity to recreate
-     */
-    public static void recreate(@NonNull Activity activity) {
-        // On Android P and later we can safely rely on the platform recreate()
-        if (Build.VERSION.SDK_INT >= 28) {
-            activity.recreate();
-        } else {
-            if (!ActivityRecreator.recreate(activity)) {
-                // If ActivityRecreator did not start a recreation, we'll just invoke the platform
-                activity.recreate();
-            }
-        }
     }
 
     @RequiresApi(21)

@@ -40,7 +40,7 @@ import java.lang.reflect.Method;
  * This must be used for some core compatibility features to function fully.
  * @hide
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class KeyEventDispatcher {
     // reflection accessors
     private static boolean sActionBarFieldsFetched = false;
@@ -183,7 +183,7 @@ public class KeyEventDispatcher {
          * {@link Window.Callback#dispatchKeyEvent}.
          *
          * If you're not implementing Window.Callback, this should contain dispatch logic
-         * that occurs <b>after</b> {@link android.view.View.OnUnhandledKeyEventListener}s.
+         * that occurs <b>after</b> {@link View.OnUnhandledKeyEventListener}s.
          *
          * @param event The event being dispatched
          * @return {@code true} if consuming the event, {@code false} otherwise

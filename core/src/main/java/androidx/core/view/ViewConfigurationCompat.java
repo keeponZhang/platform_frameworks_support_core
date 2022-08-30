@@ -103,7 +103,7 @@ public final class ViewConfigurationCompat {
     }
 
     private static float getLegacyScrollFactor(ViewConfiguration config, Context context) {
-        if (android.os.Build.VERSION.SDK_INT >= 25 && sGetScaledScrollFactorMethod != null) {
+        if (Build.VERSION.SDK_INT >= 25 && sGetScaledScrollFactorMethod != null) {
             try {
                 return (int) sGetScaledScrollFactorMethod.invoke(config);
             } catch (Exception e) {
@@ -125,7 +125,7 @@ public final class ViewConfigurationCompat {
      * @return The hover slop value.
      */
     public static int getScaledHoverSlop(ViewConfiguration config) {
-        if (android.os.Build.VERSION.SDK_INT >= 28) {
+        if (Build.VERSION.SDK_INT >= 28) {
             return config.getScaledHoverSlop();
         }
         return config.getScaledTouchSlop() / 2;
@@ -138,7 +138,7 @@ public final class ViewConfigurationCompat {
      */
     public static boolean shouldShowMenuShortcutsWhenKeyboardPresent(ViewConfiguration config,
             @NonNull Context context) {
-        if (android.os.Build.VERSION.SDK_INT >= 28) {
+        if (Build.VERSION.SDK_INT >= 28) {
             return config.shouldShowMenuShortcutsWhenKeyboardPresent();
         }
         final Resources res = context.getResources();

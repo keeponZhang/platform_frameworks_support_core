@@ -16,8 +16,7 @@
 
 package androidx.core.provider;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY;
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -66,18 +65,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Utility class to deal with Font ContentProviders.
  */
 public class FontsContractCompat {
+    private static final String TAG = "FontsContractCompat";
+
     private FontsContractCompat() { }
 
     /**
@@ -164,16 +158,16 @@ public class FontsContractCompat {
      * returned to the ResultReceiver in getFont.
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public static final String PARCEL_FONT_RESULTS = "font_results";
 
     // Error codes internal to the system, which can not come from a provider. To keep the number
     // space open for new provider codes, these should all be negative numbers.
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     /* package */ static final int RESULT_CODE_PROVIDER_NOT_FOUND = -1;
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     /* package */ static final int RESULT_CODE_WRONG_CERTIFICATES = -2;
     // Note -3 is used by FontRequestCallback to indicate the font failed to load.
 
@@ -222,122 +216,21 @@ public class FontsContractCompat {
         }
     }
 
-    @GuardedBy("sLock")
-    private static Executor sExecutor;
-
     /**
      * Used for tests, should not be used otherwise.
      * @hide
      **/
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public static void resetCache() {
         sTypefaceCache.evictAll();
     }
 
-    /**
-     * An general interface for callback when the process has completed.
-     */
-    private interface OnCompletedCallback<T> {
-        void onCompleted(T result);
-    }
-
-    /**
-     * A helper class for wrapping synchronous font fetching with Callable.
-     */
-    private static final class SyncFontFetchTaskCallable implements Callable<TypefaceResult> {
-        private final @NonNull String mCacheId;
-        private final @NonNull Context mAppContext;
-        private final @NonNull FontRequest mRequest;
-        private final int mStyle;
-
-        SyncFontFetchTaskCallable(@NonNull Context ctx, @NonNull FontRequest request,
-                int style, @NonNull String cacheId) {
-            mCacheId = cacheId;
-            mAppContext = ctx.getApplicationContext();
-            mRequest = request;
-            mStyle = style;
-        }
-
-        @Override
-        public TypefaceResult call() throws Exception {
-            TypefaceResult typeface = getFontInternal(mAppContext, mRequest, mStyle);
-            if (typeface.mTypeface != null) {
-                sTypefaceCache.put(mCacheId, typeface.mTypeface);
-            }
-            return typeface;
-        }
-    }
-
-    /**
-     * Helper class of the process when the font fetch has completed.
-     *
-     * This class does
-     * - Remove all reply objects for the given request from pending replies.
-     * - Call the all replies.
-     */
-    private static final class OnFetchCompletedAndFirePendingReplyCallback
-            implements OnCompletedCallback<TypefaceResult> {
-        private final @NonNull String mCacheId;
-
-        OnFetchCompletedAndFirePendingReplyCallback(@NonNull String cacheId) {
-            mCacheId = cacheId;
-        }
-
-        @Override
-        public void onCompleted(TypefaceResult typeface) {
-            final ArrayList<ReplyCallback<TypefaceResult>> replies;
-            synchronized (sLock) {
-                replies = sPendingReplies.get(mCacheId);
-                if (replies == null) {
-                    return;  // Nobody requested replies. Do nothing.
-                }
-                sPendingReplies.remove(mCacheId);
-            }
-            for (int i = 0; i < replies.size(); ++i) {
-                replies.get(i).onReply(typeface);
-            }
-        }
-    }
-
-    /**
-     * Helper task class for font fetching.
-     */
-    private static final class SyncFontFetchTask extends FutureTask<TypefaceResult> {
-        private static final class CallableWrapper implements Callable<TypefaceResult> {
-            private final Callable<TypefaceResult> mOriginalCallback;
-            private final OnCompletedCallback<TypefaceResult> mTypefaceResultOnCompletedCallback;
-            CallableWrapper(@NonNull Callable<TypefaceResult> callback,
-                    @NonNull OnCompletedCallback<TypefaceResult> onCompletedCallback) {
-                mOriginalCallback = callback;
-                mTypefaceResultOnCompletedCallback = onCompletedCallback;
-            }
-
-            @Override
-            public TypefaceResult call() throws Exception {
-                TypefaceResult tf = mOriginalCallback.call();
-                mTypefaceResultOnCompletedCallback.onCompleted(tf);
-                return tf;
-            }
-        }
-
-        SyncFontFetchTask(@NonNull SyncFontFetchTaskCallable callable) {
-            super(callable);
-        }
-
-        SyncFontFetchTask(@NonNull SyncFontFetchTaskCallable callable,
-                @NonNull OnCompletedCallback<TypefaceResult> onCompletedCallback) {
-            super(new CallableWrapper(callable, onCompletedCallback));
-        }
-    }
-
     /** @hide */
-    @RestrictTo(LIBRARY)
+    @RestrictTo(LIBRARY_GROUP)
     public static Typeface getFontSync(final Context context, final FontRequest request,
             final @Nullable ResourcesCompat.FontCallback fontCallback,
             final @Nullable Handler handler, boolean isBlockingFetch, int timeout,
-            final int style, boolean isRequestFromLayoutInflator) {
-
-
+            final int style) {
         final String id = request.getIdentifier() + "-" + style;
         Typeface cached = sTypefaceCache.get(id);
         if (cached != null) {
@@ -360,97 +253,54 @@ public class FontsContractCompat {
             return typefaceResult.mTypeface;
         }
 
-        Executor executor = null;
-        if (isRequestFromLayoutInflator && handler == null) {
-            if (sExecutor == null) {
-                synchronized (sLock) {
-                    if (sExecutor == null) {
-
-                        sExecutor = Executors.newFixedThreadPool(1, new ThreadFactory() {
-                            @Override
-                            public Thread newThread(@NonNull Runnable runnable) {
-                                final Thread t = new Thread(runnable);
-                                t.setName("fonts");
-                                return t;
-                            }
-                        });
-                    }
+        final Callable<TypefaceResult> fetcher = new Callable<TypefaceResult>() {
+            @Override
+            public TypefaceResult call() throws Exception {
+                TypefaceResult typeface = getFontInternal(context, request, style);
+                if (typeface.mTypeface != null) {
+                    sTypefaceCache.put(id, typeface.mTypeface);
                 }
+                return typeface;
             }
-            executor = sExecutor;
-        }
-
-        final SyncFontFetchTaskCallable fetcher = new SyncFontFetchTaskCallable(
-                context, request, style, id);
+        };
 
         if (isBlockingFetch) {
             try {
-                if (executor == null) {
-                    return sBackgroundThread.postAndWait(fetcher, timeout).mTypeface;
-                } else {
-                    final SyncFontFetchTask task = new SyncFontFetchTask(fetcher);
-                    executor.execute(task);
-                    return task.get(timeout, TimeUnit.MILLISECONDS).mTypeface;
-                }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                return sBackgroundThread.postAndWait(fetcher, timeout).mTypeface;
+            } catch (InterruptedException e) {
                 return null;
             }
-        }
-
-        // Non-blocking fetch
-        ReplyCallback<TypefaceResult> reply = null;
-        if (fontCallback != null) {
-            if (executor == null) {
-                reply = new ReplyCallback<TypefaceResult>() {
-                    @Override
-                    public void onReply(final TypefaceResult typeface) {
-                        if (typeface == null) {
-                            fontCallback.callbackFailAsync(
-                                    FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND,
-                                    handler);
-                        } else if (typeface.mResult == FontFamilyResult.STATUS_OK) {
-                            fontCallback.callbackSuccessAsync(typeface.mTypeface, handler);
-                        } else {
-                            fontCallback.callbackFailAsync(typeface.mResult, handler);
+        } else {
+            final ReplyCallback<TypefaceResult> reply = fontCallback == null ? null
+                    : new ReplyCallback<TypefaceResult>() {
+                        @Override
+                        public void onReply(final TypefaceResult typeface) {
+                            if (typeface == null) {
+                                fontCallback.callbackFailAsync(
+                                        FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND, handler);
+                            } else if (typeface.mResult == FontFamilyResult.STATUS_OK) {
+                                fontCallback.callbackSuccessAsync(typeface.mTypeface, handler);
+                            } else {
+                                fontCallback.callbackFailAsync(typeface.mResult, handler);
+                            }
                         }
-                    }
-                };
-            } else {
-                reply = new ReplyCallback<TypefaceResult>() {
-                    @Override
-                    public void onReply(final TypefaceResult typeface) {
-                        if (typeface == null) {
-                            fontCallback.onFontRetrievalFailed(
-                                    FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND);
-                        } else if (typeface.mResult == FontFamilyResult.STATUS_OK) {
-                            fontCallback.onFontRetrieved(typeface.mTypeface);
-                        } else {
-                            fontCallback.onFontRetrievalFailed(typeface.mResult);
-                        }
-                    }
-                };
-            }
-        }
+                    };
 
-        synchronized (sLock) {
-            ArrayList<ReplyCallback<TypefaceResult>> pendingReplies = sPendingReplies.get(
-                    id);
-            if (pendingReplies != null) {
-                // Already requested. Do not request the same provider again and insert the
-                // reply to the queue instead.
+            synchronized (sLock) {
+                if (sPendingReplies.containsKey(id)) {
+                    // Already requested. Do not request the same provider again and insert the
+                    // reply to the queue instead.
+                    if (reply != null) {
+                        sPendingReplies.get(id).add(reply);
+                    }
+                    return null;
+                }
                 if (reply != null) {
+                    ArrayList<ReplyCallback<TypefaceResult>> pendingReplies = new ArrayList<>();
                     pendingReplies.add(reply);
+                    sPendingReplies.put(id, pendingReplies);
                 }
-                return null;
             }
-            if (reply != null) {
-                pendingReplies = new ArrayList<>();
-                pendingReplies.add(reply);
-                sPendingReplies.put(id, pendingReplies);
-            }
-        }
-
-        if (executor == null) {
             sBackgroundThread.postAndReply(fetcher, new ReplyCallback<TypefaceResult>() {
                 @Override
                 public void onReply(final TypefaceResult typeface) {
@@ -467,22 +317,8 @@ public class FontsContractCompat {
                     }
                 }
             });
-        } else {
-            executor.execute(new SyncFontFetchTask(fetcher,
-                    new OnFetchCompletedAndFirePendingReplyCallback(id)));
-
+            return null;
         }
-        return null;
-    }
-
-    /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    public static Typeface getFontSync(final Context context, final FontRequest request,
-            final @Nullable ResourcesCompat.FontCallback fontCallback,
-            final @Nullable Handler handler, boolean isBlockingFetch, int timeout,
-            final int style) {
-        return getFontSync(context, request, fontCallback, handler, isBlockingFetch, timeout, style,
-                false /* isCalledFromLayoutInflator */);
     }
 
     /**
@@ -505,7 +341,7 @@ public class FontsContractCompat {
          *
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public FontInfo(@NonNull Uri uri, @IntRange(from = 0) int ttcIndex,
                 @IntRange(from = 1, to = 1000) int weight,
                 boolean italic, int resultCode) {
@@ -547,7 +383,7 @@ public class FontsContractCompat {
         /**
          * Returns result code.
          *
-         * {@link FontsContractCompat.Columns#RESULT_CODE}
+         * {@link Columns#RESULT_CODE}
          */
         public int getResultCode() {
             return mResultCode;
@@ -579,7 +415,7 @@ public class FontsContractCompat {
         public static final int STATUS_UNEXPECTED_DATA_PROVIDED = 2;
 
         /** @hide */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @IntDef({STATUS_OK, STATUS_WRONG_CERTIFICATES, STATUS_UNEXPECTED_DATA_PROVIDED})
         @Retention(RetentionPolicy.SOURCE)
         @interface FontResultStatus {}
@@ -588,7 +424,7 @@ public class FontsContractCompat {
         private final FontInfo[] mFonts;
 
         /** @hide */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public FontFamilyResult(@FontResultStatus int statusCode, @Nullable FontInfo[] fonts) {
             mStatusCode = statusCode;
             mFonts = fonts;
@@ -608,7 +444,7 @@ public class FontsContractCompat {
      */
     public static class FontRequestCallback {
         /** @hide */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public static final int RESULT_OK = Columns.RESULT_CODE_OK;
         /**
          * Constant returned by {@link #onTypefaceRequestFailed(int)} signaling that the given
@@ -647,7 +483,7 @@ public class FontsContractCompat {
         public static final int FAIL_REASON_MALFORMED_QUERY = Columns.RESULT_CODE_MALFORMED_QUERY;
 
         /** @hide */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @IntDef({ FAIL_REASON_PROVIDER_NOT_FOUND, FAIL_REASON_FONT_LOAD_ERROR,
                 FAIL_REASON_FONT_NOT_FOUND, FAIL_REASON_FONT_UNAVAILABLE,
                 FAIL_REASON_MALFORMED_QUERY, FAIL_REASON_WRONG_CERTIFICATES,
@@ -693,15 +529,6 @@ public class FontsContractCompat {
     public static void requestFont(final @NonNull Context context,
             final @NonNull FontRequest request, final @NonNull FontRequestCallback callback,
             final @NonNull Handler handler) {
-        requestFontInternal(context.getApplicationContext(), request, callback, handler);
-    }
-
-    /**
-     * Internal method of requestFont for avoiding holding strong refernece of Context.
-     */
-    private static void requestFontInternal(final @NonNull Context appContext,
-            final @NonNull FontRequest request, final @NonNull FontRequestCallback callback,
-            final @NonNull Handler handler) {
         final Handler callerThreadHandler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -709,7 +536,7 @@ public class FontsContractCompat {
                 // TODO: Cache the result.
                 FontFamilyResult result;
                 try {
-                    result = fetchFonts(appContext, null /* cancellation signal */, request);
+                    result = fetchFonts(context, null /* cancellation signal */, request);
                 } catch (PackageManager.NameNotFoundException e) {
                     callerThreadHandler.post(new Runnable() {
                         @Override
@@ -792,7 +619,7 @@ public class FontsContractCompat {
                     }
                 }
 
-                final Typeface typeface = buildTypeface(appContext, null /* cancellation signal */,
+                final Typeface typeface = buildTypeface(context, null /* cancellation signal */,
                         fonts);
                 if (typeface == null) {
                     // Something went wrong during reading font files. This happens if the given
@@ -847,7 +674,7 @@ public class FontsContractCompat {
      * @return A map from {@link Uri} to {@link ByteBuffer}.
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @RequiresApi(19)
     public static Map<Uri, ByteBuffer> prepareFontData(Context context, FontInfo[] fonts,
             CancellationSignal cancellationSignal) {
@@ -902,7 +729,7 @@ public class FontsContractCompat {
 
     /** @hide */
     @VisibleForTesting
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public static @Nullable ProviderInfo getProvider(@NonNull PackageManager packageManager,
             @NonNull FontRequest request, @Nullable Resources resources)
             throws PackageManager.NameNotFoundException {

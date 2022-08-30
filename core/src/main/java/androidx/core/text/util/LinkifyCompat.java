@@ -16,7 +16,7 @@
 
 package androidx.core.text.util;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -80,7 +80,7 @@ public final class LinkifyCompat {
     };
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef(flag = true, value = { Linkify.WEB_URLS, Linkify.EMAIL_ADDRESSES, Linkify.PHONE_NUMBERS,
             Linkify.MAP_ADDRESSES, Linkify.ALL })
     @Retention(RetentionPolicy.SOURCE)
@@ -379,7 +379,7 @@ public final class LinkifyCompat {
     private static void addLinkMovementMethod(@NonNull TextView t) {
         MovementMethod m = t.getMovementMethod();
 
-        if (!(m instanceof LinkMovementMethod)) {
+        if ((m == null) || !(m instanceof LinkMovementMethod)) {
             if (t.getLinksClickable()) {
                 t.setMovementMethod(LinkMovementMethod.getInstance());
             }
@@ -387,7 +387,7 @@ public final class LinkifyCompat {
     }
 
     private static String makeUrl(@NonNull String url, @NonNull String[] prefixes,
-            Matcher matcher, @Nullable Linkify.TransformFilter filter) {
+            Matcher matcher, @Nullable TransformFilter filter) {
         if (filter != null) {
             url = filter.transformUrl(matcher, url);
         }
@@ -416,7 +416,7 @@ public final class LinkifyCompat {
 
     private static void gatherLinks(ArrayList<LinkSpec> links,
             Spannable s, Pattern pattern, String[] schemes,
-            Linkify.MatchFilter matchFilter, Linkify.TransformFilter transformFilter) {
+            MatchFilter matchFilter, TransformFilter transformFilter) {
         Matcher m = pattern.matcher(s);
 
         while (m.find()) {

@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 
 /**
  * Helper for accessing API features in
- * {@link android.view.ViewGroup.MarginLayoutParams MarginLayoutParams} in a backwards compatible
+ * {@link ViewGroup.MarginLayoutParams MarginLayoutParams} in a backwards compatible
  * way.
  */
 public final class MarginLayoutParamsCompat {

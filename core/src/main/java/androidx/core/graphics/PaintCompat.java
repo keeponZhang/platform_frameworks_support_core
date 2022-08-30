@@ -16,17 +16,11 @@
 
 package androidx.core.graphics;
 
-import static androidx.core.graphics.BlendModeUtils.obtainBlendModeFromCompat;
-import static androidx.core.graphics.BlendModeUtils.obtainPorterDuffFromCompat;
-
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 /**
@@ -108,37 +102,6 @@ public final class PaintCompat {
         paint.getTextBounds(TOFU_STRING, 0, TOFU_STRING.length(), rects.first);
         paint.getTextBounds(string, 0, length, rects.second);
         return !rects.first.equals(rects.second);
-    }
-
-    /**
-     * Configure the corresponding BlendMode on the given paint. If the Android platform supports
-     * the blend mode natively, it will fall back on the framework implementation of either
-     * BlendMode or PorterDuff mode. If it is not supported then this method is a no-op
-     * @param paint target Paint to which the BlendMode will be applied
-     * @param blendMode BlendMode to configure on the paint if it is supported by the platform
-     *                  version. A value of null removes the BlendMode from the Paint and restores
-     *                  it to the default
-     * @return true if the specified BlendMode as applied successfully, false if the platform
-     * version does not support this BlendMode. If the BlendMode is not supported, this falls
-     * back to the default BlendMode
-     */
-    public static boolean setBlendMode(@NonNull Paint paint, @Nullable BlendModeCompat blendMode) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            paint.setBlendMode(blendMode != null ? obtainBlendModeFromCompat(blendMode) : null);
-            // All blend modes supported in Q
-            return true;
-        } else if (blendMode != null) {
-            PorterDuff.Mode mode = obtainPorterDuffFromCompat(blendMode);
-            paint.setXfermode(mode != null ? new PorterDuffXfermode(mode) : null);
-            // If the BlendMode has an equivalent PorterDuff mode, return true,
-            // otherwise return false
-            return mode != null;
-        } else {
-            // Configuration of a null BlendMode falls back to the default which is supported in
-            // all platform levels
-            paint.setXfermode(null);
-            return true;
-        }
     }
 
     private static Pair<Rect, Rect> obtainEmptyRects() {

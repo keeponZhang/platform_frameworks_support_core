@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Helper for accessing features in {@link android.app.AppOpsManager}.
+ * Helper for accessing features in {@link AppOpsManager}.
  */
 public final class AppOpsManagerCompat {
 

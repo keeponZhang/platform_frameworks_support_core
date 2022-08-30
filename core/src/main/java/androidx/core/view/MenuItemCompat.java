@@ -29,10 +29,10 @@ import android.view.View;
 import androidx.core.internal.view.SupportMenuItem;
 
 /**
- * Helper for accessing features in {@link android.view.MenuItem}.
+ * Helper for accessing features in {@link MenuItem}.
  * <p class="note"><strong>Note:</strong> You cannot get an instance of this class. Instead,
  * it provides <em>static</em> methods that correspond to the methods in {@link
- * android.view.MenuItem}, but take a {@link android.view.MenuItem} object as an additional
+ * MenuItem}, but take a {@link MenuItem} object as an additional
  * argument.</p>
  */
 public final class MenuItemCompat {
@@ -90,9 +90,9 @@ public final class MenuItemCompat {
      * Interface definition for a callback to be invoked when a menu item marked with {@link
      * #SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW} is expanded or collapsed.
      *
-     * @see #expandActionView(android.view.MenuItem)
-     * @see #collapseActionView(android.view.MenuItem)
-     * @see #setShowAsAction(android.view.MenuItem, int)
+     * @see #expandActionView(MenuItem)
+     * @see #collapseActionView(MenuItem)
+     * @see #setShowAsAction(MenuItem, int)
      *
      * @deprecated Use {@link MenuItem.OnActionExpandListener} directly.
      */
@@ -253,9 +253,9 @@ public final class MenuItemCompat {
      * Collapse the action view associated with this menu item. The menu item must have an action
      * view set, as well as the showAsAction flag {@link #SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW}. If a
      * listener has been set using {@link #setOnActionExpandListener(MenuItem,
-     * androidx.core.view.MenuItemCompat.OnActionExpandListener)}
+     * OnActionExpandListener)}
      * it will have its {@link
-     * androidx.core.view.MenuItemCompat.OnActionExpandListener#onMenuItemActionCollapse(MenuItem)}
+     * OnActionExpandListener#onMenuItemActionCollapse(MenuItem)}
      * method invoked. The listener may return false from this method to prevent collapsing
      * the action view.
      *
@@ -275,7 +275,7 @@ public final class MenuItemCompat {
      * @see #expandActionView(MenuItem)
      * @see #collapseActionView(MenuItem)
      * @see #SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW
-     * @see androidx.core.view.MenuItemCompat.OnActionExpandListener
+     * @see OnActionExpandListener
      *
      * @deprecated Use {@link MenuItem#isActionViewExpanded()} directly.
      */

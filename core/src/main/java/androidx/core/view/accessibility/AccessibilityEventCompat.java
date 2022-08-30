@@ -157,30 +157,6 @@ public final class AccessibilityEventCompat {
     public static final int CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION = 0x00000004;
 
     /**
-     * Change type for {@link AccessibilityEvent#TYPE_WINDOW_STATE_CHANGED} event:
-     * The node's pane title changed.
-     */
-    public static final int CONTENT_CHANGE_TYPE_PANE_TITLE = 0x00000008;
-
-    /**
-     * Change type for {@link AccessibilityEvent#TYPE_WINDOW_STATE_CHANGED} event:
-     * The node has a pane title, and either just appeared or just was assigned a title when it
-     * had none before.
-     */
-    public static final int CONTENT_CHANGE_TYPE_PANE_APPEARED = 0x00000010;
-
-    /**
-     * Change type for {@link AccessibilityEvent#TYPE_WINDOW_STATE_CHANGED} event:
-     * Can mean one of two slightly different things. The primary meaning is that the node has
-     * a pane title, and was removed from the node hierarchy. It can also be sent if the pane
-     * title is set to {@code null} after it contained a title.
-     * No source will be returned if the node is no longer on the screen. To make the change more
-     * clear for the user, the first entry in {@link AccessibilityRecord#getText()} can return the
-     * value that would have been returned by {@code getSource().getPaneTitle()}.
-     */
-    public static final int CONTENT_CHANGE_TYPE_PANE_DISAPPEARED = 0x00000020;
-
-    /**
      * Mask for {@link AccessibilityEvent} all types.
      *
      * @see AccessibilityEvent#TYPE_VIEW_CLICKED
@@ -229,7 +205,7 @@ public final class AccessibilityEventCompat {
     }
 
     /**
-     * Appends an {@link android.view.accessibility.AccessibilityRecord} to the end of
+     * Appends an {@link AccessibilityRecord} to the end of
      * event records.
      *
      * @param record The record to append.
@@ -259,7 +235,7 @@ public final class AccessibilityEventCompat {
     /**
      * Creates an {@link AccessibilityRecordCompat} from an {@link AccessibilityEvent}
      * that can be used to manipulate the event properties defined in
-     * {@link android.view.accessibility.AccessibilityRecord}.
+     * {@link AccessibilityRecord}.
      * <p>
      * <strong>Note:</strong> Do not call {@link AccessibilityRecordCompat#recycle()} on the
      * returned {@link AccessibilityRecordCompat}. Call {@link AccessibilityEvent#recycle()}

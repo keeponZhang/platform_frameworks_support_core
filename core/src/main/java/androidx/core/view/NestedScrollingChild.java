@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat.ScrollAxis;
 
 /**
- * This interface should be implemented by {@link android.view.View View} subclasses that wish
+ * This interface should be implemented by {@link View View} subclasses that wish
  * to support dispatching nested scrolling operations to a cooperating parent
  * {@link android.view.ViewGroup ViewGroup}.
  *

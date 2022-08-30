@@ -16,14 +16,13 @@
 
 package androidx.core.content.res;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.StateSet;
 import android.util.Xml;
 
@@ -32,7 +31,6 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
-import androidx.annotation.XmlRes;
 import androidx.core.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -43,8 +41,10 @@ import java.io.IOException;
 /**
  * @hide
  */
-@RestrictTo(LIBRARY_GROUP_PREFIX)
+@RestrictTo(LIBRARY_GROUP)
 public final class ColorStateListInflaterCompat {
+
+    private static final int DEFAULT_COLOR = Color.RED;
 
     private ColorStateListInflaterCompat() {
     }
@@ -52,27 +52,6 @@ public final class ColorStateListInflaterCompat {
     /**
      * Creates a ColorStateList from an XML document using given a set of
      * {@link Resources} and a {@link Resources.Theme}.
-     *
-     * @param resources Resources against which the ColorStateList should be inflated.
-     * @param resId     the resource identifier of the ColorStateList to retrieve.
-     * @param theme     Optional theme to apply to the color, may be {@code null}.
-     * @return A new color state list.
-     */
-    @Nullable
-    public static ColorStateList inflate(@NonNull Resources resources, @XmlRes int resId,
-            @Nullable Resources.Theme theme) {
-        try {
-            XmlPullParser parser = resources.getXml(resId);
-            return createFromXml(resources, parser, theme);
-        } catch (Exception e) {
-            Log.e("CSLCompat", "Failed to inflate ColorStateList.", e);
-        }
-        return null;
-    }
-
-    /**
-     * Creates a ColorStateList from an XML document using given a set of
-     * {@link Resources} and a {@link android.content.res.Resources.Theme}.
      *
      * @param r      Resources against which the ColorStateList should be inflated.
      * @param parser Parser for the XML document defining the ColorStateList.
@@ -128,6 +107,7 @@ public final class ColorStateListInflaterCompat {
         final int innerDepth = parser.getDepth() + 1;
         int depth;
         int type;
+        int defaultColor = DEFAULT_COLOR;
 
         int[][] stateSpecList = new int[20][];
         int[] colorList = new int[stateSpecList.length];
@@ -172,6 +152,9 @@ public final class ColorStateListInflaterCompat {
             // alpha yet, the default values leave us enough information to
             // modulate again during applyTheme().
             final int color = modulateColorAlpha(baseColor, alphaMod);
+            if (listSize == 0 || stateSpec.length == 0) {
+                defaultColor = color;
+            }
 
             colorList = GrowingArrayUtils.append(colorList, listSize, color);
             stateSpecList = GrowingArrayUtils.append(stateSpecList, listSize, stateSpec);

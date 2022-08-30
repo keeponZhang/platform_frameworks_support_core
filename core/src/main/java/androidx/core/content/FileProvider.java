@@ -250,7 +250,7 @@ import java.util.Map;
  * To generate the content URI, create a new {@link File} for the file, then pass the {@link File}
  * to {@link #getUriForFile(Context, String, File) getUriForFile()}. You can send the content URI
  * returned by {@link #getUriForFile(Context, String, File) getUriForFile()} to another app in an
- * {@link android.content.Intent}. The client app that receives the content URI can open the file
+ * {@link Intent}. The client app that receives the content URI can open the file
  * and access its contents by calling
  * {@link android.content.ContentResolver#openFileDescriptor(Uri, String)
  * ContentResolver.openFileDescriptor} to get a {@link ParcelFileDescriptor}.
@@ -294,7 +294,7 @@ import java.util.Map;
  * <li>
  *     Finally, send the {@link Intent} to
  *     another app. Most often, you do this by calling
- *     {@link android.app.Activity#setResult(int, android.content.Intent) setResult()}.
+ *     {@link android.app.Activity#setResult(int, Intent) setResult()}.
  *     <p>
  *     Permissions granted in an {@link Intent} remain in effect while the stack of the receiving
  *     {@link android.app.Activity} is active. When the stack finishes, the permissions are
@@ -422,10 +422,10 @@ public class FileProvider extends ContentProvider {
      * Use a content URI returned by
      * {@link #getUriForFile(Context, String, File) getUriForFile()} to get information about a file
      * managed by the FileProvider.
-     * FileProvider reports the column names defined in {@link android.provider.OpenableColumns}:
+     * FileProvider reports the column names defined in {@link OpenableColumns}:
      * <ul>
-     * <li>{@link android.provider.OpenableColumns#DISPLAY_NAME}</li>
-     * <li>{@link android.provider.OpenableColumns#SIZE}</li>
+     * <li>{@link OpenableColumns#DISPLAY_NAME}</li>
+     * <li>{@link OpenableColumns#SIZE}</li>
      * </ul>
      * For more information, see
      * {@link ContentProvider#query(Uri, String[], String, String[], String)
@@ -436,12 +436,12 @@ public class FileProvider extends ContentProvider {
      * included.
      * @param selection Selection criteria to apply. If null then all data that matches the content
      * URI is returned.
-     * @param selectionArgs An array of {@link java.lang.String}, containing arguments to bind to
+     * @param selectionArgs An array of {@link String}, containing arguments to bind to
      * the <i>selection</i> parameter. The <i>query</i> method scans <i>selection</i> from left to
      * right and iterates through <i>selectionArgs</i>, replacing the current "?" character in
      * <i>selection</i> with the value at the current position in <i>selectionArgs</i>. The
-     * values are bound to <i>selection</i> as {@link java.lang.String} values.
-     * @param sortOrder A {@link java.lang.String} containing the column name(s) on which to sort
+     * values are bound to <i>selection</i> as {@link String} values.
+     * @param sortOrder A {@link String} containing the column name(s) on which to sort
      * the resulting {@link Cursor}.
      * @return A {@link Cursor} containing the results of the query.
      *
@@ -505,7 +505,7 @@ public class FileProvider extends ContentProvider {
     }
 
     /**
-     * By default, this method throws an {@link java.lang.UnsupportedOperationException}. You must
+     * By default, this method throws an {@link UnsupportedOperationException}. You must
      * subclass FileProvider if you want to provide different functionality.
      */
     @Override
@@ -514,7 +514,7 @@ public class FileProvider extends ContentProvider {
     }
 
     /**
-     * By default, this method throws an {@link java.lang.UnsupportedOperationException}. You must
+     * By default, this method throws an {@link UnsupportedOperationException}. You must
      * subclass FileProvider if you want to provide different functionality.
      */
     @Override
@@ -526,7 +526,7 @@ public class FileProvider extends ContentProvider {
     /**
      * Deletes the file associated with the specified content URI, as
      * returned by {@link #getUriForFile(Context, String, File) getUriForFile()}. Notice that this
-     * method does <b>not</b> throw an {@link java.io.IOException}; you must check its return value.
+     * method does <b>not</b> throw an {@link IOException}; you must check its return value.
      *
      * @param uri A content URI for a file, as returned by
      * {@link #getUriForFile(Context, String, File) getUriForFile()}.
@@ -602,11 +602,6 @@ public class FileProvider extends ContentProvider {
 
         final ProviderInfo info = context.getPackageManager()
                 .resolveContentProvider(authority, PackageManager.GET_META_DATA);
-        if (info == null) {
-            throw new IllegalArgumentException(
-                    "Couldn't find meta-data for provider with authority " + authority);
-        }
-
         final XmlResourceParser in = info.loadXmlMetaData(
                 context.getPackageManager(), META_DATA_FILE_PROVIDER_PATHS);
         if (in == null) {

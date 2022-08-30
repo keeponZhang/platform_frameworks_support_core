@@ -16,10 +16,11 @@
 
 package androidx.core.view;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -30,7 +31,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Display;
@@ -42,11 +42,9 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeProvider;
 
 import androidx.annotation.FloatRange;
@@ -58,13 +56,10 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.UiThread;
-import androidx.collection.SimpleArrayMap;
+import androidx.collection.ArrayMap;
 import androidx.core.R;
-import androidx.core.view.AccessibilityDelegateCompat.AccessibilityDelegateAdapter;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
-import androidx.core.view.accessibility.AccessibilityViewCommand;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -74,8 +69,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,20 +80,20 @@ public class ViewCompat {
     private static final String TAG = "ViewCompat";
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({View.FOCUS_LEFT, View.FOCUS_UP, View.FOCUS_RIGHT, View.FOCUS_DOWN,
             View.FOCUS_FORWARD, View.FOCUS_BACKWARD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FocusDirection {}
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({View.FOCUS_LEFT, View.FOCUS_UP, View.FOCUS_RIGHT, View.FOCUS_DOWN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FocusRealDirection {}
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({View.FOCUS_FORWARD, View.FOCUS_BACKWARD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FocusRelativeDirection {}
@@ -135,7 +128,7 @@ public class ViewCompat {
     @Deprecated
     public static final int OVER_SCROLL_NEVER = 2;
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @TargetApi(Build.VERSION_CODES.O)
     @IntDef({
             View.IMPORTANT_FOR_AUTOFILL_AUTO,
             View.IMPORTANT_FOR_AUTOFILL_YES,
@@ -351,7 +344,7 @@ public class ViewCompat {
      */
     @IntDef(value = {SCROLL_AXIS_NONE, SCROLL_AXIS_HORIZONTAL, SCROLL_AXIS_VERTICAL}, flag = true)
     @Retention(RetentionPolicy.SOURCE)
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public @interface ScrollAxis {}
 
     /**
@@ -374,7 +367,7 @@ public class ViewCompat {
      */
     @IntDef({TYPE_TOUCH, TYPE_NON_TOUCH})
     @Retention(RetentionPolicy.SOURCE)
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public @interface NestedScrollType {}
 
     /**
@@ -389,7 +382,7 @@ public class ViewCompat {
     public static final int TYPE_NON_TOUCH = 1;
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true,
             value = {
@@ -663,31 +656,23 @@ public class ViewCompat {
      * {@link AccessibilityDelegateCompat}.
      * <p>
      * <strong>Note:</strong> On platform versions prior to
-     * {@link android.os.Build.VERSION_CODES#M API 23}, delegate methods on
+     * {@link Build.VERSION_CODES#M API 23}, delegate methods on
      * views in the {@code android.widget.*} package are called <i>before</i>
      * host methods. This prevents certain properties such as class name from
      * being modified by overriding
      * {@link AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo(View, AccessibilityNodeInfoCompat)},
      * as any changes will be overwritten by the host class.
      * <p>
-     * Starting in {@link android.os.Build.VERSION_CODES#M API 23}, delegate
+     * Starting in {@link Build.VERSION_CODES#M API 23}, delegate
      * methods are called <i>after</i> host methods, which all properties to be
      * modified without being overwritten by the host class.
-     * <p>
-     * If an AccessibilityDelegateCompat is already attached to the view, and this method sets
-     * the delegate to null, an empty delegate will be attached to ensure that other compatibility
-     * behavior continues to work for this view.
      *
      * @param delegate the object to which accessibility method calls should be
      *                 delegated
      * @see AccessibilityDelegateCompat
      */
-    public static void setAccessibilityDelegate(
-            @NonNull View v, AccessibilityDelegateCompat delegate) {
-        if ((delegate == null)
-                && (getAccessibilityDelegateInternal(v) instanceof AccessibilityDelegateAdapter)) {
-            delegate = new AccessibilityDelegateCompat();
-        }
+    public static void setAccessibilityDelegate(@NonNull View v,
+            AccessibilityDelegateCompat delegate) {
         v.setAccessibilityDelegate(delegate == null ? null : delegate.getBridge());
     }
 
@@ -718,7 +703,7 @@ public class ViewCompat {
      * On API 25 and below, it is a no-op</p>
      *
      * @param autofillHints The autofill hints to set. If the array is emtpy, {@code null} is set.
-     * {@link android.R.attr#autofillHints}
+     * @attr ref android.R.styleable#View_autofillHints
      */
     public static void setAutofillHints(@NonNull View v, @Nullable String... autofillHints) {
         if (Build.VERSION.SDK_INT >= 26) {
@@ -738,7 +723,7 @@ public class ViewCompat {
      * @return {@link View#IMPORTANT_FOR_AUTOFILL_AUTO} by default, or value passed to
      * {@link #setImportantForAutofill(View, int)}.
      *
-     * {@link android.R.attr#importantForAutofill}
+     * @attr ref android.R.styleable#View_importantForAutofill
      */
     @SuppressLint("InlinedApi")
     public static @AutofillImportance int getImportantForAutofill(@NonNull View v) {
@@ -783,7 +768,7 @@ public class ViewCompat {
      * {@link View#IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS},
      * or {@link View#IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS}.
      *
-     * {@link android.R.attr#importantForAutofill}
+     * @attr ref android.R.styleable#View_importantForAutofill
      */
     public static void setImportantForAutofill(@NonNull View v, @AutofillImportance int mode) {
         if (Build.VERSION.SDK_INT >= 26) {
@@ -864,58 +849,12 @@ public class ViewCompat {
     /**
      * Checks whether provided View has an accessibility delegate attached to it.
      *
-     * @param view The View instance to check
+     * @param v The View instance to check
      * @return True if the View has an accessibility delegate
      */
-    public static boolean hasAccessibilityDelegate(@NonNull View view) {
-        return getAccessibilityDelegateInternal(view) != null;
-    }
-
-    /**
-     * Get the current accessibility delegate.
-     * @see #setAccessibilityDelegate(View, AccessibilityDelegateCompat)
-     *
-     * @param view The view whose delegate is of interest
-     * @return A compat wrapper for the current delegate. If no delegate is attached, you may
-     *         still get an object that is being used to provide backward compatibility. Returns
-     *         {@code null} if there is no delegate attached.
-     */
-    @Nullable
-    public static AccessibilityDelegateCompat getAccessibilityDelegate(@NonNull View view) {
-        final View.AccessibilityDelegate delegate = getAccessibilityDelegateInternal(view);
-        if (delegate == null) {
-            return null;
-        }
-        if (delegate instanceof AccessibilityDelegateAdapter) {
-            return ((AccessibilityDelegateAdapter) delegate).mCompat;
-        }
-        return new AccessibilityDelegateCompat(delegate);
-    }
-
-    static AccessibilityDelegateCompat getOrCreateAccessibilityDelegateCompat(
-            @NonNull View v) {
-        AccessibilityDelegateCompat delegateCompat = getAccessibilityDelegate(v);
-        if (delegateCompat == null) {
-            delegateCompat = new AccessibilityDelegateCompat();
-        }
-        setAccessibilityDelegate(v, delegateCompat);
-        return delegateCompat;
-    }
-
-
-    private static @Nullable View.AccessibilityDelegate
-            getAccessibilityDelegateInternal(@NonNull View v) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return v.getAccessibilityDelegate();
-        } else {
-            return getAccessibilityDelegateThroughReflection(v);
-        }
-    }
-
-    private static @Nullable View.AccessibilityDelegate getAccessibilityDelegateThroughReflection(
-            @NonNull View v) {
+    public static boolean hasAccessibilityDelegate(@NonNull View v) {
         if (sAccessibilityDelegateCheckFailed) {
-            return null; // View implementation might have changed.
+            return false; // View implementation might have changed.
         }
         if (sAccessibilityDelegateField == null) {
             try {
@@ -924,18 +863,14 @@ public class ViewCompat {
                 sAccessibilityDelegateField.setAccessible(true);
             } catch (Throwable t) {
                 sAccessibilityDelegateCheckFailed = true;
-                return null;
+                return false;
             }
         }
         try {
-            Object o = sAccessibilityDelegateField.get(v);
-            if (o instanceof View.AccessibilityDelegate) {
-                return (View.AccessibilityDelegate) o;
-            }
-            return null;
+            return sAccessibilityDelegateField.get(v) != null;
         } catch (Throwable t) {
             sAccessibilityDelegateCheckFailed = true;
-            return null;
+            return false;
         }
     }
 
@@ -1168,170 +1103,6 @@ public class ViewCompat {
     }
 
     /**
-     * Adds an accessibility action that can be performed on a node associated with a view.
-     * A view can only have 32 actions created with this API.
-     *
-     * @param view The view.
-     * @param label The use facing description of the action.
-     * @param command The command performed when the service requests the action.
-     *
-     * @return The id associated with the action,
-     * or {@link View#NO_ID} if the action could not be created.
-     * This id can be used to remove the action.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 21: No-op</li>
-     * </ul>
-     */
-    public static int addAccessibilityAction(
-            @NonNull View view, @NonNull CharSequence label,
-            @NonNull AccessibilityViewCommand command) {
-        int actionId = getAvailableActionIdFromResources(view);
-        if (actionId != View.NO_ID) {
-            AccessibilityActionCompat action =
-                    new AccessibilityActionCompat(actionId, label, command);
-            addAccessibilityAction(view, action);
-        }
-        return actionId;
-    }
-
-    private static final int[] ACCESSIBILITY_ACTIONS_RESOURCE_IDS = {
-            R.id.accessibility_custom_action_0,
-            R.id.accessibility_custom_action_1,
-            R.id.accessibility_custom_action_2,
-            R.id.accessibility_custom_action_3,
-            R.id.accessibility_custom_action_4,
-            R.id.accessibility_custom_action_5,
-            R.id.accessibility_custom_action_6,
-            R.id.accessibility_custom_action_7,
-            R.id.accessibility_custom_action_8,
-            R.id.accessibility_custom_action_9,
-            R.id.accessibility_custom_action_10,
-            R.id.accessibility_custom_action_11,
-            R.id.accessibility_custom_action_12,
-            R.id.accessibility_custom_action_13,
-            R.id.accessibility_custom_action_14,
-            R.id.accessibility_custom_action_15,
-            R.id.accessibility_custom_action_16,
-            R.id.accessibility_custom_action_17,
-            R.id.accessibility_custom_action_18,
-            R.id.accessibility_custom_action_19,
-            R.id.accessibility_custom_action_20,
-            R.id.accessibility_custom_action_21,
-            R.id.accessibility_custom_action_22,
-            R.id.accessibility_custom_action_23,
-            R.id.accessibility_custom_action_24,
-            R.id.accessibility_custom_action_25,
-            R.id.accessibility_custom_action_26,
-            R.id.accessibility_custom_action_27,
-            R.id.accessibility_custom_action_28,
-            R.id.accessibility_custom_action_29,
-            R.id.accessibility_custom_action_30,
-            R.id.accessibility_custom_action_31};
-
-    private static int getAvailableActionIdFromResources(View view) {
-        int result = View.NO_ID;
-        List<AccessibilityActionCompat> actions = getActionList(view);
-        for (int i = 0; i < ACCESSIBILITY_ACTIONS_RESOURCE_IDS.length && result == View.NO_ID;
-                i++) {
-            int id = ACCESSIBILITY_ACTIONS_RESOURCE_IDS[i];
-            boolean idAvailable = true;
-            for (int j = 0; j < actions.size(); j++) {
-                idAvailable &= actions.get(j).getId() != id;
-            }
-            if (idAvailable) {
-                result = id;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Replaces an action. This can be used to change the default behavior or label of the action
-     * specified.
-     *
-     * @param view The view.
-     * @param replacedAction The action to be replaced.
-     * @param label The user facing description of the action or {@code null}.
-     * @param command The command performed when the service requests the action.
-     *
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 21: No-op</li>
-     * </ul>
-     */
-    public static void replaceAccessibilityAction(@NonNull View view, @NonNull
-            AccessibilityActionCompat replacedAction,  @Nullable CharSequence label,
-            @Nullable AccessibilityViewCommand command) {
-        addAccessibilityAction(view, replacedAction.createReplacementAction(label, command));
-    }
-
-    private static void addAccessibilityAction(@NonNull View view,
-            @NonNull AccessibilityActionCompat action) {
-        if (Build.VERSION.SDK_INT >= 21) {
-            getOrCreateAccessibilityDelegateCompat(view);
-            removeActionWithId(action.getId(), view);
-            getActionList(view).add(action);
-            notifyViewAccessibilityStateChangedIfNeeded(
-                    view, AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED);
-        }
-    }
-
-    /**
-     * Removes an accessibility action that can be performed on a node associated with a view.
-     * If the action was not already added to the view, calling this method has no effect.
-     *
-     * @param view The view
-     * @param actionId The actionId of the action to be removed.
-     */
-    public static void removeAccessibilityAction(@NonNull View view, int actionId) {
-        if (Build.VERSION.SDK_INT >= 21) {
-            removeActionWithId(actionId, view);
-            notifyViewAccessibilityStateChangedIfNeeded(
-                    view, AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED);
-        }
-    }
-
-    private static void removeActionWithId(int actionId, View view) {
-        List<AccessibilityActionCompat> actions = getActionList(view);
-        for (int i = 0; i < actions.size(); i++) {
-            if (actions.get(i).getId() == actionId) {
-                actions.remove(i);
-                break;
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static List<AccessibilityActionCompat> getActionList(View view) {
-        ArrayList<AccessibilityActionCompat> actions =
-                (ArrayList<AccessibilityActionCompat>) view.getTag(R.id.tag_accessibility_actions);
-        if (actions == null) {
-            actions = new ArrayList<>();
-            view.setTag(R.id.tag_accessibility_actions, actions);
-        }
-        return actions;
-    }
-
-    /**
-     * Allow accessibility services to find and activate clickable spans in the application.
-     *
-     * @param view The view
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 19: No-op
-     * </ul>
-     */
-    public static void enableAccessibleClickableSpanSupport(View view) {
-        if (Build.VERSION.SDK_INT >= 19) {
-            getOrCreateAccessibilityDelegateCompat(view);
-        }
-    }
-
-    /**
      * Gets the provider for managing a virtual view hierarchy rooted at this View
      * and reported to {@link android.accessibilityservice.AccessibilityService}s
      * that explore the window content.
@@ -1383,13 +1154,13 @@ public class ViewCompat {
      * {@link View#LAYER_TYPE_NONE disabled}, {@link View#LAYER_TYPE_SOFTWARE software} or
      * {@link View#LAYER_TYPE_HARDWARE hardware}.</p>
      *
-     * <p>A layer is associated with an optional {@link android.graphics.Paint}
+     * <p>A layer is associated with an optional {@link Paint}
      * instance that controls how the layer is composed on screen. The following
      * properties of the paint are taken into account when composing the layer:</p>
      * <ul>
-     * <li>{@link android.graphics.Paint#getAlpha() Translucency (alpha)}</li>
-     * <li>{@link android.graphics.Paint#getXfermode() Blending mode}</li>
-     * <li>{@link android.graphics.Paint#getColorFilter() Color filter}</li>
+     * <li>{@link Paint#getAlpha() Translucency (alpha)}</li>
+     * <li>{@link Paint#getXfermode() Blending mode}</li>
+     * <li>{@link Paint#getColorFilter() Color filter}</li>
      * </ul>
      *
      * <p>If this view has an alpha value set to < 1.0 by calling
@@ -1421,14 +1192,14 @@ public class ViewCompat {
      * Indicates what type of layer is currently associated with this view. By default
      * a view does not have a layer, and the layer type is {@link View#LAYER_TYPE_NONE}.
      * Refer to the documentation of
-     * {@link #setLayerType(android.view.View, int, android.graphics.Paint)}
+     * {@link #setLayerType(View, int, Paint)}
      * for more information on the different types of layers.
      *
      * @param view The view to fetch the layer type from
      * @return {@link View#LAYER_TYPE_NONE}, {@link View#LAYER_TYPE_SOFTWARE} or
      *         {@link View#LAYER_TYPE_HARDWARE}
      *
-     * @see #setLayerType(android.view.View, int, android.graphics.Paint)
+     * @see #setLayerType(View, int, Paint)
      * @see View#LAYER_TYPE_NONE
      * @see View#LAYER_TYPE_SOFTWARE
      * @see View#LAYER_TYPE_HARDWARE
@@ -1472,18 +1243,18 @@ public class ViewCompat {
     /**
      * Updates the {@link Paint} object used with the current layer (used only if the current
      * layer type is not set to {@link View#LAYER_TYPE_NONE}). Changed properties of the Paint
-     * provided to {@link #setLayerType(android.view.View, int, android.graphics.Paint)}
+     * provided to {@link #setLayerType(View, int, Paint)}
      * will be used the next time the View is redrawn, but
-     * {@link #setLayerPaint(android.view.View, android.graphics.Paint)}
+     * {@link #setLayerPaint(View, Paint)}
      * must be called to ensure that the view gets redrawn immediately.
      *
-     * <p>A layer is associated with an optional {@link android.graphics.Paint}
+     * <p>A layer is associated with an optional {@link Paint}
      * instance that controls how the layer is composed on screen. The following
      * properties of the paint are taken into account when composing the layer:</p>
      * <ul>
-     * <li>{@link android.graphics.Paint#getAlpha() Translucency (alpha)}</li>
-     * <li>{@link android.graphics.Paint#getXfermode() Blending mode}</li>
-     * <li>{@link android.graphics.Paint#getColorFilter() Color filter}</li>
+     * <li>{@link Paint#getAlpha() Translucency (alpha)}</li>
+     * <li>{@link Paint#getXfermode() Blending mode}</li>
+     * <li>{@link Paint#getColorFilter() Color filter}</li>
      * </ul>
      *
      * <p>If this view has an alpha value set to < 1.0 by calling
@@ -1497,7 +1268,7 @@ public class ViewCompat {
      *        and can be null. It is ignored when the layer type is
      *        {@link View#LAYER_TYPE_NONE}
      *
-     * @see #setLayerType(View, int, android.graphics.Paint)
+     * @see #setLayerType(View, int, Paint)
      */
     public static void setLayerPaint(@NonNull View view, Paint paint) {
         if (Build.VERSION.SDK_INT >= 17) {
@@ -1630,11 +1401,11 @@ public class ViewCompat {
 
     /**
      * Return the full width measurement information for this view as computed
-     * by the most recent call to {@link android.view.View#measure(int, int)}.
+     * by the most recent call to {@link View#measure(int, int)}.
      * This result is a bit mask as defined by {@link #MEASURED_SIZE_MASK} and
      * {@link #MEASURED_STATE_TOO_SMALL}.
      * This should be used during measurement and layout calculations only. Use
-     * {@link android.view.View#getWidth()} to see how wide a view is after layout.
+     * {@link View#getWidth()} to see how wide a view is after layout.
      *
      * @return The measured width of this view as a bit mask.
      *
@@ -1647,11 +1418,11 @@ public class ViewCompat {
 
     /**
      * Return the full height measurement information for this view as computed
-     * by the most recent call to {@link android.view.View#measure(int, int)}.
+     * by the most recent call to {@link View#measure(int, int)}.
      * This result is a bit mask as defined by {@link #MEASURED_SIZE_MASK} and
      * {@link #MEASURED_STATE_TOO_SMALL}.
      * This should be used during measurement and layout calculations only. Use
-     * {@link android.view.View#getHeight()} to see how wide a view is after layout.
+     * {@link View#getHeight()} to see how wide a view is after layout.
      *
      * @return The measured width of this view as a bit mask.
      *
@@ -2438,10 +2209,9 @@ public class ViewCompat {
             v.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
                 @Override
                 public WindowInsets onApplyWindowInsets(View view, WindowInsets insets) {
-                    WindowInsetsCompat compatInsets = WindowInsetsCompat
-                            .toWindowInsetsCompat(insets);
+                    WindowInsetsCompat compatInsets = WindowInsetsCompat.wrap(insets);
                     compatInsets = listener.onApplyWindowInsets(view, compatInsets);
-                    return compatInsets.toWindowInsets();
+                    return (WindowInsets) WindowInsetsCompat.unwrap(compatInsets);
                 }
             });
         }
@@ -2462,12 +2232,12 @@ public class ViewCompat {
     public static WindowInsetsCompat onApplyWindowInsets(@NonNull View view,
             WindowInsetsCompat insets) {
         if (Build.VERSION.SDK_INT >= 21) {
-            WindowInsets unwrapped = insets.toWindowInsets();
+            WindowInsets unwrapped = (WindowInsets)  WindowInsetsCompat.unwrap(insets);
             WindowInsets result = view.onApplyWindowInsets(unwrapped);
-            if (!result.equals(unwrapped)) {
+            if (result != unwrapped) {
                 unwrapped = new WindowInsets(result);
             }
-            return WindowInsetsCompat.toWindowInsetsCompat(unwrapped);
+            return WindowInsetsCompat.wrap(unwrapped);
         }
         return insets;
     }
@@ -2487,48 +2257,14 @@ public class ViewCompat {
     public static WindowInsetsCompat dispatchApplyWindowInsets(@NonNull View view,
             WindowInsetsCompat insets) {
         if (Build.VERSION.SDK_INT >= 21) {
-            WindowInsets unwrapped = insets.toWindowInsets();
+            WindowInsets unwrapped = (WindowInsets) WindowInsetsCompat.unwrap(insets);
             WindowInsets result = view.dispatchApplyWindowInsets(unwrapped);
-            if (!result.equals(unwrapped)) {
+            if (result != unwrapped) {
                 unwrapped = new WindowInsets(result);
             }
-            return WindowInsetsCompat.toWindowInsetsCompat(unwrapped);
+            return WindowInsetsCompat.wrap(unwrapped);
         }
         return insets;
-    }
-
-    /**
-     * Sets a list of areas within this view's post-layout coordinate space where the system
-     * should not intercept touch or other pointing device gestures. <em>This method should
-     * be called by {@link View#onLayout(boolean, int, int, int, int)} or
-     * {@link View#onDraw(Canvas)}.</em>
-     * <p>
-     * On devices running API 28 and below, this method has no effect.
-     *
-     * @param rects A list of precision gesture regions that this view needs to function correctly
-     * @see View#setSystemGestureExclusionRects
-     */
-    public static void setSystemGestureExclusionRects(@NonNull View view,
-            @NonNull List<Rect> rects) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            view.setSystemGestureExclusionRects(rects);
-        }
-    }
-
-    /**
-     * Retrieve the list of areas within this view's post-layout coordinate space where the system
-     * should not intercept touch or other pointing device gestures.
-     * <p>
-     * On devices running API 28 and below, this method always returns an empty list.
-     *
-     * @see View#getSystemGestureExclusionRects
-     */
-    @NonNull
-    public static List<Rect> getSystemGestureExclusionRects(@NonNull View view) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return view.getSystemGestureExclusionRects();
-        }
-        return Collections.emptyList();
     }
 
     /**
@@ -2671,7 +2407,7 @@ public class ViewCompat {
 
     /**
      * Specifies the blending mode used to apply the tint specified by
-     * {@link #setBackgroundTintList(android.view.View, android.content.res.ColorStateList)} to
+     * {@link #setBackgroundTintList(View, ColorStateList)} to
      * the background drawable. The default mode is {@link PorterDuff.Mode#SRC_IN}.
      * <p>
      * This will always take effect when running on API v21 or newer. When running on platforms
@@ -2960,50 +2696,8 @@ public class ViewCompat {
      * {@link #isNestedScrollingEnabled(View) enabled} for this view this method does nothing.</p>
      *
      * <p>Compatible View implementations should also call
-     * {@link #dispatchNestedPreScroll(View, int, int, int[], int[], int) dispatchNestedPreScroll}
-     * before consuming a component of the scroll event themselves.
-     *
-     * <p>A non-null <code>consumed</code> int array of length 2 may be passed in to enable nested
-     * scrolling parents to report how much of the scroll distance was consumed.  The original
-     * caller (where the input event was received to start the scroll) should initialize the values
-     * to be 0, in order to tell how much was actually consumed up the hierarchy of scrolling
-     * parents.
-     *
-     * @param dxConsumed Horizontal distance in pixels consumed by this view during this scroll step
-     * @param dyConsumed Vertical distance in pixels consumed by this view during this scroll step
-     * @param dxUnconsumed Horizontal scroll distance in pixels not consumed by this view
-     * @param dyUnconsumed Horizontal scroll distance in pixels not consumed by this view
-     * @param offsetInWindow Optional. If not null, on return this will contain the offset
-     *                       in local view coordinates of this view from before this operation
-     *                       to after it completes. View implementations may use this to adjust
-     *                       expected input coordinate tracking.
-     * @param type the type of input which cause this scroll event
-     * @param consumed Output, If not null, <code>consumed[0]</code> will contain the consumed
-     *                 component of dx and <code>consumed[1]</code> the consumed dy.
-     */
-    public static void dispatchNestedScroll(@NonNull View view, int dxConsumed, int dyConsumed,
-            int dxUnconsumed, int dyUnconsumed, @Nullable int[] offsetInWindow,
-            @NestedScrollType int type, @NonNull int[] consumed) {
-        if (view instanceof NestedScrollingChild3) {
-            ((NestedScrollingChild3) view).dispatchNestedScroll(dxConsumed, dyConsumed,
-                    dxUnconsumed, dyUnconsumed, offsetInWindow, type, consumed);
-        } else {
-            dispatchNestedScroll(view, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
-                    offsetInWindow, type);
-        }
-    }
-
-    /**
-     * Dispatch one step of a nested scroll in progress.
-     *
-     * <p>Implementations of views that support nested scrolling should call this to report
-     * info about a scroll in progress to the current nested scrolling parent. If a nested scroll
-     * is not currently in progress or nested scrolling is not
-     * {@link #isNestedScrollingEnabled(View) enabled} for this view this method does nothing.
-     *
-     * <p>Compatible View implementations should also call
      * {@link #dispatchNestedPreScroll(View, int, int, int[], int[]) dispatchNestedPreScroll} before
-     * consuming a component of the scroll event themselves.
+     * consuming a component of the scroll event themselves.</p>
      *
      * @param dxConsumed Horizontal distance in pixels consumed by this view during this scroll step
      * @param dyConsumed Vertical distance in pixels consumed by this view during this scroll step
@@ -3014,7 +2708,7 @@ public class ViewCompat {
      *                       to after it completes. View implementations may use this to adjust
      *                       expected input coordinate tracking.
      * @param type the type of input which cause this scroll event
-     * @return true if the event was dispatched, and therefore the scroll distance was consumed
+     * @return true if the event was dispatched, false if it could not be dispatched.
      * @see #dispatchNestedPreScroll(View, int, int, int[], int[])
      */
     public static boolean dispatchNestedScroll(@NonNull View view, int dxConsumed, int dyConsumed,
@@ -3024,8 +2718,8 @@ public class ViewCompat {
             return ((NestedScrollingChild2) view).dispatchNestedScroll(dxConsumed, dyConsumed,
                     dxUnconsumed, dyUnconsumed, offsetInWindow, type);
         } else if (type == ViewCompat.TYPE_TOUCH) {
-            return dispatchNestedScroll(view, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed,
-                    offsetInWindow);
+            return dispatchNestedScroll(view, dxConsumed, dyConsumed, dxUnconsumed,
+                    dyUnconsumed, offsetInWindow);
         }
         return false;
     }
@@ -3202,7 +2896,7 @@ public class ViewCompat {
      * <p>
      * Compatibility:
      * <ul>
-     *     <li>API &lt; 21: No-op</li>
+     *     <li>API &lt; 21: No-op
      * </ul>
      *
      * @param z The visual z position of this view, in pixels.
@@ -3703,26 +3397,19 @@ public class ViewCompat {
      * @param listener a receiver of unhandled {@link KeyEvent}s.
      * @see #removeOnUnhandledKeyEventListener
      */
-    @SuppressWarnings("unchecked")
     public static void addOnUnhandledKeyEventListener(@NonNull View v,
-            final @NonNull OnUnhandledKeyEventListenerCompat listener) {
+            @NonNull OnUnhandledKeyEventListenerCompat listener) {
         if (Build.VERSION.SDK_INT >= 28) {
-            SimpleArrayMap<OnUnhandledKeyEventListenerCompat, View.OnUnhandledKeyEventListener>
-                    viewListeners = (SimpleArrayMap<OnUnhandledKeyEventListenerCompat,
+            Map<OnUnhandledKeyEventListenerCompat, View.OnUnhandledKeyEventListener>
+                    viewListeners = (Map<OnUnhandledKeyEventListenerCompat,
                             View.OnUnhandledKeyEventListener>)
                             v.getTag(R.id.tag_unhandled_key_listeners);
             if (viewListeners == null) {
-                viewListeners = new SimpleArrayMap<>();
+                viewListeners = new ArrayMap<>();
                 v.setTag(R.id.tag_unhandled_key_listeners, viewListeners);
             }
-
-            View.OnUnhandledKeyEventListener fwListener = new View.OnUnhandledKeyEventListener() {
-                @Override
-                public boolean onUnhandledKeyEvent(View v, KeyEvent event) {
-                    return listener.onUnhandledKeyEvent(v, event);
-                }
-            };
-
+            View.OnUnhandledKeyEventListener fwListener =
+                    new OnUnhandledKeyEventListenerWrapper(listener);
             viewListeners.put(listener, fwListener);
             v.addOnUnhandledKeyEventListener(fwListener);
             return;
@@ -3747,13 +3434,12 @@ public class ViewCompat {
      * @param listener a receiver of unhandled {@link KeyEvent}s.
      * @see #addOnUnhandledKeyEventListener
      */
-    @SuppressWarnings("unchecked")
     public static void removeOnUnhandledKeyEventListener(@NonNull View v,
             @NonNull OnUnhandledKeyEventListenerCompat listener) {
         if (Build.VERSION.SDK_INT >= 28) {
-            SimpleArrayMap<OnUnhandledKeyEventListenerCompat, View.OnUnhandledKeyEventListener>
-                    viewListeners = (SimpleArrayMap<OnUnhandledKeyEventListenerCompat,
-                            View.OnUnhandledKeyEventListener>)
+            Map<OnUnhandledKeyEventListenerCompat, View.OnUnhandledKeyEventListener>
+                    viewListeners =
+                    (Map<OnUnhandledKeyEventListenerCompat, View.OnUnhandledKeyEventListener>)
                             v.getTag(R.id.tag_unhandled_key_listeners);
             if (viewListeners == null) {
                 return;
@@ -3793,6 +3479,19 @@ public class ViewCompat {
         boolean onUnhandledKeyEvent(View v, KeyEvent event);
     }
 
+    @RequiresApi(28)
+    private static class OnUnhandledKeyEventListenerWrapper
+            implements View.OnUnhandledKeyEventListener {
+        private OnUnhandledKeyEventListenerCompat mCompatListener;
+        OnUnhandledKeyEventListenerWrapper(OnUnhandledKeyEventListenerCompat listener) {
+            mCompatListener = listener;
+        }
+        @Override
+        public boolean onUnhandledKeyEvent(View v, KeyEvent event) {
+            return mCompatListener.onUnhandledKeyEvent(v, event);
+        }
+    }
+
     @UiThread
     static boolean dispatchUnhandledKeyEventBeforeHierarchy(View root, KeyEvent evt) {
         if (Build.VERSION.SDK_INT >= 28) {
@@ -3807,360 +3506,6 @@ public class ViewCompat {
             return false;
         }
         return UnhandledKeyEventManager.at(root).dispatch(root, evt);
-    }
-
-    /**
-     * Sets whether this View should be a focusable element for screen readers
-     * and include non-focusable Views from its subtree when providing feedback.
-     * <p>
-     * Note: this is similar to using <a href="#attr_android:focusable">{@code android:focusable},
-     * but does not impact input focus behavior.
-     *
-     * @param view The view whose title should be set
-     * @param screenReaderFocusable Whether the view should be treated as a unit by screen reader
-     *                              accessibility tools.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 19: No-op
-     * </ul>
-     */
-    @UiThread
-    public static void setScreenReaderFocusable(View view, boolean screenReaderFocusable) {
-        screenReaderFocusableProperty().set(view, screenReaderFocusable);
-    }
-
-    /**
-     * Returns whether the view should be treated as a focusable unit by screen reader
-     * accessibility tools.
-     * @see #setScreenReaderFocusable(View, boolean)
-     *
-     * @param view The view to check for screen reader focusability.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 19: Always returns {@code false}</li>
-     * </ul>
-     *
-     * @return Whether the view should be treated as a focusable unit by screen reader.
-     */
-    @UiThread
-    public static boolean isScreenReaderFocusable(View view) {
-        Boolean result = screenReaderFocusableProperty().get(view);
-        return result == null ? false : result.booleanValue();
-    }
-
-    private static AccessibilityViewProperty<Boolean> screenReaderFocusableProperty() {
-        return new AccessibilityViewProperty<Boolean>(
-                R.id.tag_screen_reader_focusable, Boolean.class, 28) {
-
-            @RequiresApi(28)
-            @Override
-            Boolean frameworkGet(View view) {
-                return view.isScreenReaderFocusable();
-            }
-
-            @RequiresApi(28)
-            @Override
-            void frameworkSet(View view, Boolean value) {
-                view.setScreenReaderFocusable(value);
-            }
-
-            @Override
-            boolean shouldUpdate(Boolean oldValue, Boolean newValue) {
-                return !booleanNullToFalseEquals(oldValue, newValue);
-            }
-        };
-    }
-
-    /**
-     * Visually distinct portion of a window with window-like semantics are considered panes for
-     * accessibility purposes. One example is the content view of a fragment that is replaced.
-     * In order for accessibility services to understand a pane's window-like behavior, panes
-     * should have descriptive titles. Views with pane titles produce {@link AccessibilityEvent}s
-     * when they appear, disappear, or change title.
-     *
-     * @param view The view whose pane title should be set.
-     * @param accessibilityPaneTitle The pane's title. Setting to {@code null} indicates that this
-     *                               View is not a pane.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 19: No-op
-     * </ul>
-     *
-     * {@see AccessibilityNodeInfo#setPaneTitle(CharSequence)}
-     */
-    @UiThread
-    public static void setAccessibilityPaneTitle(View view, CharSequence accessibilityPaneTitle) {
-        if (Build.VERSION.SDK_INT >= 19) {
-            paneTitleProperty().set(view, accessibilityPaneTitle);
-            if (accessibilityPaneTitle != null) {
-                sAccessibilityPaneVisibilityManager.addAccessibilityPane(view);
-            } else {
-                sAccessibilityPaneVisibilityManager.removeAccessibilityPane(view);
-            }
-        }
-    }
-
-    /**
-     * Get the title of the pane for purposes of accessibility.
-     *
-     * @param view The view queried for it's pane title.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 19: Always returns {@code null}</li>
-     * </ul>
-     *
-     * @return The current pane title.
-     *
-     * {@see #setAccessibilityPaneTitle}.
-     */
-    @UiThread
-    public static CharSequence getAccessibilityPaneTitle(View view) {
-        return paneTitleProperty().get(view);
-    }
-
-    private static AccessibilityViewProperty<CharSequence> paneTitleProperty() {
-        return new AccessibilityViewProperty<CharSequence>(R.id.tag_accessibility_pane_title,
-                CharSequence.class, AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE, 28) {
-
-            @RequiresApi(28)
-            @Override
-            CharSequence frameworkGet(View view) {
-                return view.getAccessibilityPaneTitle();
-            }
-
-            @RequiresApi(28)
-            @Override
-            void frameworkSet(View view, CharSequence value) {
-                view.setAccessibilityPaneTitle(value);
-            }
-
-            @Override
-            boolean shouldUpdate(CharSequence oldValue, CharSequence newValue) {
-                return !TextUtils.equals(oldValue, newValue);
-            }
-        };
-    }
-
-    /**
-     * Gets whether this view is a heading for accessibility purposes.
-     *
-     * @param view The view checked if it is a heading.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 19: Always returns {@code false}</li>
-     * </ul>
-     *
-     * @return {@code true} if the view is a heading, {@code false} otherwise.
-     */
-    @UiThread
-    public static boolean isAccessibilityHeading(View view) {
-        Boolean result = accessibilityHeadingProperty().get(view);
-        return result == null ? false : result.booleanValue();
-    }
-
-    /**
-     * Set if view is a heading for a section of content for accessibility purposes.
-     *
-     * @param view The view to set if it is a heading.
-     * @param isHeading {@code true} if the view is a heading, {@code false} otherwise.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 19: No-op
-     * </ul>
-     */
-    @UiThread
-    public static void setAccessibilityHeading(View view, boolean isHeading) {
-        accessibilityHeadingProperty().set(view, isHeading);
-    }
-
-    private static AccessibilityViewProperty<Boolean> accessibilityHeadingProperty() {
-        return new AccessibilityViewProperty<Boolean>(
-                R.id.tag_accessibility_heading, Boolean.class, 28) {
-
-            @RequiresApi(28)
-            @Override
-            Boolean frameworkGet(View view) {
-                return view.isAccessibilityHeading();
-            }
-
-            @RequiresApi(28)
-            @Override
-            void frameworkSet(View view, Boolean value) {
-                view.setAccessibilityHeading(value);
-            }
-
-            @Override
-            boolean shouldUpdate(Boolean oldValue, Boolean newValue) {
-                return !booleanNullToFalseEquals(oldValue, newValue);
-            }
-        };
-    }
-
-
-    abstract static class AccessibilityViewProperty<T> {
-        private final int mTagKey;
-        private final Class<T> mType;
-        private final int mFrameworkMinimumSdk;
-        private final int mContentChangeType;
-
-        AccessibilityViewProperty(int tagKey, Class<T> type, int frameworkMinimumSdk) {
-            this(tagKey, type,
-                    AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED, frameworkMinimumSdk);
-        }
-
-        AccessibilityViewProperty(
-                int tagKey, Class<T> type, int contentChangeType, int frameworkMinimumSdk) {
-            mTagKey = tagKey;
-            mType = type;
-            mContentChangeType = contentChangeType;
-            mFrameworkMinimumSdk = frameworkMinimumSdk;
-        }
-
-        void set(View view, T value) {
-            if (frameworkAvailable()) {
-                frameworkSet(view, value);
-            } else if (extrasAvailable() && shouldUpdate(get(view), value)) {
-                getOrCreateAccessibilityDelegateCompat(view);
-                view.setTag(mTagKey, value);
-                // If we're here, we're guaranteed to be on v19+ (see the logic in
-                // extrasAvailable), so we can call notifyViewAccessibilityStateChangedIfNeeded
-                // which requires 19.
-                notifyViewAccessibilityStateChangedIfNeeded(view,
-                        AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        T get(View view) {
-            if (frameworkAvailable()) {
-                return frameworkGet(view);
-            } else if (extrasAvailable()) {
-                Object value = view.getTag(mTagKey);
-                if (mType.isInstance(value)) {
-                    return (T) value;
-                }
-            }
-            return null;
-        }
-        private boolean frameworkAvailable() {
-            return Build.VERSION.SDK_INT >= mFrameworkMinimumSdk;
-        }
-
-        private boolean extrasAvailable() {
-            return Build.VERSION.SDK_INT >= 19;
-        }
-
-        boolean shouldUpdate(T oldValue, T newValue) {
-            return !newValue.equals(oldValue);
-        }
-
-        abstract T frameworkGet(View view);
-        abstract void frameworkSet(View view, T value);
-
-        boolean booleanNullToFalseEquals(Boolean a, Boolean b) {
-            boolean aBool = a == null ? false : a.booleanValue();
-            boolean bBool = b == null ? false : b.booleanValue();
-            return aBool == bBool;
-        }
-    }
-
-    @RequiresApi(19)
-    static void notifyViewAccessibilityStateChangedIfNeeded(View view, int changeType) {
-        AccessibilityManager accessibilityManager = (AccessibilityManager)
-                view.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (!accessibilityManager.isEnabled()) {
-            return;
-        }
-        boolean isAccessibilityPane = getAccessibilityPaneTitle(view) != null;
-        // If this is a live region or accessibilityPane, we should send a subtree change event
-        // from this view immediately. Otherwise, we can let it propagate up.
-        if ((getAccessibilityLiveRegion(view) != ACCESSIBILITY_LIVE_REGION_NONE)
-                || (isAccessibilityPane && view.getVisibility() == View.VISIBLE)) {
-            final AccessibilityEvent event = AccessibilityEvent.obtain();
-            event.setEventType(isAccessibilityPane ? AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-                    : AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-            event.setContentChangeTypes(changeType);
-            view.sendAccessibilityEventUnchecked(event);
-        } else if (view.getParent() != null) {
-            try {
-                view.getParent().notifySubtreeAccessibilityStateChanged(view, view, changeType);
-            } catch (AbstractMethodError e) {
-                Log.e(TAG, view.getParent().getClass().getSimpleName()
-                        + " does not fully implement ViewParent", e);
-            }
-        }
-    }
-
-    private static AccessibilityPaneVisibilityManager sAccessibilityPaneVisibilityManager =
-            new AccessibilityPaneVisibilityManager();
-
-    static class AccessibilityPaneVisibilityManager
-            implements ViewTreeObserver.OnGlobalLayoutListener, View.OnAttachStateChangeListener {
-        private WeakHashMap<View, Boolean> mPanesToVisible = new WeakHashMap<View, Boolean>();
-
-        @RequiresApi(19)
-        @Override
-        public void onGlobalLayout() {
-            for (Map.Entry<View, Boolean> entry : mPanesToVisible.entrySet()) {
-                checkPaneVisibility(entry.getKey(), entry.getValue());
-            }
-        }
-
-        @RequiresApi(19)
-        @Override
-        public void onViewAttachedToWindow(View view) {
-            // When detached the view loses its viewTreeObserver.
-            registerForLayoutCallback(view);
-        }
-
-        @Override
-        public void onViewDetachedFromWindow(View view) {
-            // Don't do anything.
-        }
-
-        @RequiresApi(19)
-        void addAccessibilityPane(View pane) {
-            mPanesToVisible.put(pane, pane.getVisibility() == View.VISIBLE);
-            pane.addOnAttachStateChangeListener(this);
-            if (pane.isAttachedToWindow()) {
-                registerForLayoutCallback(pane);
-            }
-        }
-
-        @RequiresApi(19)
-        void removeAccessibilityPane(View pane) {
-            mPanesToVisible.remove(pane);
-            pane.removeOnAttachStateChangeListener(this);
-            unregisterForLayoutCallback(pane);
-        }
-
-        @RequiresApi(19)
-        private void checkPaneVisibility(View pane, boolean oldVisibility) {
-            boolean newVisibility = pane.getVisibility() == View.VISIBLE;
-            if (oldVisibility != newVisibility) {
-                if (newVisibility) {
-                    notifyViewAccessibilityStateChangedIfNeeded(pane,
-                            AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED);
-                }
-                mPanesToVisible.put(pane, newVisibility);
-            }
-        }
-
-        @RequiresApi(19)
-        private void registerForLayoutCallback(View view) {
-            view.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        }
-
-        @RequiresApi(19)
-        private void unregisterForLayoutCallback(View view) {
-            view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        }
     }
 
     static class UnhandledKeyEventManager {

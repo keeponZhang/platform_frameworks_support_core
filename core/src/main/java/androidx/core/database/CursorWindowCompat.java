@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Helper for accessing features in {@link android.database.CursorWindow}
+ * Helper for accessing features in {@link CursorWindow}
  */
 public final class CursorWindowCompat {
 

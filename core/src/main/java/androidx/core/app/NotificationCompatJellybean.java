@@ -60,6 +60,7 @@ class NotificationCompatJellybean {
     private static boolean sExtrasFieldAccessFailed;
 
     private static final Object sActionsLock = new Object();
+    private static Class<?> sActionClass;
     private static Field sActionsField;
     private static Field sActionIconField;
     private static Field sActionTitleField;
@@ -132,7 +133,7 @@ class NotificationCompatJellybean {
         }
         return new NotificationCompat.Action(icon, title, actionIntent, extras, remoteInputs,
                 dataOnlyRemoteInputs, allowGeneratedReplies,
-                NotificationCompat.Action.SEMANTIC_ACTION_NONE, true, false /* isContextual */);
+                NotificationCompat.Action.SEMANTIC_ACTION_NONE, true);
     }
 
     public static Bundle writeActionAndGetExtras(
@@ -209,7 +210,7 @@ class NotificationCompatJellybean {
         }
         try {
             if (sActionsField == null) {
-                Class<?> sActionClass = Class.forName("android.app.Notification$Action");
+                sActionClass = Class.forName("android.app.Notification$Action");
                 sActionIconField = sActionClass.getDeclaredField("icon");
                 sActionTitleField = sActionClass.getDeclaredField("title");
                 sActionIntentField = sActionClass.getDeclaredField("actionIntent");
@@ -241,8 +242,7 @@ class NotificationCompatJellybean {
                 fromBundleArray(getBundleArrayFromBundle(bundle, KEY_DATA_ONLY_REMOTE_INPUTS)),
                 allowGeneratedReplies,
                 bundle.getInt(KEY_SEMANTIC_ACTION),
-                bundle.getBoolean(KEY_SHOWS_USER_INTERFACE),
-                false /* is_contextual is only supported for Q+ devices */);
+                bundle.getBoolean(KEY_SHOWS_USER_INTERFACE));
     }
 
     static Bundle getBundleForAction(NotificationCompat.Action action) {
@@ -278,7 +278,6 @@ class NotificationCompatJellybean {
                 data.getCharSequence(KEY_LABEL),
                 data.getCharSequenceArray(KEY_CHOICES),
                 data.getBoolean(KEY_ALLOW_FREE_FORM_INPUT),
-                RemoteInput.EDIT_CHOICES_BEFORE_SENDING_AUTO, // Tap-to-edit is only supported on Q+
                 data.getBundle(KEY_EXTRAS),
                 allowedDataTypes);
     }

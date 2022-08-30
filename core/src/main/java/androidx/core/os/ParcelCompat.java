@@ -18,8 +18,6 @@ package androidx.core.os;
 
 import android.os.Parcel;
 
-import androidx.annotation.NonNull;
-
 /**
  * Helper for accessing features in {@link Parcel}.
  */
@@ -28,7 +26,7 @@ public final class ParcelCompat {
     /**
      * Read a boolean value from the parcel at the current {@link Parcel#dataPosition()}.
      */
-    public static boolean readBoolean(@NonNull Parcel in) {
+    public static boolean readBoolean(Parcel in) {
         return in.readInt() != 0;
     }
 
@@ -39,7 +37,7 @@ public final class ParcelCompat {
      * <p>Note: This method currently delegates to {@link Parcel#writeInt} with a value of 1 or 0
      * for true or false, respectively, but may change in the future.
      */
-    public static void writeBoolean(@NonNull Parcel out, boolean value) {
+    public static void writeBoolean(Parcel out, boolean value) {
         out.writeInt(value ? 1 : 0);
     }
 

@@ -48,7 +48,7 @@ public final class WindowCompat {
      * View.SYSTEM_UI_FLAG_FULLSCREEN}, which allows you to seamlessly hide the
      * action bar in conjunction with other screen decorations.
      *
-     * <p>As of {@link android.os.Build.VERSION_CODES#JELLY_BEAN}, when an
+     * <p>As of {@link Build.VERSION_CODES#JELLY_BEAN}, when an
      * ActionBar is in this mode it will adjust the insets provided to
      * {@link View#fitSystemWindows(android.graphics.Rect) View.fitSystemWindows(Rect)}
      * to include the content covered by the action bar, so you can do layout within

@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 /**
- * Helper for accessing features in {@link android.graphics.drawable.Drawable}.
+ * Helper for accessing features in {@link Drawable}.
  */
 public final class DrawableCompat {
     private static final String TAG = "DrawableCompat";
@@ -67,7 +67,7 @@ public final class DrawableCompat {
      * direction is RTL (right-to left). See
      * {@link android.util.LayoutDirection}.
      * <p>
-     * If running on a pre-{@link android.os.Build.VERSION_CODES#KITKAT} device
+     * If running on a pre-{@link Build.VERSION_CODES#KITKAT} device
      * this method does nothing.
      *
      * @param drawable The Drawable against which to invoke the method.
@@ -84,7 +84,7 @@ public final class DrawableCompat {
      * Tells if this Drawable will be automatically mirrored when its layout
      * direction is RTL right-to-left. See {@link android.util.LayoutDirection}.
      * <p>
-     * If running on a pre-{@link android.os.Build.VERSION_CODES#KITKAT} device
+     * If running on a pre-{@link Build.VERSION_CODES#KITKAT} device
      * this method returns false.
      *
      * @param drawable The Drawable against which to invoke the method.
@@ -292,7 +292,7 @@ public final class DrawableCompat {
      * DrawableCompat.setTint(bg, ...);
      * </pre>
      *
-     * <p>If you need to get hold of the original {@link android.graphics.drawable.Drawable} again,
+     * <p>If you need to get hold of the original {@link Drawable} again,
      * you can use the value returned from {@link #unwrap(Drawable)}.</p>
      *
      * @param drawable The Drawable to process
@@ -329,7 +329,7 @@ public final class DrawableCompat {
      *
      * @see #wrap(Drawable)
      */
-    @SuppressWarnings({"TypeParameterUnusedInFormals", "unchecked"})
+    @SuppressWarnings("TypeParameterUnusedInFormals")
     public static <T extends Drawable> T unwrap(@NonNull Drawable drawable) {
         if (drawable instanceof WrappedDrawable) {
             return (T) ((WrappedDrawable) drawable).getWrappedDrawable();

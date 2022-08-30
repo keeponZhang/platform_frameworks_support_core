@@ -33,7 +33,7 @@ public final class ListPopupWindowCompat {
     }
 
     /**
-     * On API {@link android.os.Build.VERSION_CODES#KITKAT} and higher, returns
+     * On API {@link Build.VERSION_CODES#KITKAT} and higher, returns
      * an {@link OnTouchListener} that can be added to the source view to
      * implement drag-to-open behavior. Generally, the source view should be the
      * same view that was passed to ListPopupWindow.setAnchorView(View).
@@ -67,7 +67,7 @@ public final class ListPopupWindowCompat {
     }
 
     /**
-     * On API {@link android.os.Build.VERSION_CODES#KITKAT} and higher, returns
+     * On API {@link Build.VERSION_CODES#KITKAT} and higher, returns
      * an {@link OnTouchListener} that can be added to the source view to
      * implement drag-to-open behavior. Generally, the source view should be the
      * same view that was passed to ListPopupWindow.setAnchorView(View).

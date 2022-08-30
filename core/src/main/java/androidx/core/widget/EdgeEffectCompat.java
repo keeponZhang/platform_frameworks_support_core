@@ -23,9 +23,9 @@ import android.widget.EdgeEffect;
 import androidx.annotation.NonNull;
 
 /**
- * Helper for accessing {@link android.widget.EdgeEffect}.
+ * Helper for accessing {@link EdgeEffect}.
  *
- * This class is used to access {@link android.widget.EdgeEffect} on platform versions
+ * This class is used to access {@link EdgeEffect} on platform versions
  * that support it. When running on older platforms it will result in no-ops. It should
  * be used by views that wish to use the standard Android visual effects at the edges
  * of scrolling containers.

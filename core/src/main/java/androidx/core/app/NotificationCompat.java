@@ -16,14 +16,10 @@
 
 package androidx.core.app;
 
-import static android.graphics.drawable.Icon.TYPE_BITMAP;
-
-import static androidx.annotation.Dimension.DP;
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -54,15 +50,12 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
-import androidx.annotation.Dimension;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 import androidx.core.R;
-import androidx.core.graphics.drawable.IconCompat;
 import androidx.core.text.BidiFormatter;
 import androidx.core.view.GravityCompat;
 
@@ -75,7 +68,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Helper for accessing features in {@link android.app.Notification}.
+ * Helper for accessing features in {@link Notification}.
  */
 public class NotificationCompat {
 
@@ -174,7 +167,7 @@ public class NotificationCompat {
     /**
      * Obsolete flag indicating high-priority notifications; use the priority field instead.
      *
-     * @deprecated Use {@link NotificationCompat.Builder#setPriority(int)} with a positive value.
+     * @deprecated Use {@link Builder#setPriority(int)} with a positive value.
      */
     @Deprecated
     public static final int FLAG_HIGH_PRIORITY      = 0x00000080;
@@ -194,24 +187,14 @@ public class NotificationCompat {
     public static final int FLAG_GROUP_SUMMARY      = 0x00000200;
 
     /**
-     * Bit set in the Notification flags field if this notification is showing as a bubble.
-     *
-     * Applications cannot set this flag directly; they should instead call
-     * {@link NotificationCompat.Builder#setBubbleMetadata(BubbleMetadata)} to request that a
-     * notification be displayed as a bubble, and then check this flag to see whether that request
-     * was honored by the system.
-     */
-    public static final int FLAG_BUBBLE             = 0x00001000;
-
-    /**
-     * Default notification priority for {@link NotificationCompat.Builder#setPriority(int)}.
+     * Default notification priority for {@link Builder#setPriority(int)}.
      * If your application does not prioritize its own notifications,
      * use this value for all notifications.
      */
     public static final int PRIORITY_DEFAULT = 0;
 
     /**
-     * Lower notification priority for {@link NotificationCompat.Builder#setPriority(int)},
+     * Lower notification priority for {@link Builder#setPriority(int)},
      * for items that are less important. The UI may choose to show
      * these items smaller, or at a different position in the list,
      * compared with your app's {@link #PRIORITY_DEFAULT} items.
@@ -219,14 +202,14 @@ public class NotificationCompat {
     public static final int PRIORITY_LOW = -1;
 
     /**
-     * Lowest notification priority for {@link NotificationCompat.Builder#setPriority(int)};
+     * Lowest notification priority for {@link Builder#setPriority(int)};
      * these items might not be shown to the user except under
      * special circumstances, such as detailed notification logs.
      */
     public static final int PRIORITY_MIN = -2;
 
     /**
-     * Higher notification priority for {@link NotificationCompat.Builder#setPriority(int)},
+     * Higher notification priority for {@link Builder#setPriority(int)},
      * for more important notifications or alerts. The UI may choose
      * to show these items larger, or at a different position in
      * notification lists, compared with your app's {@link #PRIORITY_DEFAULT} items.
@@ -234,7 +217,7 @@ public class NotificationCompat {
     public static final int PRIORITY_HIGH = 1;
 
     /**
-     * Highest notification priority for {@link NotificationCompat.Builder#setPriority(int)},
+     * Highest notification priority for {@link Builder#setPriority(int)},
      * for your application's most important items that require the user's
      * prompt attention or input.
      */
@@ -309,15 +292,15 @@ public class NotificationCompat {
     /**
      * Notification extras key: this is a bitmap to be used instead of the small icon when showing the
      * notification payload, as
-     * supplied to {@link Builder#setLargeIcon(android.graphics.Bitmap)}.
+     * supplied to {@link Builder#setLargeIcon(Bitmap)}.
      */
     public static final String EXTRA_LARGE_ICON = "android.largeIcon";
 
     /**
      * Notification extras key: this is a bitmap to be used instead of the one from
-     * {@link Builder#setLargeIcon(android.graphics.Bitmap)} when the notification is
+     * {@link Builder#setLargeIcon(Bitmap)} when the notification is
      * shown in its expanded form, as supplied to
-     * {@link BigPictureStyle#bigLargeIcon(android.graphics.Bitmap)}.
+     * {@link BigPictureStyle#bigLargeIcon(Bitmap)}.
      */
     public static final String EXTRA_LARGE_ICON_BIG = EXTRA_LARGE_ICON + ".big";
 
@@ -354,7 +337,7 @@ public class NotificationCompat {
 
     /**
      * Notification extras key: this is a bitmap to be shown in {@link BigPictureStyle} expanded
-     * notifications, supplied to {@link BigPictureStyle#bigPicture(android.graphics.Bitmap)}.
+     * notifications, supplied to {@link BigPictureStyle#bigPicture(Bitmap)}.
      */
     public static final String EXTRA_PICTURE = "android.picture";
 
@@ -366,7 +349,7 @@ public class NotificationCompat {
 
     /**
      * Notification extras key: A string representing the name of the specific
-     * {@link android.app.Notification.Style} used to create this notification.
+     * {@link Notification.Style} used to create this notification.
      */
     public static final String EXTRA_TEMPLATE = "android.template";
 
@@ -391,7 +374,7 @@ public class NotificationCompat {
     /**
      * Notification key: A
      * {@link android.media.session.MediaSession.Token} associated with a
-     * {@link android.app.Notification.MediaStyle} notification.
+     * {@link Notification.MediaStyle} notification.
      */
     public static final String EXTRA_MEDIA_SESSION = "android.mediaSession";
 
@@ -426,7 +409,7 @@ public class NotificationCompat {
     public static final String EXTRA_MESSAGES = "android.messages";
 
     /**
-     * Notification key: whether the {@link NotificationCompat.MessagingStyle} notification
+     * Notification key: whether the {@link MessagingStyle} notification
      * represents a group conversation.
      */
     public static final String EXTRA_IS_GROUP_CONVERSATION = "android.isGroupConversation";
@@ -466,7 +449,7 @@ public class NotificationCompat {
 
     /**
      * Value of {@link Notification#color} equal to 0 (also known as
-     * {@link android.graphics.Color#TRANSPARENT Color.TRANSPARENT}),
+     * {@link Color#TRANSPARENT Color.TRANSPARENT}),
      * telling the system not to decorate this notification with any special color but instead use
      * default colors when presenting this notification.
      */
@@ -474,7 +457,7 @@ public class NotificationCompat {
     public static final int COLOR_DEFAULT = Color.TRANSPARENT;
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({AudioManager.STREAM_VOICE_CALL, AudioManager.STREAM_SYSTEM, AudioManager.STREAM_RING,
             AudioManager.STREAM_MUSIC, AudioManager.STREAM_ALARM, AudioManager.STREAM_NOTIFICATION,
             AudioManager.STREAM_DTMF, AudioManager.STREAM_ACCESSIBILITY})
@@ -482,7 +465,7 @@ public class NotificationCompat {
     public @interface StreamType {}
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @Retention(SOURCE)
     @IntDef({VISIBILITY_PUBLIC, VISIBILITY_PRIVATE, VISIBILITY_SECRET})
     public @interface NotificationVisibility {}
@@ -512,11 +495,6 @@ public class NotificationCompat {
      * Notification category: incoming call (voice or video) or similar synchronous communication request.
      */
     public static final String CATEGORY_CALL = Notification.CATEGORY_CALL;
-
-    /**
-     * Notification category: map turn-by-turn navigation.
-     */
-    public static final String CATEGORY_NAVIGATION = Notification.CATEGORY_NAVIGATION;
 
     /**
      * Notification category: incoming direct message (SMS, instant message, etc.).
@@ -593,7 +571,7 @@ public class NotificationCompat {
 
     /** @hide */
     @Retention(RetentionPolicy.SOURCE)
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({BADGE_ICON_NONE, BADGE_ICON_SMALL, BADGE_ICON_LARGE})
     public @interface BadgeIconType {}
     /**
@@ -609,13 +587,13 @@ public class NotificationCompat {
 
     /**
      * If this notification is being shown as a badge, use the icon provided to
-     * {@link Builder#setLargeIcon(Bitmap)} to represent this notification.
+     * {@link Builder#setLargeIcon(Bitmap) to represent this notification.
      */
     public static final int BADGE_ICON_LARGE = Notification.BADGE_ICON_LARGE;
 
     /** @hide */
     @Retention(RetentionPolicy.SOURCE)
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({GROUP_ALERT_ALL, GROUP_ALERT_SUMMARY, GROUP_ALERT_CHILDREN})
     public @interface GroupAlertBehavior {}
 
@@ -664,9 +642,9 @@ public class NotificationCompat {
      * and later.
      * <p>
      * For this reason, you should always ensure that UI controls in a notification are also
-     * available in an {@link android.app.Activity} in your app, and you should always start that
-     * {@link android.app.Activity} when users click the notification. To do this, use the
-     * {@link NotificationCompat.Builder#setContentIntent setContentIntent()}
+     * available in an {@link Activity} in your app, and you should always start that
+     * {@link Activity} when users click the notification. To do this, use the
+     * {@link Builder#setContentIntent setContentIntent()}
      * method.
      * </p>
      *
@@ -684,11 +662,11 @@ public class NotificationCompat {
         // extender.
 
         /** @hide */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public Context mContext;
 
         /** @hide */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public ArrayList<Action> mActions = new ArrayList<>();
 
         // Invisible actions are stored in the CarExtender bundle without actually being owned by
@@ -732,8 +710,6 @@ public class NotificationCompat {
         String mShortcutId;
         long mTimeout;
         @GroupAlertBehavior int mGroupAlertBehavior = GROUP_ALERT_ALL;
-        boolean mAllowSystemGeneratedContextualActions;
-        BubbleMetadata mBubbleMetadata;
         Notification mNotification = new Notification();
 
         /**
@@ -764,7 +740,6 @@ public class NotificationCompat {
             mNotification.audioStreamType = Notification.STREAM_DEFAULT;
             mPriority = PRIORITY_DEFAULT;
             mPeople = new ArrayList<String>();
-            mAllowSystemGeneratedContextualActions = true;
         }
 
         /**
@@ -1134,7 +1109,7 @@ public class NotificationCompat {
          * However, for MediaStyle and DecoratedMediaCustomViewStyle notifications
          * that have a media session attached there is no such requirement.
          * <p>
-         * Calling this method on any version prior to {@link android.os.Build.VERSION_CODES#O} will
+         * Calling this method on any version prior to {@link Build.VERSION_CODES#O} will
          * not have an effect on the notification and it won't be colorized.
          *
          * @see #setColor(int)
@@ -1367,14 +1342,14 @@ public class NotificationCompat {
          * Action buttons won't appear on platforms prior to Android 4.1. Action
          * buttons depend on expanded notifications, which are only available in Android 4.1
          * and later. To ensure that an action button's functionality is always available, first
-         * implement the functionality in the {@link android.app.Activity} that starts when a user
+         * implement the functionality in the {@link Activity} that starts when a user
          * clicks the  notification (see {@link #setContentIntent setContentIntent()}), and then
          * enhance the notification by implementing the same functionality with
          * {@link #addAction addAction()}.
          *
          * @param icon Resource ID of a drawable that represents the action.
          * @param title Text describing the action.
-         * @param intent {@link android.app.PendingIntent} to be fired when the action is invoked.
+         * @param intent {@link PendingIntent} to be fired when the action is invoked.
          */
         public Builder addAction(int icon, CharSequence title, PendingIntent intent) {
             mActions.add(new Action(icon, title, intent));
@@ -1388,7 +1363,7 @@ public class NotificationCompat {
          * Action buttons won't appear on platforms prior to Android 4.1. Action
          * buttons depend on expanded notifications, which are only available in Android 4.1
          * and later. To ensure that an action button's functionality is always available, first
-         * implement the functionality in the {@link android.app.Activity} that starts when a user
+         * implement the functionality in the {@link Activity} that starts when a user
          * clicks the  notification (see {@link #setContentIntent setContentIntent()}), and then
          * enhance the notification by implementing the same functionality with
          * {@link #addAction addAction()}.
@@ -1408,7 +1383,7 @@ public class NotificationCompat {
          *
          * @param icon Resource ID of a drawable that represents the action.
          * @param title Text describing the action.
-         * @param intent {@link android.app.PendingIntent} to be fired when the action is invoked.
+         * @param intent {@link PendingIntent} to be fired when the action is invoked.
          */
         @RequiresApi(21)
         public Builder addInvisibleAction(int icon, CharSequence title, PendingIntent intent) {
@@ -1501,7 +1476,7 @@ public class NotificationCompat {
          * This will override the expanded layout that would otherwise be constructed by this
          * Builder object.
          *
-         * No-op on versions prior to {@link android.os.Build.VERSION_CODES#JELLY_BEAN}.
+         * No-op on versions prior to {@link Build.VERSION_CODES#JELLY_BEAN}.
          */
         public Builder setCustomBigContentView(RemoteViews contentView) {
             mBigContentView = contentView;
@@ -1514,7 +1489,7 @@ public class NotificationCompat {
          * This will override the heads-up layout that would otherwise be constructed by this
          * Builder object.
          *
-         * No-op on versions prior to {@link android.os.Build.VERSION_CODES#LOLLIPOP}.
+         * No-op on versions prior to {@link Build.VERSION_CODES#LOLLIPOP}.
          */
         public Builder setCustomHeadsUpContentView(RemoteViews contentView) {
             mHeadsUpContentView = contentView;
@@ -1524,7 +1499,7 @@ public class NotificationCompat {
         /**
          * Specifies the channel the notification should be delivered on.
          *
-         * No-op on versions prior to {@link android.os.Build.VERSION_CODES#O} .
+         * No-op on versions prior to {@link Build.VERSION_CODES#O} .
          */
         public Builder setChannelId(@NonNull String channelId) {
             mChannelId = channelId;
@@ -1586,37 +1561,11 @@ public class NotificationCompat {
         }
 
         /**
-         * Sets the {@link BubbleMetadata} that will be used to display app content in a floating
-         * window over the existing foreground activity.
-         *
-         * <p>This data will be ignored unless the notification is posted to a channel that
-         * allows {@link android.app.NotificationChannel#canBubble() bubbles}.</p>
-         *
-         * <p>Notifications allowed to bubble that have valid bubble metadata will display in
-         * collapsed state outside of the notification shade on unlocked devices. When a user
-         * interacts with the collapsed state, the bubble intent will be invoked and displayed.</p>
-         */
-        public @NonNull Builder setBubbleMetadata(@Nullable BubbleMetadata data) {
-            mBubbleMetadata = data;
-            return this;
-        }
-
-        /**
          * Apply an extender to this notification builder. Extenders may be used to add
          * metadata or change options on this builder.
          */
         public Builder extend(Extender extender) {
             extender.extend(this);
-            return this;
-        }
-
-        /**
-         * Determines whether the platform can generate contextual actions for a notification.
-         * By default this is true.
-         */
-        @NonNull
-        public Builder setAllowSystemGeneratedContextualActions(boolean allowed) {
-            mAllowSystemGeneratedContextualActions = allowed;
             return this;
         }
 
@@ -1647,7 +1596,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public RemoteViews getContentView() {
             return mContentView;
         }
@@ -1655,7 +1604,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public RemoteViews getBigContentView() {
             return mBigContentView;
         }
@@ -1663,7 +1612,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public RemoteViews getHeadsUpContentView() {
             return mHeadsUpContentView;
         }
@@ -1673,7 +1622,7 @@ public class NotificationCompat {
          *
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public long getWhenIfShowing() {
             return mShowWhen ? mNotification.when : 0;
         }
@@ -1683,7 +1632,7 @@ public class NotificationCompat {
          *
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public int getPriority() {
             return mPriority;
         }
@@ -1693,19 +1642,9 @@ public class NotificationCompat {
          *
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public int getColor() {
             return mColor;
-        }
-
-        /**
-         * @return the {@link BubbleMetadata} of the notification
-         *
-         * @hide
-         */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
-        public @Nullable BubbleMetadata getBubbleMetadata() {
-            return mBubbleMetadata;
         }
     }
 
@@ -1720,7 +1659,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         protected Builder mBuilder;
         CharSequence mBigContentTitle;
         CharSequence mSummaryText;
@@ -1749,7 +1688,7 @@ public class NotificationCompat {
          *
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         // TODO: implement for all styles
         public void apply(NotificationBuilderWithBuilderAccessor builder) {
         }
@@ -1757,7 +1696,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public RemoteViews makeContentView(NotificationBuilderWithBuilderAccessor builder) {
             return null;
         }
@@ -1765,7 +1704,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public RemoteViews makeBigContentView(NotificationBuilderWithBuilderAccessor builder) {
             return null;
         }
@@ -1773,7 +1712,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public RemoteViews makeHeadsUpContentView(NotificationBuilderWithBuilderAccessor builder) {
             return null;
         }
@@ -1781,7 +1720,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         // TODO: implement for all styles
         public void addCompatExtras(Bundle extras) {
         }
@@ -1789,7 +1728,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         // TODO: implement for all styles
         protected void restoreFromCompatExtras(Bundle extras) {
         }
@@ -1797,7 +1736,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public RemoteViews applyStandardTemplate(boolean showSmallIcon,
                 int resId, boolean fitIn1U) {
             Resources res = mBuilder.mContext.getResources();
@@ -1945,7 +1884,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public Bitmap createColoredBitmap(int iconId, int color) {
             return createColoredBitmap(iconId, color, 0);
         }
@@ -1982,7 +1921,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         public void buildIntoRemoteViews(RemoteViews outerView,
                 RemoteViews innerView) {
             // this needs to be done fore the other calls, since otherwise we might hide the wrong
@@ -2092,7 +2031,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public void apply(NotificationBuilderWithBuilderAccessor builder) {
             if (Build.VERSION.SDK_INT >= 16) {
@@ -2171,7 +2110,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public void apply(NotificationBuilderWithBuilderAccessor builder) {
             if (Build.VERSION.SDK_INT >= 16) {
@@ -2408,7 +2347,7 @@ public class NotificationCompat {
         /**
          * Retrieves a {@link MessagingStyle} from a {@link Notification}, enabling an application
          * that has set a {@link MessagingStyle} using {@link NotificationCompat} or
-         * {@link android.app.Notification.Builder} to send messaging information to another
+         * {@link Notification.Builder} to send messaging information to another
          * application using {@link NotificationCompat}, regardless of the API level of the system.
          *
          * @return {@code null} if there is no {@link MessagingStyle} set, or if the SDK version is
@@ -2436,7 +2375,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public void apply(NotificationBuilderWithBuilderAccessor builder) {
             // This is called because we need to apply legacy logic before writing MessagingInfo
@@ -2470,7 +2409,7 @@ public class NotificationCompat {
                     frameworkStyle.setGroupConversation(mIsGroupConversation);
                 }
 
-                for (MessagingStyle.Message compatMessage : mMessages) {
+                for (Message compatMessage : mMessages) {
                     Notification.MessagingStyle.Message frameworkMessage;
 
                     // Use Person for P and above
@@ -2499,7 +2438,7 @@ public class NotificationCompat {
                 }
                 frameworkStyle.setBuilder(builder.getBuilder());
             } else {
-                MessagingStyle.Message latestIncomingMessage = findLatestIncomingMessage();
+                Message latestIncomingMessage = findLatestIncomingMessage();
                 // Set the title
                 if (mConversationTitle != null && mIsGroupConversation) {
                     builder.getBuilder().setContentTitle(mConversationTitle);
@@ -2522,7 +2461,7 @@ public class NotificationCompat {
                     boolean showNames = mConversationTitle != null
                             || hasMessagesWithoutSender();
                     for (int i = mMessages.size() - 1; i >= 0; i--) {
-                        MessagingStyle.Message message = mMessages.get(i);
+                        Message message = mMessages.get(i);
                         CharSequence line;
                         line = showNames ? makeMessageLine(message) : message.getText();
                         if (i != mMessages.size() - 1) {
@@ -2538,9 +2477,9 @@ public class NotificationCompat {
         }
 
         @Nullable
-        private MessagingStyle.Message findLatestIncomingMessage() {
+        private Message findLatestIncomingMessage() {
             for (int i = mMessages.size() - 1; i >= 0; i--) {
-                MessagingStyle.Message message = mMessages.get(i);
+                Message message = mMessages.get(i);
                 // Incoming messages have a non-empty sender.
                 if (message.getPerson() != null
                         && !TextUtils.isEmpty(message.getPerson().getName())) {
@@ -2556,7 +2495,7 @@ public class NotificationCompat {
 
         private boolean hasMessagesWithoutSender() {
             for (int i = mMessages.size() - 1; i >= 0; i--) {
-                MessagingStyle.Message message = mMessages.get(i);
+                Message message = mMessages.get(i);
                 if (message.getPerson() != null && message.getPerson().getName() == null) {
                     return true;
                 }
@@ -2564,7 +2503,7 @@ public class NotificationCompat {
             return false;
         }
 
-        private CharSequence makeMessageLine(MessagingStyle.Message message) {
+        private CharSequence makeMessageLine(Message message) {
             BidiFormatter bidi = BidiFormatter.getInstance();
             SpannableStringBuilder sb = new SpannableStringBuilder();
             final boolean afterLollipop = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
@@ -2615,7 +2554,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         protected void restoreFromCompatExtras(Bundle extras) {
             mMessages.clear();
@@ -2944,7 +2883,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public void apply(NotificationBuilderWithBuilderAccessor builder) {
             if (Build.VERSION.SDK_INT >= 16) {
@@ -2968,13 +2907,13 @@ public class NotificationCompat {
      * style and still obtain system decorations like the notification header with the expand
      * affordance and actions.
      *
-     * <p>Use {@link NotificationCompat.Builder#setCustomContentView(RemoteViews)},
-     * {@link NotificationCompat.Builder#setCustomBigContentView(RemoteViews)} and
-     * {@link NotificationCompat.Builder#setCustomHeadsUpContentView(RemoteViews)} to set the
+     * <p>Use {@link Builder#setCustomContentView(RemoteViews)},
+     * {@link Builder#setCustomBigContentView(RemoteViews)} and
+     * {@link Builder#setCustomHeadsUpContentView(RemoteViews)} to set the
      * corresponding custom views to display.
      *
      * <p>To use this style with your Notification, feed it to
-     * {@link NotificationCompat.Builder#setStyle(Style)} like so:
+     * {@link Builder#setStyle(Style)} like so:
      * <pre class="prettyprint">
      * Notification noti = new NotificationCompat.Builder()
      *     .setSmallIcon(R.drawable.ic_stat_player)
@@ -2985,8 +2924,8 @@ public class NotificationCompat {
      * </pre>
      *
      * <p>If you are using this style, consider using the corresponding styles like
-     * {@link androidx.core.R.style#TextAppearance_Compat_Notification} or
-     * {@link androidx.core.R.style#TextAppearance_Compat_Notification_Title} in
+     * {@link R.style#TextAppearance_Compat_Notification} or
+     * {@link R.style#TextAppearance_Compat_Notification_Title} in
      * your custom views in order to get the correct styling on each platform version.
      */
     public static class DecoratedCustomViewStyle extends Style {
@@ -2999,7 +2938,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public void apply(NotificationBuilderWithBuilderAccessor builder) {
             if (Build.VERSION.SDK_INT >= 24) {
@@ -3010,7 +2949,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public RemoteViews makeContentView(NotificationBuilderWithBuilderAccessor builder) {
             if (Build.VERSION.SDK_INT >= 24) {
@@ -3027,7 +2966,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public RemoteViews makeBigContentView(NotificationBuilderWithBuilderAccessor builder) {
             if (Build.VERSION.SDK_INT >= 24) {
@@ -3048,7 +2987,7 @@ public class NotificationCompat {
         /**
          * @hide
          */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         @Override
         public RemoteViews makeHeadsUpContentView(NotificationBuilderWithBuilderAccessor builder) {
             if (Build.VERSION.SDK_INT >= 24) {
@@ -3069,19 +3008,12 @@ public class NotificationCompat {
                     R.layout.notification_template_custom_big, false /* fitIn1U */);
             remoteViews.removeAllViews(R.id.actions);
             boolean actionsVisible = false;
-
-            // In the UI contextual actions appear separately from the standard actions, so we
-            // filter them out here.
-            List<NotificationCompat.Action> nonContextualActions =
-                    getNonContextualActions(mBuilder.mActions);
-
-            if (showActions && nonContextualActions != null) {
-                int numActions = Math.min(nonContextualActions.size(), MAX_ACTION_BUTTONS);
+            if (showActions && mBuilder.mActions != null) {
+                int numActions = Math.min(mBuilder.mActions.size(), MAX_ACTION_BUTTONS);
                 if (numActions > 0) {
                     actionsVisible = true;
                     for (int i = 0; i < numActions; i++) {
-                        final RemoteViews button =
-                                generateActionButton(nonContextualActions.get(i));
+                        final RemoteViews button = generateActionButton(mBuilder.mActions.get(i));
                         remoteViews.addView(R.id.actions, button);
                     }
                 }
@@ -3093,19 +3025,7 @@ public class NotificationCompat {
             return remoteViews;
         }
 
-        private static List<NotificationCompat.Action> getNonContextualActions(
-                List<NotificationCompat.Action> actions) {
-            if (actions == null) return null;
-            List<NotificationCompat.Action> nonContextualActions = new ArrayList<>();
-            for (NotificationCompat.Action action : actions) {
-                if (!action.isContextual()) {
-                    nonContextualActions.add(action);
-                }
-            }
-            return nonContextualActions;
-        }
-
-        private RemoteViews generateActionButton(NotificationCompat.Action action) {
+        private RemoteViews generateActionButton(Action action) {
             final boolean tombstone = (action.actionIntent == null);
             RemoteViews button = new RemoteViews(mBuilder.mContext.getPackageName(),
                     tombstone ? R.layout.notification_action_tombstone
@@ -3130,7 +3050,7 @@ public class NotificationCompat {
      * selected by the user. Action buttons won't appear on platforms prior to Android 4.1.
      * <p>
      * Apps should use {@link NotificationCompat.Builder#addAction(int, CharSequence, PendingIntent)}
-     * or {@link NotificationCompat.Builder#addAction(NotificationCompat.Action)}
+     * or {@link NotificationCompat.Builder#addAction(Action)}
      * to attach actions.
      */
     public static class Action {
@@ -3218,7 +3138,6 @@ public class NotificationCompat {
         boolean mShowsUserInterface = true;
 
         private final @SemanticAction int mSemanticAction;
-        private final boolean mIsContextual;
 
         /**
          * Small icon representing the action.
@@ -3235,14 +3154,13 @@ public class NotificationCompat {
         public PendingIntent actionIntent;
 
         public Action(int icon, CharSequence title, PendingIntent intent) {
-            this(icon, title, intent, new Bundle(), null, null, true, SEMANTIC_ACTION_NONE, true,
-                false /* isContextual */);
+            this(icon, title, intent, new Bundle(), null, null, true, SEMANTIC_ACTION_NONE, true);
         }
 
         Action(int icon, CharSequence title, PendingIntent intent, Bundle extras,
                 RemoteInput[] remoteInputs, RemoteInput[] dataOnlyRemoteInputs,
                 boolean allowGeneratedReplies, @SemanticAction int semanticAction,
-                boolean showsUserInterface, boolean isContextual) {
+                boolean showsUserInterface) {
             this.icon = icon;
             this.title = NotificationCompat.Builder.limitCharSequenceLength(title);
             this.actionIntent = intent;
@@ -3252,7 +3170,6 @@ public class NotificationCompat {
             this.mAllowGeneratedReplies = allowGeneratedReplies;
             this.mSemanticAction = semanticAction;
             this.mShowsUserInterface = showsUserInterface;
-            this.mIsContextual = isContextual;
         }
 
         public int getIcon() {
@@ -3303,15 +3220,6 @@ public class NotificationCompat {
         }
 
         /**
-         * Returns whether this is a contextual Action, i.e. whether the action is dependent on the
-         * notification message body. An example of a contextual action could be an action opening a
-         * map application with an address shown in the notification.
-         */
-        public boolean isContextual() {
-            return mIsContextual;
-        }
-
-        /**
          * Get the list of inputs to be collected from the user that ONLY accept data when this
          * action is sent. These remote inputs are guaranteed to return true on a call to
          * {@link RemoteInput#isDataOnly}.
@@ -3345,7 +3253,6 @@ public class NotificationCompat {
             private ArrayList<RemoteInput> mRemoteInputs;
             private @SemanticAction int mSemanticAction;
             private boolean mShowsUserInterface = true;
-            private boolean mIsContextual;
 
             /**
              * Construct a new builder for {@link Action} object.
@@ -3354,8 +3261,7 @@ public class NotificationCompat {
              * @param intent the {@link PendingIntent} to fire when users trigger this action
              */
             public Builder(int icon, CharSequence title, PendingIntent intent) {
-                this(icon, title, intent, new Bundle(), null, true, SEMANTIC_ACTION_NONE, true,
-                        false /* isContextual */);
+                this(icon, title, intent, new Bundle(), null, true, SEMANTIC_ACTION_NONE, true);
             }
 
             /**
@@ -3366,14 +3272,12 @@ public class NotificationCompat {
             public Builder(Action action) {
                 this(action.icon, action.title, action.actionIntent, new Bundle(action.mExtras),
                         action.getRemoteInputs(), action.getAllowGeneratedReplies(),
-                        action.getSemanticAction(), action.mShowsUserInterface,
-                        action.isContextual());
+                        action.getSemanticAction(), action.mShowsUserInterface);
             }
 
             private Builder(int icon, CharSequence title, PendingIntent intent, Bundle extras,
                     RemoteInput[] remoteInputs, boolean allowGeneratedReplies,
-                    @SemanticAction int semanticAction, boolean showsUserInterface,
-                    boolean isContextual) {
+                    @SemanticAction int semanticAction, boolean showsUserInterface) {
                 mIcon = icon;
                 mTitle = NotificationCompat.Builder.limitCharSequenceLength(title);
                 mIntent = intent;
@@ -3383,7 +3287,6 @@ public class NotificationCompat {
                 mAllowGeneratedReplies = allowGeneratedReplies;
                 mSemanticAction = semanticAction;
                 mShowsUserInterface = showsUserInterface;
-                mIsContextual = isContextual;
             }
 
             /**
@@ -3391,7 +3294,7 @@ public class NotificationCompat {
              *
              * <p>Values within the Bundle will replace existing extras values in this Builder.
              *
-             * @see NotificationCompat.Action#getExtras
+             * @see Action#getExtras
              */
             public Builder addExtras(Bundle extras) {
                 if (extras != null) {
@@ -3452,17 +3355,6 @@ public class NotificationCompat {
             }
 
             /**
-             * Sets whether this {@link Action} is a contextual action, i.e. whether the action is
-             * dependent on the notification message body. An example of a contextual action could
-             * be an action opening a map application with an address shown in the notification.
-             */
-            @NonNull
-            public Builder setContextual(boolean isContextual) {
-                mIsContextual = isContextual;
-                return this;
-            }
-
-            /**
              * Set whether or not this {@link Action}'s {@link PendingIntent} will open a user
              * interface.
              * @param showsUserInterface {@code true} if this {@link Action}'s {@link PendingIntent}
@@ -3485,28 +3377,11 @@ public class NotificationCompat {
             }
 
             /**
-             * Throws an NPE if we are building a contextual action missing one of the fields
-             * necessary to display the action.
-             */
-            private void checkContextualActionNullFields() {
-                if (!mIsContextual) return;
-
-                if (mIntent == null) {
-                    throw new NullPointerException(
-                            "Contextual Actions must contain a valid PendingIntent");
-                }
-            }
-
-            /**
              * Combine all of the options that have been set and return a new {@link Action}
              * object.
              * @return the built action
-             * @throws {@ref NullPointerException} if this is a contextual Action and its Intent is
-             * null.
              */
             public Action build() {
-                checkContextualActionNullFields();
-
                 List<RemoteInput> dataOnlyInputs = new ArrayList<>();
                 List<RemoteInput> textInputs = new ArrayList<>();
                 if (mRemoteInputs != null) {
@@ -3524,7 +3399,7 @@ public class NotificationCompat {
                         ? null : textInputs.toArray(new RemoteInput[textInputs.size()]);
                 return new Action(mIcon, mTitle, mIntent, mExtras, textInputsArr,
                         dataOnlyInputsArr, mAllowGeneratedReplies, mSemanticAction,
-                        mShowsUserInterface, mIsContextual);
+                        mShowsUserInterface);
             }
         }
 
@@ -3544,10 +3419,10 @@ public class NotificationCompat {
 
         /**
          * Wearable extender for notification actions. To add extensions to an action,
-         * create a new {@link NotificationCompat.Action.WearableExtender} object using
+         * create a new {@link WearableExtender} object using
          * the {@code WearableExtender()} constructor and apply it to a
-         * {@link NotificationCompat.Action.Builder} using
-         * {@link NotificationCompat.Action.Builder#extend}.
+         * {@link Builder} using
+         * {@link Builder#extend}.
          *
          * <pre class="prettyprint">
          * NotificationCompat.Action action = new NotificationCompat.Action.Builder(
@@ -3581,14 +3456,14 @@ public class NotificationCompat {
             private CharSequence mCancelLabel;
 
             /**
-             * Create a {@link NotificationCompat.Action.WearableExtender} with default
+             * Create a {@link WearableExtender} with default
              * options.
              */
             public WearableExtender() {
             }
 
             /**
-             * Create a {@link NotificationCompat.Action.WearableExtender} by reading
+             * Create a {@link WearableExtender} by reading
              * wearable options present in an existing notification action.
              * @param action the notification action to inspect.
              */
@@ -3604,11 +3479,11 @@ public class NotificationCompat {
 
             /**
              * Apply wearable extensions to a notification action that is being built. This is
-             * typically called by the {@link NotificationCompat.Action.Builder#extend}
-             * method of {@link NotificationCompat.Action.Builder}.
+             * typically called by the {@link Builder#extend}
+             * method of {@link Builder}.
              */
             @Override
-            public Action.Builder extend(Action.Builder builder) {
+            public Builder extend(Builder builder) {
                 Bundle wearableBundle = new Bundle();
 
                 if (mFlags != DEFAULT_FLAGS) {
@@ -3673,8 +3548,6 @@ public class NotificationCompat {
              *
              * @param label the label to display while the action is being prepared to execute
              * @return this object for method chaining
-             *
-             * @deprecated This method has no effect starting with Wear 2.0.
              */
             @Deprecated
             public WearableExtender setInProgressLabel(CharSequence label) {
@@ -3687,8 +3560,6 @@ public class NotificationCompat {
              * the action. This is usually a 'ing' verb ending in ellipsis like "Sending..."
              *
              * @return the label to display while the action is being prepared to execute
-             *
-             * @deprecated This method has no effect starting with Wear 2.0.
              */
             @Deprecated
             public CharSequence getInProgressLabel() {
@@ -3701,8 +3572,6 @@ public class NotificationCompat {
              *
              * @param label the label to confirm the action should be executed
              * @return this object for method chaining
-             *
-             * @deprecated This method has no effect starting with Wear 2.0.
              */
             @Deprecated
             public WearableExtender setConfirmLabel(CharSequence label) {
@@ -3715,8 +3584,6 @@ public class NotificationCompat {
              * This is usually an imperative verb like "Send".
              *
              * @return the label to confirm the action should be executed
-             *
-             * @deprecated This method has no effect starting with Wear 2.0.
              */
             @Deprecated
             public CharSequence getConfirmLabel() {
@@ -3729,8 +3596,6 @@ public class NotificationCompat {
              *
              * @param label the label to display to cancel the action
              * @return this object for method chaining
-             *
-             * @deprecated This method has no effect starting with Wear 2.0.
              */
             @Deprecated
             public WearableExtender setCancelLabel(CharSequence label) {
@@ -3743,8 +3608,6 @@ public class NotificationCompat {
              * This is usually an imperative verb like "Cancel".
              *
              * @return the label to display to cancel the action
-             *
-             * @deprecated This method has no effect starting with Wear 2.0.
              */
             @Deprecated
             public CharSequence getCancelLabel() {
@@ -3848,12 +3711,12 @@ public class NotificationCompat {
      * <p>
      * To create a notification with wearable extensions:
      * <ol>
-     *   <li>Create a {@link NotificationCompat.Builder}, setting any desired
+     *   <li>Create a {@link Builder}, setting any desired
      *   properties.
-     *   <li>Create a {@link NotificationCompat.WearableExtender}.
+     *   <li>Create a {@link WearableExtender}.
      *   <li>Set wearable-specific properties using the
-     *   {@code add} and {@code set} methods of {@link NotificationCompat.WearableExtender}.
-     *   <li>Call {@link NotificationCompat.Builder#extend} to apply the extensions to a
+     *   {@code add} and {@code set} methods of {@link WearableExtender}.
+     *   <li>Call {@link Builder#extend} to apply the extensions to a
      *   notification.
      *   <li>Post the notification to the notification
      *   system with the {@code NotificationManagerCompat.notify(...)} methods
@@ -3891,10 +3754,7 @@ public class NotificationCompat {
          * <p>For custom display notifications created using {@link #setDisplayIntent},
          * the default is {@link #SIZE_MEDIUM}. All other notifications size automatically based
          * on their content.
-         *
-         * @deprecated Display intents are no longer supported.
          */
-        @Deprecated
         public static final int SIZE_DEFAULT = 0;
 
         /**
@@ -3902,10 +3762,7 @@ public class NotificationCompat {
          * with an extra small size.
          * <p>This value is only applicable for custom display notifications created using
          * {@link #setDisplayIntent}.
-         *
-         * @deprecated Display intents are no longer supported.
          */
-        @Deprecated
         public static final int SIZE_XSMALL = 1;
 
         /**
@@ -3913,10 +3770,7 @@ public class NotificationCompat {
          * with a small size.
          * <p>This value is only applicable for custom display notifications created using
          * {@link #setDisplayIntent}.
-         *
-         * @deprecated Display intents are no longer supported.
          */
-        @Deprecated
         public static final int SIZE_SMALL = 2;
 
         /**
@@ -3924,10 +3778,7 @@ public class NotificationCompat {
          * with a medium size.
          * <p>This value is only applicable for custom display notifications created using
          * {@link #setDisplayIntent}.
-         *
-         * @deprecated Display intents are no longer supported.
          */
-        @Deprecated
         public static final int SIZE_MEDIUM = 3;
 
         /**
@@ -3935,10 +3786,7 @@ public class NotificationCompat {
          * with a large size.
          * <p>This value is only applicable for custom display notifications created using
          * {@link #setDisplayIntent}.
-         *
-         * @deprecated Display intents are no longer supported.
          */
-        @Deprecated
         public static final int SIZE_LARGE = 4;
 
         /**
@@ -3946,28 +3794,20 @@ public class NotificationCompat {
          * full screen.
          * <p>This value is only applicable for custom display notifications created using
          * {@link #setDisplayIntent}.
-         *
-         * @deprecated Display intents are no longer supported.
          */
-        @Deprecated
         public static final int SIZE_FULL_SCREEN = 5;
 
         /**
          * Sentinel value for use with {@link #setHintScreenTimeout} to keep the screen on for a
          * short amount of time when this notification is displayed on the screen. This
          * is the default value.
-         *
-         * @deprecated This feature is no longer supported.
          */
-        @Deprecated
         public static final int SCREEN_TIMEOUT_SHORT = 0;
 
         /**
          * Sentinel value for use with {@link #setHintScreenTimeout} to keep the screen on
          * for a longer amount of time when this notification is displayed on the screen.
-         * @deprecated This feature is no longer supported.
          */
-        @Deprecated
         public static final int SCREEN_TIMEOUT_LONG = -1;
 
         /** Notification extra which contains wearable extensions */
@@ -4020,7 +3860,7 @@ public class NotificationCompat {
         private String mBridgeTag;
 
         /**
-         * Create a {@link NotificationCompat.WearableExtender} with default
+         * Create a {@link WearableExtender} with default
          * options.
          */
         public WearableExtender() {
@@ -4074,11 +3914,11 @@ public class NotificationCompat {
 
         /**
          * Apply wearable extensions to a notification that is being built. This is typically
-         * called by the {@link NotificationCompat.Builder#extend} method of
-         * {@link NotificationCompat.Builder}.
+         * called by the {@link Builder#extend} method of
+         * {@link Builder}.
          */
         @Override
-        public NotificationCompat.Builder extend(NotificationCompat.Builder builder) {
+        public Builder extend(Builder builder) {
             Bundle wearableBundle = new Bundle();
 
             if (!mActions.isEmpty()) {
@@ -4195,12 +4035,12 @@ public class NotificationCompat {
          *
          * <p>When wearable actions are added using this method, the set of actions that
          * show on a wearable device splits from devices that only show actions added
-         * using {@link NotificationCompat.Builder#addAction}. This allows for customization
+         * using {@link Builder#addAction}. This allows for customization
          * of which actions display on different devices.
          *
          * @param action the action to add to this notification
          * @return this object for method chaining
-         * @see NotificationCompat.Action
+         * @see Action
          */
         public WearableExtender addAction(Action action) {
             mActions.add(action);
@@ -4212,12 +4052,12 @@ public class NotificationCompat {
          *
          * <p>When wearable actions are added using this method, the set of actions that
          * show on a wearable device splits from devices that only show actions added
-         * using {@link NotificationCompat.Builder#addAction}. This allows for customization
+         * using {@link Builder#addAction}. This allows for customization
          * of which actions display on different devices.
          *
          * @param actions the actions to add to this notification
          * @return this object for method chaining
-         * @see NotificationCompat.Action
+         * @see Action
          */
         public WearableExtender addActions(List<Action> actions) {
             mActions.addAll(actions);
@@ -4269,10 +4109,8 @@ public class NotificationCompat {
          *
          * @param intent the {@link PendingIntent} for an activity
          * @return this object for method chaining
-         * @see NotificationCompat.WearableExtender#getDisplayIntent
-         * @deprecated Display intents are no longer supported.
+         * @see WearableExtender#getDisplayIntent
          */
-        @Deprecated
         public WearableExtender setDisplayIntent(PendingIntent intent) {
             mDisplayIntent = intent;
             return this;
@@ -4281,10 +4119,7 @@ public class NotificationCompat {
         /**
          * Get the intent to launch inside of an activity view when displaying this
          * notification. This {@code PendingIntent} should be for an activity.
-         *
-         * @deprecated Display intents are no longer supported.
          */
-        @Deprecated
         public PendingIntent getDisplayIntent() {
             return mDisplayIntent;
         }
@@ -4297,10 +4132,8 @@ public class NotificationCompat {
          *
          * @param page the notification to add as another page
          * @return this object for method chaining
-         * @see NotificationCompat.WearableExtender#getPages
-         * @deprecated Multiple content pages are no longer supported.
+         * @see WearableExtender#getPages
          */
-        @Deprecated
         public WearableExtender addPage(Notification page) {
             mPages.add(page);
             return this;
@@ -4314,10 +4147,8 @@ public class NotificationCompat {
          *
          * @param pages a list of notifications
          * @return this object for method chaining
-         * @see NotificationCompat.WearableExtender#getPages
-         * @deprecated Multiple content pages are no longer supported.
+         * @see WearableExtender#getPages
          */
-        @Deprecated
         public WearableExtender addPages(List<Notification> pages) {
             mPages.addAll(pages);
             return this;
@@ -4327,9 +4158,7 @@ public class NotificationCompat {
          * Clear all additional pages present on this builder.
          * @return this object for method chaining.
          * @see #addPage
-         * @deprecated Multiple content pages are no longer supported.
          */
-        @Deprecated
         public WearableExtender clearPages() {
             mPages.clear();
             return this;
@@ -4341,24 +4170,20 @@ public class NotificationCompat {
          * subsequent pages. This field can be used to separate a notification into multiple
          * sections.
          * @return the pages for this notification
-         * @deprecated Multiple content pages are no longer supported.
          */
-        @Deprecated
         public List<Notification> getPages() {
             return mPages;
         }
 
         /**
          * Set a background image to be displayed behind the notification content.
-         * Contrary to the {@link NotificationCompat.BigPictureStyle}, this background
+         * Contrary to the {@link BigPictureStyle}, this background
          * will work with any notification style.
          *
          * @param background the background bitmap
          * @return this object for method chaining
-         * @see NotificationCompat.WearableExtender#getBackground
-         * @deprecated Background images are no longer supported.
+         * @see WearableExtender#getBackground
          */
-        @Deprecated
         public WearableExtender setBackground(Bitmap background) {
             mBackground = background;
             return this;
@@ -4366,22 +4191,18 @@ public class NotificationCompat {
 
         /**
          * Get a background image to be displayed behind the notification content.
-         * Contrary to the {@link NotificationCompat.BigPictureStyle}, this background
+         * Contrary to the {@link BigPictureStyle}, this background
          * will work with any notification style.
          *
          * @return the background image
-         * @see NotificationCompat.WearableExtender#setBackground
-         * @deprecated Background images are no longer supported.
+         * @see WearableExtender#setBackground
          */
-        @Deprecated
         public Bitmap getBackground() {
             return mBackground;
         }
 
         /**
          * Set an icon that goes with the content of this notification.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public WearableExtender setContentIcon(int icon) {
@@ -4391,8 +4212,6 @@ public class NotificationCompat {
 
         /**
          * Get an icon that goes with the content of this notification.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public int getContentIcon() {
@@ -4401,11 +4220,9 @@ public class NotificationCompat {
 
         /**
          * Set the gravity that the content icon should have within the notification display.
-         * Supported values include {@link android.view.Gravity#START} and
-         * {@link android.view.Gravity#END}. The default value is {@link android.view.Gravity#END}.
+         * Supported values include {@link Gravity#START} and
+         * {@link Gravity#END}. The default value is {@link Gravity#END}.
          * @see #setContentIcon
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public WearableExtender setContentIconGravity(int contentIconGravity) {
@@ -4415,11 +4232,9 @@ public class NotificationCompat {
 
         /**
          * Get the gravity that the content icon should have within the notification display.
-         * Supported values include {@link android.view.Gravity#START} and
-         * {@link android.view.Gravity#END}. The default value is {@link android.view.Gravity#END}.
+         * Supported values include {@link Gravity#START} and
+         * {@link Gravity#END}. The default value is {@link Gravity#END}.
          * @see #getContentIcon
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public int getContentIconGravity() {
@@ -4427,11 +4242,15 @@ public class NotificationCompat {
         }
 
         /**
-         * Set an action from this notification's actions as the primary action. If the action has a
-         * {@link RemoteInput} associated with it, shortcuts to the options for that input are shown
-         * directly on the notification.
+         * Set an action from this notification's actions to be clickable with the content of
+         * this notification. This action will no longer display separately from the
+         * notification's content.
          *
-         * @param actionIndex The index of the primary action.
+         * <p>For notifications with multiple pages, child pages can also have content actions
+         * set, although the list of available actions comes from the main notification and not
+         * from the child page's notification.
+         *
+         * @param actionIndex The index of the action to hoist onto the current notification page.
          *                    If wearable actions were added to the main notification, this index
          *                    will apply to that list, otherwise it will apply to the regular
          *                    actions list.
@@ -4442,8 +4261,13 @@ public class NotificationCompat {
         }
 
         /**
-         * Get the index of the notification action, if any, that was specified as the primary
-         * action.
+         * Get the index of the notification action, if any, that was specified as being clickable
+         * with the content of this notification. This action will no longer display separately
+         * from the notification's content.
+         *
+         * <p>For notifications with multiple pages, child pages can also have content actions
+         * set, although the list of available actions comes from the main notification and not
+         * from the child page's notification.
          *
          * <p>If wearable specific actions were added to the main notification, this index will
          * apply to that list, otherwise it will apply to the regular actions list.
@@ -4456,11 +4280,9 @@ public class NotificationCompat {
 
         /**
          * Set the gravity that this notification should have within the available viewport space.
-         * Supported values include {@link android.view.Gravity#TOP},
-         * {@link android.view.Gravity#CENTER_VERTICAL} and {@link android.view.Gravity#BOTTOM}.
-         * The default value is {@link android.view.Gravity#BOTTOM}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
+         * Supported values include {@link Gravity#TOP},
+         * {@link Gravity#CENTER_VERTICAL} and {@link Gravity#BOTTOM}.
+         * The default value is {@link Gravity#BOTTOM}.
          */
         @Deprecated
         public WearableExtender setGravity(int gravity) {
@@ -4470,11 +4292,9 @@ public class NotificationCompat {
 
         /**
          * Get the gravity that this notification should have within the available viewport space.
-         * Supported values include {@link android.view.Gravity#TOP},
-         * {@link android.view.Gravity#CENTER_VERTICAL} and {@link android.view.Gravity#BOTTOM}.
-         * The default value is {@link android.view.Gravity#BOTTOM}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
+         * Supported values include {@link Gravity#TOP},
+         * {@link Gravity#CENTER_VERTICAL} and {@link Gravity#BOTTOM}.
+         * The default value is {@link Gravity#BOTTOM}.
          */
         @Deprecated
         public int getGravity() {
@@ -4483,14 +4303,12 @@ public class NotificationCompat {
 
         /**
          * Set the custom size preset for the display of this notification out of the available
-         * presets found in {@link NotificationCompat.WearableExtender}, e.g.
+         * presets found in {@link WearableExtender}, e.g.
          * {@link #SIZE_LARGE}.
          * <p>Some custom size presets are only applicable for custom display notifications created
-         * using {@link NotificationCompat.WearableExtender#setDisplayIntent}. Check the
+         * using {@link WearableExtender#setDisplayIntent}. Check the
          * documentation for the preset in question. See also
          * {@link #setCustomContentHeight} and {@link #getCustomSizePreset}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public WearableExtender setCustomSizePreset(int sizePreset) {
@@ -4500,13 +4318,11 @@ public class NotificationCompat {
 
         /**
          * Get the custom size preset for the display of this notification out of the available
-         * presets found in {@link NotificationCompat.WearableExtender}, e.g.
+         * presets found in {@link WearableExtender}, e.g.
          * {@link #SIZE_LARGE}.
          * <p>Some custom size presets are only applicable for custom display notifications created
          * using {@link #setDisplayIntent}. Check the documentation for the preset in question.
          * See also {@link #setCustomContentHeight} and {@link #setCustomSizePreset}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public int getCustomSizePreset() {
@@ -4516,11 +4332,9 @@ public class NotificationCompat {
         /**
          * Set the custom height in pixels for the display of this notification's content.
          * <p>This option is only available for custom display notifications created
-         * using {@link NotificationCompat.WearableExtender#setDisplayIntent}. See also
-         * {@link NotificationCompat.WearableExtender#setCustomSizePreset} and
+         * using {@link WearableExtender#setDisplayIntent}. See also
+         * {@link WearableExtender#setCustomSizePreset} and
          * {@link #getCustomContentHeight}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public WearableExtender setCustomContentHeight(int height) {
@@ -4533,8 +4347,6 @@ public class NotificationCompat {
          * <p>This option is only available for custom display notifications created
          * using {@link #setDisplayIntent}. See also {@link #setCustomSizePreset} and
          * {@link #setCustomContentHeight}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public int getCustomContentHeight() {
@@ -4586,8 +4398,6 @@ public class NotificationCompat {
          * Set a hint that this notification's icon should not be displayed.
          * @param hintHideIcon {@code true} to hide the icon, {@code false} otherwise.
          * @return this object for method chaining
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public WearableExtender setHintHideIcon(boolean hintHideIcon) {
@@ -4599,8 +4409,6 @@ public class NotificationCompat {
          * Get a hint that this notification's icon should not be displayed.
          * @return {@code true} if this icon should not be displayed, false otherwise.
          * The default value is {@code false} if this was never set.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public boolean getHintHideIcon() {
@@ -4611,8 +4419,6 @@ public class NotificationCompat {
          * Set a visual hint that only the background image of this notification should be
          * displayed, and other semantic content should be hidden. This hint is only applicable
          * to sub-pages added using {@link #addPage}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public WearableExtender setHintShowBackgroundOnly(boolean hintShowBackgroundOnly) {
@@ -4623,9 +4429,7 @@ public class NotificationCompat {
         /**
          * Get a visual hint that only the background image of this notification should be
          * displayed, and other semantic content should be hidden. This hint is only applicable
-         * to sub-pages added using {@link NotificationCompat.WearableExtender#addPage}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
+         * to sub-pages added using {@link WearableExtender#addPage}.
          */
         @Deprecated
         public boolean getHintShowBackgroundOnly() {
@@ -4638,8 +4442,6 @@ public class NotificationCompat {
          * ratio of the image. This can be useful for images like barcodes or qr codes.
          * @param hintAvoidBackgroundClipping {@code true} to avoid clipping if possible.
          * @return this object for method chaining
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public WearableExtender setHintAvoidBackgroundClipping(
@@ -4654,8 +4456,6 @@ public class NotificationCompat {
          * ratio of the image. This can be useful for images like barcodes or qr codes.
          * @return {@code true} if it's ok if the background is clipped on the screen, false
          * otherwise. The default value is {@code false} if this was never set.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public boolean getHintAvoidBackgroundClipping() {
@@ -4668,8 +4468,6 @@ public class NotificationCompat {
          * @param timeout The requested screen timeout in milliseconds. Can also be either
          *     {@link #SCREEN_TIMEOUT_SHORT} or {@link #SCREEN_TIMEOUT_LONG}.
          * @return this object for method chaining
-         *
-         * @deprecated This method has no effect.
          */
         @Deprecated
         public WearableExtender setHintScreenTimeout(int timeout) {
@@ -4682,8 +4480,6 @@ public class NotificationCompat {
          * when this notification is displayed.
          * @return the duration in milliseconds if > 0, or either one of the sentinel values
          *     {@link #SCREEN_TIMEOUT_SHORT} or {@link #SCREEN_TIMEOUT_LONG}.
-         *
-         * @deprecated This method has no effect starting with Wear 2.0.
          */
         @Deprecated
         public int getHintScreenTimeout() {
@@ -4696,9 +4492,7 @@ public class NotificationCompat {
          * qr codes, as well as other simple black-and-white tickets.
          * @param hintAmbientBigPicture {@code true} to enable converstion and ambient.
          * @return this object for method chaining
-         * @deprecated This feature is no longer supported.
          */
-        @Deprecated
         public WearableExtender setHintAmbientBigPicture(boolean hintAmbientBigPicture) {
             setFlag(FLAG_BIG_PICTURE_AMBIENT, hintAmbientBigPicture);
             return this;
@@ -4710,9 +4504,7 @@ public class NotificationCompat {
          * qr codes, as well as other simple black-and-white tickets.
          * @return {@code true} if it should be displayed in ambient, false otherwise
          * otherwise. The default value is {@code false} if this was never set.
-         * @deprecated This feature is no longer supported.
          */
-        @Deprecated
         public boolean getHintAmbientBigPicture() {
             return (mFlags & FLAG_BIG_PICTURE_AMBIENT) != 0;
         }
@@ -4797,12 +4589,12 @@ public class NotificationCompat {
      * with car extensions:
      *
      * <ol>
-     *  <li>Create an {@link NotificationCompat.Builder}, setting any desired
+     *  <li>Create an {@link Builder}, setting any desired
      *  properties.
      *  <li>Create a {@link CarExtender}.
      *  <li>Set car-specific properties using the {@code add} and {@code set} methods of
      *  {@link CarExtender}.
-     *  <li>Call {@link androidx.core.app.NotificationCompat.Builder#extend(NotificationCompat.Extender)}
+     *  <li>Call {@link Builder#extend(Extender)}
      *  to apply the extensions to a notification.
      *  <li>Post the notification to the notification system with the
      *  {@code NotificationManagerCompat.notify(...)} methods and not the
@@ -4823,13 +4615,13 @@ public class NotificationCompat {
      */
     public static final class CarExtender implements Extender {
         /** @hide **/
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         static final String EXTRA_CAR_EXTENDER = "android.car.EXTENSIONS";
         private static final String EXTRA_LARGE_ICON = "large_icon";
         private static final String EXTRA_CONVERSATION = "car_conversation";
         private static final String EXTRA_COLOR = "app_color";
         /** @hide **/
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
+        @RestrictTo(LIBRARY_GROUP)
         static final String EXTRA_INVISIBLE_ACTIONS = "invisible_actions";
 
         private static final String KEY_AUTHOR = "author";
@@ -4915,9 +4707,6 @@ public class NotificationCompat {
                     remoteInput.getLabel(),
                     remoteInput.getChoices(),
                     remoteInput.getAllowFreeFormInput(),
-                    Build.VERSION.SDK_INT >= 29
-                            ? remoteInput.getEditChoicesBeforeSending()
-                            : RemoteInput.EDIT_CHOICES_BEFORE_SENDING_AUTO,
                     remoteInput.getExtras(),
                     null /* allowedDataTypes */)
                     : null;
@@ -4961,11 +4750,11 @@ public class NotificationCompat {
 
         /**
          * Apply car extensions to a notification that is being built. This is typically called by
-         * the {@link androidx.core.app.NotificationCompat.Builder#extend(NotificationCompat.Extender)}
-         * method of {@link NotificationCompat.Builder}.
+         * the {@link Builder#extend(Extender)}
+         * method of {@link Builder}.
          */
         @Override
-        public NotificationCompat.Builder extend(NotificationCompat.Builder builder) {
+        public Builder extend(Builder builder) {
             if (Build.VERSION.SDK_INT < 21) {
                 return builder;
             }
@@ -4991,7 +4780,7 @@ public class NotificationCompat {
         /**
          * Sets the accent color to use when Android Auto presents the notification.
          *
-         * Android Auto uses the color set with {@link androidx.core.app.NotificationCompat.Builder#setColor(int)}
+         * Android Auto uses the color set with {@link Builder#setColor(int)}
          * to accent the displayed notification. However, not all colors are acceptable in an
          * automotive setting. This method can be used to override the color provided in the
          * notification in such a situation.
@@ -5015,7 +4804,7 @@ public class NotificationCompat {
          * Sets the large icon of the car notification.
          *
          * If no large icon is set in the extender, Android Auto will display the icon
-         * specified by {@link androidx.core.app.NotificationCompat.Builder#setLargeIcon(android.graphics.Bitmap)}
+         * specified by {@link Builder#setLargeIcon(Bitmap)}
          *
          * @param largeIcon The large icon to use in the car notification.
          * @return This object for method chaining.
@@ -5129,7 +4918,7 @@ public class NotificationCompat {
             }
 
             /**
-             * Builder class for {@link CarExtender.UnreadConversation} objects.
+             * Builder class for {@link UnreadConversation} objects.
              */
             public static class Builder {
                 private final List<String> mMessages = new ArrayList<String>();
@@ -5140,7 +4929,7 @@ public class NotificationCompat {
                 private long mLatestTimestamp;
 
                 /**
-                 * Constructs a new builder for {@link CarExtender.UnreadConversation}.
+                 * Constructs a new builder for {@link UnreadConversation}.
                  *
                  * @param name The name of the other participant in the conversation.
                  */
@@ -5169,8 +4958,8 @@ public class NotificationCompat {
                  * @param remoteInput The remote input parcelable which will carry the reply.
                  * @return This object for method chaining.
                  *
-                 * @see CarExtender.UnreadConversation#getRemoteInput
-                 * @see CarExtender.UnreadConversation#getReplyPendingIntent
+                 * @see UnreadConversation#getRemoteInput
+                 * @see UnreadConversation#getReplyPendingIntent
                  */
                 public Builder setReplyAction(
                         PendingIntent pendingIntent, RemoteInput remoteInput) {
@@ -5219,367 +5008,6 @@ public class NotificationCompat {
                     return new UnreadConversation(messages, mRemoteInput, mReplyPendingIntent,
                             mReadPendingIntent, participants, mLatestTimestamp);
                 }
-            }
-        }
-    }
-
-
-    /**
-     * Encapsulates the information needed to display a notification as a bubble.
-     *
-     * <p>A bubble is used to display app content in a floating window over the existing
-     * foreground activity. A bubble has a collapsed state represented by an icon,
-     * {@link BubbleMetadata.Builder#setIcon(IconCompat)} and an expanded state which is populated
-     * via {@link BubbleMetadata.Builder#setIntent(PendingIntent)}.</p>
-     *
-     * <b>Notifications with a valid and allowed bubble will display in collapsed state
-     * outside of the notification shade on unlocked devices. When a user interacts with the
-     * collapsed bubble, the bubble intent will be invoked and displayed.</b>
-     *
-     * @see NotificationCompat.Builder#setBubbleMetadata(BubbleMetadata)
-     */
-    public static final class BubbleMetadata {
-
-        private PendingIntent mPendingIntent;
-        private PendingIntent mDeleteIntent;
-        private IconCompat mIcon;
-        private int mDesiredHeight;
-        @DimenRes
-        private int mDesiredHeightResId;
-        private int mFlags;
-
-        /**
-         * If set and the app creating the bubble is in the foreground, the bubble will be posted
-         * in its expanded state, with the contents of {@link #getIntent()} in a floating window.
-         *
-         * <p>If the app creating the bubble is not in the foreground this flag has no effect.</p>
-         *
-         * <p>Generally this flag should only be set if the user has performed an action to request
-         * or create a bubble.</p>
-         */
-        private static final int FLAG_AUTO_EXPAND_BUBBLE = 0x00000001;
-
-        /**
-         * If set and the app creating the bubble is in the foreground, the bubble will be posted
-         * <b>without</b> the associated notification in the notification shade.
-         *
-         * <p>If the app posting the bubble is not in the foreground this flag has no effect.</p>
-         *
-         * <p>Generally this flag should only be set if the user has performed an action to request
-         * or create a bubble, or if the user has seen the content in the notification and the
-         * notification is no longer relevant.</p>
-         */
-        private static final int FLAG_SUPPRESS_NOTIFICATION = 0x00000002;
-
-        private BubbleMetadata(PendingIntent expandIntent, PendingIntent deleteIntent,
-                IconCompat icon, int height, @DimenRes int heightResId, int flags) {
-            mPendingIntent = expandIntent;
-            mIcon = icon;
-            mDesiredHeight = height;
-            mDesiredHeightResId = heightResId;
-            mDeleteIntent = deleteIntent;
-            mFlags = flags;
-        }
-
-        /**
-         * @return the pending intent used to populate the floating window for this bubble.
-         */
-        @NonNull
-        public PendingIntent getIntent() {
-            return mPendingIntent;
-        }
-
-        /**
-         * @return the pending intent to send when the bubble is dismissed by a user, if one exists.
-         */
-        @Nullable
-        public PendingIntent getDeleteIntent() {
-            return mDeleteIntent;
-        }
-
-        /**
-         * @return the icon that will be displayed for this bubble when it is collapsed.
-         */
-        @NonNull
-        public IconCompat getIcon() {
-            return mIcon;
-        }
-
-        /**
-         * @return the ideal height, in DPs, for the floating window that app content defined by
-         * {@link #getIntent()} for this bubble. A value of 0 indicates a desired height has not
-         * been set.
-         */
-        @Dimension(unit = DP)
-        public int getDesiredHeight() {
-            return mDesiredHeight;
-        }
-
-        /**
-         * @return the resId of ideal height for the floating window that app content defined by
-         * {@link #getIntent()} for this bubble. A value of 0 indicates a res value has not
-         * been provided for the desired height.
-         */
-        @DimenRes
-        public int getDesiredHeightResId() {
-            return mDesiredHeightResId;
-        }
-
-        /**
-         * @return whether this bubble should auto expand when it is posted.
-         *
-         * @see BubbleMetadata.Builder#setAutoExpandBubble(boolean)
-         */
-        public boolean getAutoExpandBubble() {
-            return (mFlags & FLAG_AUTO_EXPAND_BUBBLE) != 0;
-        }
-
-        /**
-         * @return whether this bubble should suppress the notification when it is posted.
-         *
-         * @see BubbleMetadata.Builder#setSuppressNotification(boolean)
-         */
-        public boolean isNotificationSuppressed() {
-            return (mFlags & FLAG_SUPPRESS_NOTIFICATION) != 0;
-        }
-
-        /**
-         * Converts a {@link NotificationCompat.BubbleMetadata} to a platform-level
-         * {@link Notification.BubbleMetadata}.
-         *
-         * @param compatMetadata the NotificationCompat.BubbleMetadata to convert
-         * @return a {@link Notification.BubbleMetadata} containing the same data if compatMetadata
-         * is non-null, otherwise null.
-         */
-        @RequiresApi(29)
-        public static @Nullable android.app.Notification.BubbleMetadata toPlatform(
-                @Nullable BubbleMetadata compatMetadata) {
-            if (compatMetadata == null) {
-                return null;
-            }
-
-            android.app.Notification.BubbleMetadata.Builder platformMetadataBuilder =
-                    new android.app.Notification.BubbleMetadata.Builder()
-                            .setAutoExpandBubble(compatMetadata.getAutoExpandBubble())
-                            .setDeleteIntent(compatMetadata.getDeleteIntent())
-                            .setIcon(compatMetadata.getIcon().toIcon())
-                            .setIntent(compatMetadata.getIntent())
-                            .setSuppressNotification(
-                                    compatMetadata.isNotificationSuppressed());
-
-            if (compatMetadata.getDesiredHeight() != 0) {
-                platformMetadataBuilder.setDesiredHeight(compatMetadata.getDesiredHeight());
-            }
-
-            if (compatMetadata.getDesiredHeightResId() != 0) {
-                platformMetadataBuilder.setDesiredHeightResId(
-                        compatMetadata.getDesiredHeightResId());
-            }
-
-            return platformMetadataBuilder.build();
-        }
-
-        /**
-         * Converts a platform-level {@link Notification.BubbleMetadata} to a
-         * {@link NotificationCompat.BubbleMetadata}.
-         *
-         * @param platformMetadata the {@link Notification.BubbleMetadata} to convert
-         * @return a {@link NotificationCompat.BubbleMetadata} containing the same data if
-         * platformMetadata is non-null, otherwise null.
-         */
-        @RequiresApi(29)
-        public static @Nullable BubbleMetadata fromPlatform(
-                @Nullable android.app.Notification.BubbleMetadata platformMetadata) {
-            if (platformMetadata == null) {
-                return null;
-            }
-
-            BubbleMetadata.Builder compatBuilder = new BubbleMetadata.Builder()
-                    .setAutoExpandBubble(platformMetadata.getAutoExpandBubble())
-                    .setDeleteIntent(platformMetadata.getDeleteIntent())
-                    .setIcon(IconCompat.createFromIcon(platformMetadata.getIcon()))
-                    .setIntent(platformMetadata.getIntent())
-                    .setSuppressNotification(
-                            platformMetadata.isNotificationSuppressed());
-
-            if (platformMetadata.getDesiredHeight() != 0) {
-                compatBuilder.setDesiredHeight(platformMetadata.getDesiredHeight());
-            }
-
-            if (platformMetadata.getDesiredHeightResId() != 0) {
-                compatBuilder.setDesiredHeightResId(platformMetadata.getDesiredHeightResId());
-            }
-
-            return compatBuilder.build();
-        }
-
-        private void setFlags(int flags) {
-            mFlags = flags;
-        }
-
-        /**
-         * Builder to construct a {@link BubbleMetadata} object.
-         */
-        public static final class Builder {
-
-            private PendingIntent mPendingIntent;
-            private IconCompat mIcon;
-            private int mDesiredHeight;
-            @DimenRes private int mDesiredHeightResId;
-            private int mFlags;
-            private PendingIntent mDeleteIntent;
-
-            /**
-             * Constructs a new builder object.
-             */
-            public Builder() {
-            }
-
-            /**
-             * Sets the intent that will be used when the bubble is expanded. This will display the
-             * app content in a floating window over the existing foreground activity.
-             */
-            @NonNull
-            public BubbleMetadata.Builder setIntent(@NonNull PendingIntent intent) {
-                if (intent == null) {
-                    throw new IllegalArgumentException("Bubble requires non-null pending intent");
-                }
-                mPendingIntent = intent;
-                return this;
-            }
-            /**
-             * Sets the icon that will represent the bubble when it is collapsed.
-             *
-             * <p>An icon is required and should be representative of the content within the bubble.
-             * If your app produces multiple bubbles, the image should be unique for each of them.
-             * </p>
-             *
-             * <p>The shape of a bubble icon is adaptive and can match the device theme.
-             *
-             * If your icon is bitmap-based, you should create it using
-             * {@link IconCompat#createWithAdaptiveBitmap(Bitmap)}, otherwise this method will
-             * throw.
-             *
-             * If your icon is not bitmap-based, you should expect that the icon will be tinted.
-             * </p>
-             */
-            @NonNull
-            public BubbleMetadata.Builder setIcon(@NonNull IconCompat icon) {
-                if (icon == null) {
-                    throw new IllegalArgumentException("Bubbles require non-null icon");
-                }
-                if (icon.getType() == TYPE_BITMAP) {
-                    throw new IllegalArgumentException("When using bitmap based icons, Bubbles "
-                            + "require TYPE_ADAPTIVE_BITMAP, please use"
-                            + " IconCompat#createWithAdaptiveBitmap instead");
-                }
-                mIcon = icon;
-                return this;
-            }
-
-            /**
-             * Sets the desired height in DPs for the app content defined by
-             * {@link #setIntent(PendingIntent)}, this height may not be respected if there is not
-             * enough space on the screen or if the provided height is too small to be useful.
-             * <p>
-             * If {@link #setDesiredHeightResId(int)} was previously called on this builder, the
-             * previous value set will be cleared after calling this method, and this value will
-             * be used instead.
-             */
-            @NonNull
-            public BubbleMetadata.Builder setDesiredHeight(@Dimension(unit = DP) int height) {
-                mDesiredHeight = Math.max(height, 0);
-                mDesiredHeightResId = 0;
-                return this;
-            }
-
-
-            /**
-             * Sets the desired height via resId for the app content defined by
-             * {@link #setIntent(PendingIntent)}, this height may not be respected if there is not
-             * enough space on the screen or if the provided height is too small to be useful.
-             * <p>
-             * If {@link #setDesiredHeight(int)} was previously called on this builder, the
-             * previous value set will be cleared after calling this method, and this value will
-             * be used instead.
-             */
-            @NonNull
-            public BubbleMetadata.Builder setDesiredHeightResId(@DimenRes int heightResId) {
-                mDesiredHeightResId = heightResId;
-                mDesiredHeight = 0;
-                return this;
-            }
-
-            /**
-             * If set and the app creating the bubble is in the foreground, the bubble will be
-             * posted in its expanded state, with the contents of {@link #getIntent()} in a
-             * floating window.
-             *
-             * <p>If the app creating the bubble is not in the foreground this flag has no effect.
-             * </p>
-             *
-             * <p>Generally this flag should only be set if the user has performed an action to
-             * request or create a bubble.</p>
-             */
-            @NonNull
-            public BubbleMetadata.Builder setAutoExpandBubble(boolean shouldExpand) {
-                setFlag(FLAG_AUTO_EXPAND_BUBBLE, shouldExpand);
-                return this;
-            }
-
-            /**
-             * If set and the app posting the bubble is in the foreground, the bubble will be
-             * posted <b>without</b> the associated notification in the notification shade.
-             *
-             * <p>If the app posting the bubble is not in the foreground this flag has no effect.
-             * </p>
-             *
-             * <p>Generally this flag should only be set if the user has performed an action to
-             * request or create a bubble, or if the user has seen the content in the notification
-             * and the notification is no longer relevant.</p>
-             */
-            @NonNull
-            public BubbleMetadata.Builder setSuppressNotification(
-                    boolean shouldSuppressNotif) {
-                setFlag(FLAG_SUPPRESS_NOTIFICATION, shouldSuppressNotif);
-                return this;
-            }
-
-            /**
-             * Sets an optional intent to send when this bubble is explicitly removed by the user.
-             */
-            @NonNull
-            public BubbleMetadata.Builder setDeleteIntent(@Nullable PendingIntent deleteIntent) {
-                mDeleteIntent = deleteIntent;
-                return this;
-            }
-
-            /**
-             * Creates the {@link BubbleMetadata} defined by this builder.
-             * <p>Will throw {@link IllegalStateException} if required fields have not been set
-             * on this builder.</p>
-             */
-            @NonNull
-            @SuppressLint("SyntheticAccessor")
-            public BubbleMetadata build() {
-                if (mPendingIntent == null) {
-                    throw new IllegalStateException("Must supply pending intent to bubble");
-                }
-                if (mIcon == null) {
-                    throw new IllegalStateException("Must supply an icon for the bubble");
-                }
-                BubbleMetadata data = new BubbleMetadata(mPendingIntent, mDeleteIntent,
-                        mIcon, mDesiredHeight, mDesiredHeightResId, mFlags);
-                return data;
-            }
-
-            private BubbleMetadata.Builder setFlag(int mask, boolean value) {
-                if (value) {
-                    mFlags |= mask;
-                } else {
-                    mFlags &= ~mask;
-                }
-                return this;
             }
         }
     }
@@ -5659,22 +5087,6 @@ public class NotificationCompat {
         }
     }
 
-    /**
-     * Get the {@link BubbleMetadata} for a notification that will be used to display app content in
-     * a floating window over the existing foreground activity.
-     *
-     * @param notification the notification to inspect
-     *
-     * @return the BubbleMetadata if available and set, otherwise null
-     */
-    public static @Nullable BubbleMetadata getBubbleMetadata(@NonNull Notification notification) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return BubbleMetadata.fromPlatform(notification.getBubbleMetadata());
-        } else {
-            return null;
-        }
-    }
-
     @RequiresApi(20)
     static Action getActionCompatFromAction(Notification.Action action) {
         final RemoteInput[] remoteInputs;
@@ -5685,16 +5097,8 @@ public class NotificationCompat {
             remoteInputs = new RemoteInput[srcArray.length];
             for (int i = 0; i < srcArray.length; i++) {
                 android.app.RemoteInput src = srcArray[i];
-                remoteInputs[i] = new RemoteInput(
-                        src.getResultKey(),
-                        src.getLabel(),
-                        src.getChoices(),
-                        src.getAllowFreeFormInput(),
-                        Build.VERSION.SDK_INT >= 29
-                                ? src.getEditChoicesBeforeSending()
-                                : RemoteInput.EDIT_CHOICES_BEFORE_SENDING_AUTO,
-                        src.getExtras(),
-                        null);
+                remoteInputs[i] = new RemoteInput(src.getResultKey(), src.getLabel(),
+                        src.getChoices(), src.getAllowFreeFormInput(), src.getExtras(), null);
             }
         }
 
@@ -5719,11 +5123,9 @@ public class NotificationCompat {
                     Action.EXTRA_SEMANTIC_ACTION, Action.SEMANTIC_ACTION_NONE);
         }
 
-        final boolean isContextual = Build.VERSION.SDK_INT >= 29 ? action.isContextual() : false;
-
         return new Action(action.icon, action.title, action.actionIntent,
                 action.getExtras(), remoteInputs, null, allowGeneratedReplies,
-                semanticAction, showsUserInterface, isContextual);
+                semanticAction, showsUserInterface);
     }
 
     /** Returns the invisible actions contained within the given notification. */
@@ -5904,18 +5306,6 @@ public class NotificationCompat {
             return notification.getGroupAlertBehavior();
         } else {
             return GROUP_ALERT_ALL;
-        }
-    }
-
-    /**
-     * Returns whether the platform is allowed (by the app developer) to generate contextual actions
-     * for this notification.
-     */
-    public static boolean getAllowSystemGeneratedContextualActions(Notification notification) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return notification.getAllowSystemGeneratedContextualActions();
-        } else {
-            return false;
         }
     }
 

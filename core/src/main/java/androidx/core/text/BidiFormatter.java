@@ -394,12 +394,12 @@ public final class BidiFormatter {
 
     /**
      * Operates like {@link #unicodeWrap(String,
-     * androidx.core.text.TextDirectionHeuristicCompat, boolean)}, but takes a CharSequence
+     * TextDirectionHeuristicCompat, boolean)}, but takes a CharSequence
      * instead of a string
      *
      * @param str The input CharSequence.
      * @param heuristic The algorithm to be used to estimate the CharSequence's overall direction.
-     *        See {@link androidx.core.text.TextDirectionHeuristicsCompat} for pre-defined
+     *        See {@link TextDirectionHeuristicsCompat} for pre-defined
      *        heuristics.
      * @param isolate Whether to directionally isolate the CharSequence to prevent it from garbling
      *     the content around it
@@ -430,7 +430,7 @@ public final class BidiFormatter {
     }
 
     /**
-     * Operates like {@link #unicodeWrap(String, androidx.core.text.TextDirectionHeuristicCompat, boolean)}, but assumes
+     * Operates like {@link #unicodeWrap(String, TextDirectionHeuristicCompat, boolean)}, but assumes
      * {@code isolate} is true.
      *
      * @param str The input string.
@@ -443,12 +443,12 @@ public final class BidiFormatter {
 
     /**
      * Operates like {@link #unicodeWrap(CharSequence,
-     * androidx.core.text.TextDirectionHeuristicCompat, boolean)}, but assumes {@code isolate}
+     * TextDirectionHeuristicCompat, boolean)}, but assumes {@code isolate}
      * is true.
      *
      * @param str The input CharSequence.
      * @param heuristic The algorithm to be used to estimate the CharSequence's overall direction.
-     *        See {@link androidx.core.text.TextDirectionHeuristicsCompat} for pre-defined
+     *        See {@link TextDirectionHeuristicsCompat} for pre-defined
      *        heuristics.
      * @return Input CharSequence after applying the above processing.
      */
@@ -457,7 +457,7 @@ public final class BidiFormatter {
     }
 
     /**
-     * Operates like {@link #unicodeWrap(String, androidx.core.text.TextDirectionHeuristicCompat, boolean)}, but uses the
+     * Operates like {@link #unicodeWrap(String, TextDirectionHeuristicCompat, boolean)}, but uses the
      * formatter's default direction estimation algorithm.
      *
      * @param str The input string.
@@ -471,7 +471,7 @@ public final class BidiFormatter {
 
     /**
      * Operates like {@link #unicodeWrap(CharSequence,
-     * androidx.core.text.TextDirectionHeuristicCompat, boolean)}, but uses the formatter's
+     * TextDirectionHeuristicCompat, boolean)}, but uses the formatter's
      * default direction estimation algorithm.
      *
      * @param str The input CharSequence.
@@ -484,7 +484,7 @@ public final class BidiFormatter {
     }
 
     /**
-     * Operates like {@link #unicodeWrap(String, androidx.core.text.TextDirectionHeuristicCompat, boolean)}, but uses the
+     * Operates like {@link #unicodeWrap(String, TextDirectionHeuristicCompat, boolean)}, but uses the
      * formatter's default direction estimation algorithm and assumes {@code isolate} is true.
      *
      * @param str The input string.
@@ -496,7 +496,7 @@ public final class BidiFormatter {
 
     /**
      * Operates like {@link #unicodeWrap(CharSequence,
-     * androidx.core.text.TextDirectionHeuristicCompat, boolean)}, but uses the formatter's
+     * TextDirectionHeuristicCompat, boolean)}, but uses the formatter's
      * default direction estimation algorithm and assumes {@code isolate} is true.
      *
      * @param str The input CharSequence.
@@ -810,7 +810,7 @@ public final class BidiFormatter {
          * figure out the actual character, and return its dirtype, but treating it as whitespace is
          * good enough for our purposes.
          *
-         * @throws java.lang.IndexOutOfBoundsException if called when charIndex >= length or < 0.
+         * @throws IndexOutOfBoundsException if called when charIndex >= length or < 0.
          */
         byte dirTypeForward() {
             lastChar = text.charAt(charIndex);
@@ -840,7 +840,7 @@ public final class BidiFormatter {
          * actual character, and return its dirtype, but treating it as whitespace is good enough
          * for our purposes.
          *
-         * @throws java.lang.IndexOutOfBoundsException if called when charIndex > length or <= 0.
+         * @throws IndexOutOfBoundsException if called when charIndex > length or <= 0.
          */
         byte dirTypeBackward() {
             lastChar = text.charAt(charIndex - 1);

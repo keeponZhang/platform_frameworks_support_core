@@ -16,13 +16,12 @@
 
 package androidx.core.graphics;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.CancellationSignal;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,23 +33,15 @@ import androidx.core.provider.FontsContractCompat.FontInfo;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of the Typeface compat methods for API 14 and above.
  * @hide
  */
-@RestrictTo(LIBRARY_GROUP_PREFIX)
+@RestrictTo(LIBRARY_GROUP)
 class TypefaceCompatBaseImpl {
     private static final String TAG = "TypefaceCompatBaseImpl";
-    private static final int INVALID_KEY = 0;
-
-    /**
-     * Maps a unique identifier from a Typeface to it's family
-     */
-    private ConcurrentHashMap<Long, FontFamilyFilesResourceEntry> mFontFamilies =
-            new ConcurrentHashMap<>();
+    private static final String CACHE_FILE_PREFIX = "cached_font_";
 
     private interface StyleExtractor<T> {
         int getWeight(T t);
@@ -74,25 +65,6 @@ class TypefaceCompatBaseImpl {
             }
         }
         return best;
-    }
-
-    private static long getUniqueKey(@Nullable final Typeface typeface) {
-        if (typeface == null) {
-            return INVALID_KEY;
-        }
-
-        try {
-            final Field field = Typeface.class.getDeclaredField("native_instance");
-            field.setAccessible(true);
-            final Number num = (Number) field.get(typeface);
-            return num.longValue();
-        } catch (NoSuchFieldException e) {
-            Log.e(TAG, "Could not retrieve font from family.", e);
-            return INVALID_KEY;
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, "Could not retrieve font from family.", e);
-            return INVALID_KEY;
-        }
     }
 
     protected FontInfo findBestInfo(FontInfo[] fonts, int style) {
@@ -130,7 +102,6 @@ class TypefaceCompatBaseImpl {
         }
     }
 
-    @Nullable
     public Typeface createFromFontInfo(Context context,
             @Nullable CancellationSignal cancellationSignal, @NonNull FontInfo[] fonts, int style) {
         // When we load from file, we can only load one font so just take the first one.
@@ -170,12 +141,8 @@ class TypefaceCompatBaseImpl {
         if (best == null) {
             return null;
         }
-        final Typeface typeface = TypefaceCompat.createFromResourcesFontFile(
+        return TypefaceCompat.createFromResourcesFontFile(
                 context, resources, best.getResourceId(), best.getFileName(), style);
-
-        addFontFamily(typeface, entry);
-
-        return typeface;
     }
 
     /**
@@ -200,25 +167,6 @@ class TypefaceCompatBaseImpl {
             return null;
         } finally {
             tmpFile.delete();
-        }
-    }
-
-    /**
-     * Retrieves the font family resource entries given a unique identifier for a Typeface
-     */
-    @Nullable
-    FontFamilyFilesResourceEntry getFontFamily(final Typeface typeface) {
-        final long key = getUniqueKey(typeface);
-        if (key == INVALID_KEY) {
-            return null;
-        }
-        return mFontFamilies.get(key);
-    }
-
-    private void addFontFamily(final Typeface typeface, final FontFamilyFilesResourceEntry entry) {
-        final long key = getUniqueKey(typeface);
-        if (key != INVALID_KEY) {
-            mFontFamilies.put(key, entry);
         }
     }
 }

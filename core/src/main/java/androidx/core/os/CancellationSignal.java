@@ -18,8 +18,6 @@ package androidx.core.os;
 
 import android.os.Build;
 
-import androidx.annotation.Nullable;
-
 /**
  * Static library support version of the framework's {@link android.os.CancellationSignal}.
  * Used to write apps that run on platforms prior to Android 4.1.  See the framework SDK
@@ -107,7 +105,7 @@ public final class CancellationSignal {
      *
      * @param listener The cancellation listener, or null to remove the current listener.
      */
-    public void setOnCancelListener(@Nullable OnCancelListener listener) {
+    public void setOnCancelListener(OnCancelListener listener) {
         synchronized (this) {
             waitForCancelFinishedLocked();
 
@@ -126,14 +124,13 @@ public final class CancellationSignal {
      * Gets the framework {@link android.os.CancellationSignal} associated with this object.
      * <p>
      * Framework support for cancellation signals was added in
-     * {@link android.os.Build.VERSION_CODES#JELLY_BEAN} so this method will always
+     * {@link Build.VERSION_CODES#JELLY_BEAN} so this method will always
      * return null on older versions of the platform.
      * </p>
      *
      * @return A framework cancellation signal object, or null on platform versions
      * prior to Jellybean.
      */
-    @Nullable
     public Object getCancellationSignalObject() {
         if (Build.VERSION.SDK_INT < 16) {
             return null;

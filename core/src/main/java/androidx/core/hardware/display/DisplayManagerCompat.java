@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import java.util.WeakHashMap;
 
 /**
- * Helper for accessing features in {@link android.hardware.display.DisplayManager}.
+ * Helper for accessing features in {@link DisplayManager}.
  */
 public final class DisplayManagerCompat {
     private static final WeakHashMap<Context, DisplayManagerCompat> sInstances =

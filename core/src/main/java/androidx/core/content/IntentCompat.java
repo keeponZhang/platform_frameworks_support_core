@@ -22,7 +22,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 
 /**
- * Helper for accessing features in {@link android.content.Intent}.
+ * Helper for accessing features in {@link Intent}.
  */
 public final class IntentCompat {
     private IntentCompat() {
@@ -31,15 +31,15 @@ public final class IntentCompat {
 
     /**
      * A constant String that is associated with the Intent, used with
-     * {@link android.content.Intent#ACTION_SEND} to supply an alternative to
-     * {@link android.content.Intent#EXTRA_TEXT}
+     * {@link Intent#ACTION_SEND} to supply an alternative to
+     * {@link Intent#EXTRA_TEXT}
      * as HTML formatted text.  Note that you <em>must</em> also supply
-     * {@link android.content.Intent#EXTRA_TEXT}.
+     * {@link Intent#EXTRA_TEXT}.
      */
     public static final String EXTRA_HTML_TEXT = "android.intent.extra.HTML_TEXT";
 
     /**
-     * Used as a boolean extra field in {@link android.content.Intent#ACTION_VIEW} intents to
+     * Used as a boolean extra field in {@link Intent#ACTION_VIEW} intents to
      * indicate that content should immediately be played without any intermediate screens that
      * require additional user input, e.g. a profile selection screen or a details page.
      */

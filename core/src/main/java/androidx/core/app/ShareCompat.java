@@ -72,37 +72,11 @@ public final class ShareCompat {
             "androidx.core.app.EXTRA_CALLING_PACKAGE";
 
     /**
-     * Intent extra that stores the name of the calling package for an ACTION_SEND intent.
-     * When an activity is started using startActivityForResult this is redundant info.
-     * (It is also provided by {@link Activity#getCallingPackage()}.)
-     *
-     * Note that this is only for interoperability between pre-1.0 AndroidX and AndroidX 1.1+
-     * worlds. You are strongly encouraged to use {@link #getCallingPackage(Activity)}
-     * or {@link IntentReader#getCallingPackage()}.
-     */
-    public static final String EXTRA_CALLING_PACKAGE_INTEROP =
-            "android.support.v4.app.EXTRA_CALLING_PACKAGE";
-
-    /**
      * Intent extra that stores the {@link ComponentName} of the calling activity for
      * an ACTION_SEND intent.
-     *
-     * Instead of using this constant directly, consider using {@link #getCallingPackage(Activity)}
-     * or {@link IntentReader#getCallingPackage()}.
      */
     public static final String EXTRA_CALLING_ACTIVITY =
             "androidx.core.app.EXTRA_CALLING_ACTIVITY";
-
-    /**
-     * Intent extra that stores the {@link ComponentName} of the calling activity for
-     * an ACTION_SEND intent.
-     *
-     * Note that this is only for interoperability between pre-1.0 AndroidX and AndroidX 1.1+
-     * worlds. You are strongly encouraged to use {@link #getCallingPackage(Activity)}
-     * or {@link IntentReader#getCallingPackage()}.
-     */
-    public static final String EXTRA_CALLING_ACTIVITY_INTEROP =
-            "android.support.v4.app.EXTRA_CALLING_ACTIVITY";
 
     private static final String HISTORY_FILENAME_PREFIX = ".sharecompat_";
 
@@ -124,9 +98,6 @@ public final class ShareCompat {
         String result = calledActivity.getCallingPackage();
         if (result == null) {
             result = calledActivity.getIntent().getStringExtra(EXTRA_CALLING_PACKAGE);
-            if (result == null) {
-                result = calledActivity.getIntent().getStringExtra(EXTRA_CALLING_PACKAGE_INTEROP);
-            }
         }
         return result;
     }
@@ -147,10 +118,6 @@ public final class ShareCompat {
         ComponentName result = calledActivity.getCallingActivity();
         if (result == null) {
             result = calledActivity.getIntent().getParcelableExtra(EXTRA_CALLING_ACTIVITY);
-            if (result == null) {
-                result = calledActivity.getIntent().getParcelableExtra(
-                        EXTRA_CALLING_ACTIVITY_INTEROP);
-            }
         }
         return result;
     }
@@ -248,9 +215,7 @@ public final class ShareCompat {
             mActivity = launchingActivity;
             mIntent = new Intent().setAction(Intent.ACTION_SEND);
             mIntent.putExtra(EXTRA_CALLING_PACKAGE, launchingActivity.getPackageName());
-            mIntent.putExtra(EXTRA_CALLING_PACKAGE_INTEROP, launchingActivity.getPackageName());
             mIntent.putExtra(EXTRA_CALLING_ACTIVITY, launchingActivity.getComponentName());
-            mIntent.putExtra(EXTRA_CALLING_ACTIVITY_INTEROP, launchingActivity.getComponentName());
             mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         }
 
@@ -407,7 +372,7 @@ public final class ShareCompat {
          * Set an HTML string to be sent as part of the share.
          * If {@link Intent#EXTRA_TEXT EXTRA_TEXT} has not already been supplied,
          * a styled version of the supplied HTML text will be added as EXTRA_TEXT as
-         * parsed by {@link android.text.Html#fromHtml(String) Html.fromHtml}.
+         * parsed by {@link Html#fromHtml(String) Html.fromHtml}.
          *
          * @param htmlText A string containing HTML markup as a richer version of the text
          *                 provided by EXTRA_TEXT.
@@ -711,7 +676,7 @@ public final class ShareCompat {
          * If no HTML text was supplied but {@link Intent#EXTRA_TEXT} contained
          * styled text, it will be converted to HTML if possible and returned.
          * If the text provided by {@link Intent#EXTRA_TEXT} was not styled text,
-         * it will be escaped by {@link android.text.Html#escapeHtml(CharSequence)}
+         * it will be escaped by {@link Html#escapeHtml(CharSequence)}
          * and returned. If no text was provided at all, this method will return null.
          *
          * @return Styled text provided by the sender as HTML.
@@ -868,7 +833,6 @@ public final class ShareCompat {
          * @return Name of the package that started this activity or null if unknown
          * @see Activity#getCallingPackage()
          * @see ShareCompat#EXTRA_CALLING_PACKAGE
-         * @see ShareCompat#EXTRA_CALLING_PACKAGE_INTEROP
          */
         public String getCallingPackage() {
             return mCallingPackage;
@@ -886,7 +850,6 @@ public final class ShareCompat {
          * @return ComponentName of the calling Activity or null if unknown
          * @see Activity#getCallingActivity()
          * @see ShareCompat#EXTRA_CALLING_ACTIVITY
-         * @see ShareCompat#EXTRA_CALLING_ACTIVITY_INTEROP
          */
         public ComponentName getCallingActivity() {
             return mCallingActivity;

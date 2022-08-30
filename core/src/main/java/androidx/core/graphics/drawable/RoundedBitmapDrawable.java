@@ -36,11 +36,11 @@ import androidx.annotation.Nullable;
 /**
  * A Drawable that wraps a bitmap and can be drawn with rounded corners. You can create a
  * RoundedBitmapDrawable from a file path, an input stream, or from a
- * {@link android.graphics.Bitmap} object.
+ * {@link Bitmap} object.
  * <p>
- * Also see the {@link android.graphics.Bitmap} class, which handles the management and
+ * Also see the {@link Bitmap} class, which handles the management and
  * transformation of raw bitmap graphics, and should be used when drawing to a
- * {@link android.graphics.Canvas}.
+ * {@link Canvas}.
  * </p>
  */
 public abstract class RoundedBitmapDrawable extends Drawable {
@@ -92,8 +92,8 @@ public abstract class RoundedBitmapDrawable extends Drawable {
      *
      * @param canvas The Canvas from which the density scale must be obtained.
      *
-     * @see android.graphics.Bitmap#setDensity(int)
-     * @see android.graphics.Bitmap#getDensity()
+     * @see Bitmap#setDensity(int)
+     * @see Bitmap#getDensity()
      */
     public void setTargetDensity(@NonNull Canvas canvas) {
         setTargetDensity(canvas.getDensity());
@@ -104,8 +104,8 @@ public abstract class RoundedBitmapDrawable extends Drawable {
      *
      * @param metrics The DisplayMetrics indicating the density scale for this drawable.
      *
-     * @see android.graphics.Bitmap#setDensity(int)
-     * @see android.graphics.Bitmap#getDensity()
+     * @see Bitmap#setDensity(int)
+     * @see Bitmap#getDensity()
      */
     public void setTargetDensity(@NonNull DisplayMetrics metrics) {
         setTargetDensity(metrics.densityDpi);
@@ -116,8 +116,8 @@ public abstract class RoundedBitmapDrawable extends Drawable {
      *
      * @param density The density scale for this drawable.
      *
-     * @see android.graphics.Bitmap#setDensity(int)
-     * @see android.graphics.Bitmap#getDensity()
+     * @see Bitmap#setDensity(int)
+     * @see Bitmap#getDensity()
      */
     public void setTargetDensity(int density) {
         if (mTargetDensity != density) {
@@ -134,7 +134,7 @@ public abstract class RoundedBitmapDrawable extends Drawable {
      *
      * @return the gravity applied to the bitmap
      *
-     * @see android.view.Gravity
+     * @see Gravity
      */
     public int getGravity() {
         return mGravity;
@@ -145,7 +145,7 @@ public abstract class RoundedBitmapDrawable extends Drawable {
      *
      * @param gravity the gravity
      *
-     * @see android.view.Gravity
+     * @see Gravity
      */
     public void setGravity(int gravity) {
         if (mGravity != gravity) {

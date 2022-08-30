@@ -16,7 +16,7 @@
 
 package androidx.core.graphics;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -49,7 +49,7 @@ import java.util.Map;
  * Implementation of the Typeface compat methods for API 26 and above.
  * @hide
  */
-@RestrictTo(LIBRARY_GROUP_PREFIX)
+@RestrictTo(LIBRARY_GROUP)
 @RequiresApi(26)
 public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     private static final String TAG = "TypefaceCompatApi26Impl";
@@ -62,9 +62,10 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     private static final String FREEZE_METHOD = "freeze";
     private static final String ABORT_CREATION_METHOD = "abortCreation";
     private static final int RESOLVE_BY_FONT_TABLE = -1;
+    private static final String DEFAULT_FAMILY = "sans-serif";
 
-    protected final Class<?> mFontFamily;
-    protected final Constructor<?> mFontFamilyCtor;
+    protected final Class mFontFamily;
+    protected final Constructor mFontFamilyCtor;
     protected final Method mAddFontFromAssetManager;
     protected final Method mAddFontFromBuffer;
     protected final Method mFreeze;
@@ -72,8 +73,8 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     protected final Method mCreateFromFamiliesWithDefault;
 
     public TypefaceCompatApi26Impl() {
-        Class<?> fontFamily;
-        Constructor<?> fontFamilyCtor;
+        Class fontFamily;
+        Constructor fontFamilyCtor;
         Method addFontFromAssetManager;
         Method addFontFromBuffer;
         Method freeze;
@@ -121,12 +122,11 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     /**
      * Create a new FontFamily instance
      */
-    @Nullable
     private Object newFamily() {
         try {
             return mFontFamilyCtor.newInstance();
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -137,11 +137,12 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     private boolean addFontFromAssetManager(Context context, Object family, String fileName,
             int ttcIndex, int weight, int style, @Nullable FontVariationAxis[] axes) {
         try {
-            return (Boolean) mAddFontFromAssetManager.invoke(family,
+            final Boolean result = (Boolean) mAddFontFromAssetManager.invoke(family,
                     context.getAssets(), fileName, 0 /* cookie */, false /* isAsset */, ttcIndex,
                     weight, style, axes);
+            return result.booleanValue();
         } catch (IllegalAccessException | InvocationTargetException e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -152,10 +153,11 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     private boolean addFontFromBuffer(Object family, ByteBuffer buffer,
             int ttcIndex, int weight, int style) {
         try {
-            return (Boolean) mAddFontFromBuffer.invoke(family,
+            final Boolean result = (Boolean) mAddFontFromBuffer.invoke(family,
                     buffer, ttcIndex, null /* axes */, weight, style);
+            return result.booleanValue();
         } catch (IllegalAccessException | InvocationTargetException e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -163,7 +165,6 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
      * Call method Typeface#createFromFamiliesWithDefault(
      *      FontFamily[] families, int weight, int italic)
      */
-    @Nullable
     protected Typeface createFromFamiliesWithDefault(Object family) {
         try {
             Object familyArray = Array.newInstance(mFontFamily, 1);
@@ -171,7 +172,7 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
             return (Typeface) mCreateFromFamiliesWithDefault.invoke(null /* static method */,
                     familyArray, RESOLVE_BY_FONT_TABLE, RESOLVE_BY_FONT_TABLE);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -180,9 +181,10 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
      */
     private boolean freeze(Object family) {
         try {
-            return (Boolean) mFreeze.invoke(family);
+            Boolean result = (Boolean) mFreeze.invoke(family);
+            return result.booleanValue();
         } catch (IllegalAccessException | InvocationTargetException e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -192,11 +194,12 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     private void abortCreation(Object family) {
         try {
             mAbortCreation.invoke(family);
-        } catch (IllegalAccessException | InvocationTargetException ignored) { }
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    @Nullable
     public Typeface createFromFontFamilyFilesResourceEntry(Context context,
             FontResourcesParserCompat.FontFamilyFilesResourceEntry entry, Resources resources,
             int style) {
@@ -204,9 +207,6 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
             return super.createFromFontFamilyFilesResourceEntry(context, entry, resources, style);
         }
         Object fontFamily = newFamily();
-        if (fontFamily == null) {
-            return null;
-        }
         for (final FontFileResourceEntry fontFile : entry.getEntries()) {
             if (!addFontFromAssetManager(context, fontFamily, fontFile.getFileName(),
                     fontFile.getTtcIndex(), fontFile.getWeight(), fontFile.isItalic() ? 1 : 0,
@@ -222,7 +222,6 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     }
 
     @Override
-    @Nullable
     public Typeface createFromFontInfo(Context context,
             @Nullable CancellationSignal cancellationSignal,
             @NonNull FontsContractCompat.FontInfo[] fonts, int style) {
@@ -250,9 +249,6 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
         Map<Uri, ByteBuffer> uriBuffer = FontsContractCompat.prepareFontData(
                 context, fonts, cancellationSignal);
         final Object fontFamily = newFamily();
-        if (fontFamily == null) {
-            return null;
-        }
         boolean atLeastOneFont = false;
         for (FontsContractCompat.FontInfo font : fonts) {
             final ByteBuffer fontBuffer = uriBuffer.get(font.getUri());
@@ -275,9 +271,6 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
             return null;
         }
         final Typeface typeface = createFromFamiliesWithDefault(fontFamily);
-        if (typeface == null) {
-            return null;
-        }
         return Typeface.create(typeface, style);
     }
 
@@ -292,9 +285,6 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
             return super.createFromResourcesFontFile(context, resources, id, path, style);
         }
         Object fontFamily = newFamily();
-        if (fontFamily == null) {
-            return null;
-        }
         if (!addFontFromAssetManager(context, fontFamily, path,
                 0 /* ttcIndex */, RESOLVE_BY_FONT_TABLE /* weight */,
                 RESOLVE_BY_FONT_TABLE /* italic */, null /* axes */)) {
@@ -312,38 +302,36 @@ public class TypefaceCompatApi26Impl extends TypefaceCompatApi21Impl {
     // across different API versions, inheriting classes should override these getters in order to
     // reflect the method definitions in the API versions they represent.
     //===========================================================================================
-    protected Class<?> obtainFontFamily() throws ClassNotFoundException {
+    protected Class obtainFontFamily() throws ClassNotFoundException {
         return Class.forName(FONT_FAMILY_CLASS);
     }
 
-    protected Constructor<?> obtainFontFamilyCtor(Class<?> fontFamily)
-            throws NoSuchMethodException {
+    protected Constructor obtainFontFamilyCtor(Class fontFamily) throws NoSuchMethodException {
         return fontFamily.getConstructor();
     }
 
-    protected Method obtainAddFontFromAssetManagerMethod(Class<?> fontFamily)
+    protected Method obtainAddFontFromAssetManagerMethod(Class fontFamily)
             throws NoSuchMethodException {
         return fontFamily.getMethod(ADD_FONT_FROM_ASSET_MANAGER_METHOD,
                 AssetManager.class, String.class, Integer.TYPE, Boolean.TYPE, Integer.TYPE,
                 Integer.TYPE, Integer.TYPE, FontVariationAxis[].class);
     }
 
-    protected Method obtainAddFontFromBufferMethod(Class<?> fontFamily)
-            throws NoSuchMethodException {
+    protected Method obtainAddFontFromBufferMethod(Class fontFamily) throws NoSuchMethodException {
         return fontFamily.getMethod(ADD_FONT_FROM_BUFFER_METHOD,
                 ByteBuffer.class, Integer.TYPE, FontVariationAxis[].class, Integer.TYPE,
                 Integer.TYPE);
     }
 
-    protected Method obtainFreezeMethod(Class<?> fontFamily) throws NoSuchMethodException {
+    protected Method obtainFreezeMethod(Class fontFamily) throws NoSuchMethodException {
         return fontFamily.getMethod(FREEZE_METHOD);
     }
 
-    protected Method obtainAbortCreationMethod(Class<?> fontFamily) throws NoSuchMethodException {
+    protected Method obtainAbortCreationMethod(Class fontFamily) throws NoSuchMethodException {
         return fontFamily.getMethod(ABORT_CREATION_METHOD);
     }
 
-    protected Method obtainCreateFromFamiliesWithDefaultMethod(Class<?> fontFamily)
+    protected Method obtainCreateFromFamiliesWithDefaultMethod(Class fontFamily)
             throws NoSuchMethodException {
         Object familyArray = Array.newInstance(fontFamily, 1);
         Method m =  Typeface.class.getDeclaredMethod(CREATE_FROM_FAMILIES_WITH_DEFAULT_METHOD,

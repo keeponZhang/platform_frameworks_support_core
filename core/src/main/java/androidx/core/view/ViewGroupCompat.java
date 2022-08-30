@@ -32,9 +32,9 @@ public final class ViewGroupCompat {
 
     /**
      * This constant is a {@link #setLayoutMode(ViewGroup, int) layoutMode}.
-     * Clip bounds are the raw values of {@link android.view.View#getLeft() left},
-     * {@link android.view.View#getTop() top},
-     * {@link android.view.View#getRight() right} and {@link android.view.View#getBottom() bottom}.
+     * Clip bounds are the raw values of {@link View#getLeft() left},
+     * {@link View#getTop() top},
+     * {@link View#getRight() right} and {@link View#getBottom() bottom}.
      */
     public static final int LAYOUT_MODE_CLIP_BOUNDS = 0;
 

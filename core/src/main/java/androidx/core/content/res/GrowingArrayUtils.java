@@ -37,7 +37,6 @@ final class GrowingArrayUtils {
      * @return the array to which the element was appended. This may be different than the given
      *         array.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T[] append(T[] array, int currentSize, T element) {
         assert currentSize <= array.length;
 
@@ -107,7 +106,6 @@ final class GrowingArrayUtils {
      * @return the array to which the element was appended. This may be different than the given
      *         array.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T[] insert(T[] array, int currentSize, int index, T element) {
         assert currentSize <= array.length;
 

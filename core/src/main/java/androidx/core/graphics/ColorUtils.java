@@ -84,7 +84,7 @@ public final class ColorUtils {
      * <em>Note:</em> This method requires API 26 or newer.
      *
      * @throws IllegalArgumentException if the
-     * {@linkplain android.graphics.Color#getModel models} of the colors do not match
+     * {@linkplain Color#getModel models} of the colors do not match
      */
     @RequiresApi(26)
     @NonNull

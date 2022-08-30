@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper for accessing {@link android.view.accessibility.AccessibilityNodeProvider}.
+ * Helper for accessing {@link AccessibilityNodeProvider}.
  */
 public class AccessibilityNodeProviderCompat {
     @RequiresApi(16)
@@ -113,7 +113,7 @@ public class AccessibilityNodeProviderCompat {
 
     /**
      * Creates a new instance wrapping an
-     * {@link android.view.accessibility.AccessibilityNodeProvider}.
+     * {@link AccessibilityNodeProvider}.
      *
      * @param provider The provider.
      */
@@ -122,7 +122,7 @@ public class AccessibilityNodeProviderCompat {
     }
 
     /**
-     * @return The wrapped {@link android.view.accessibility.AccessibilityNodeProvider}.
+     * @return The wrapped {@link AccessibilityNodeProvider}.
      */
     public Object getProvider() {
         return mProvider;

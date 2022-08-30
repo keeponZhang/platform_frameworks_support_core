@@ -16,92 +16,39 @@
 
 package androidx.core.view.accessibility;
 
-import static android.view.View.NO_ID;
-
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.graphics.Rect;
-import android.graphics.Region;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
-import android.text.style.ClickableSpan;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.view.accessibility.AccessibilityNodeInfo.TouchDelegateInfo;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
-import androidx.core.R;
 import androidx.core.accessibilityservice.AccessibilityServiceInfoCompat;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityViewCommand.CommandArguments;
-import androidx.core.view.accessibility.AccessibilityViewCommand.MoveAtGranularityArguments;
-import androidx.core.view.accessibility.AccessibilityViewCommand.MoveHtmlArguments;
-import androidx.core.view.accessibility.AccessibilityViewCommand.MoveWindowArguments;
-import androidx.core.view.accessibility.AccessibilityViewCommand.ScrollToPositionArguments;
-import androidx.core.view.accessibility.AccessibilityViewCommand.SetProgressArguments;
-import androidx.core.view.accessibility.AccessibilityViewCommand.SetSelectionArguments;
-import androidx.core.view.accessibility.AccessibilityViewCommand.SetTextArguments;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Helper for accessing {@link android.view.accessibility.AccessibilityNodeInfo} in a backwards
+ * Helper for accessing {@link AccessibilityNodeInfo} in a backwards
  * compatible fashion.
  */
 public class AccessibilityNodeInfoCompat {
 
-    /**
-     * A class defining an action that can be performed on an {@link AccessibilityNodeInfo}.
-     * Each action has a unique id and a label.
-     * <p>
-     * There are three categories of actions:
-     * <ul>
-     * <li><strong>Standard actions</strong> - These are actions that are reported and
-     * handled by the standard UI widgets in the platform. For each standard action
-     * there is a static constant defined in this class, e.g. {@link #ACTION_FOCUS}.
-     * These actions will have {@code null} labels.
-     * </li>
-     * <li><strong>Custom actions action</strong> - These are actions that are reported
-     * and handled by custom widgets. i.e. ones that are not part of the UI toolkit. For
-     * example, an application may define a custom action for clearing the user history.
-     * </li>
-     * <li><strong>Overriden standard actions</strong> - These are actions that override
-     * standard actions to customize them. For example, an app may add a label to the
-     * standard {@link #ACTION_CLICK} action to indicate to the user that this action clears
-     * browsing history.
-     * </ul>
-     * </p>
-     * <p class="note">
-     * <strong>Note:</strong> Views which support these actions should invoke
-     * {@link View#setImportantForAccessibility(int)} with
-     * {@link View#IMPORTANT_FOR_ACCESSIBILITY_YES} to ensure an
-     * {@link android.accessibilityservice.AccessibilityService} can discover the set of supported
-     * actions.
-     * </p>
-     */
     public static class AccessibilityActionCompat {
-
-        private static final String TAG = "A11yActionCompat";
 
         /**
          * Action that gives input focus to the node.
          */
         public static final AccessibilityActionCompat ACTION_FOCUS =
-                new AccessibilityActionCompat(AccessibilityNodeInfoCompat.ACTION_FOCUS, null);
+                new AccessibilityActionCompat(
+                        AccessibilityNodeInfoCompat.ACTION_FOCUS, null);
 
         /**
          * Action that clears input focus of the node.
@@ -128,7 +75,8 @@ public class AccessibilityNodeInfoCompat {
          * Action that clicks on the node info.
          */
         public static final AccessibilityActionCompat ACTION_CLICK =
-                new AccessibilityActionCompat(AccessibilityNodeInfoCompat.ACTION_CLICK, null);
+                new AccessibilityActionCompat(
+                        AccessibilityNodeInfoCompat.ACTION_CLICK, null);
 
         /**
          * Action that long clicks on the node.
@@ -197,8 +145,7 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_NEXT_AT_MOVEMENT_GRANULARITY =
                 new AccessibilityActionCompat(
-                        AccessibilityNodeInfoCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY, null,
-                        MoveAtGranularityArguments.class);
+                        AccessibilityNodeInfoCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY, null);
 
         /**
          * Action that requests to go to the previous entity in this node's text
@@ -246,8 +193,7 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY =
                 new AccessibilityActionCompat(
-                        AccessibilityNodeInfoCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, null,
-                        MoveAtGranularityArguments.class);
+                        AccessibilityNodeInfoCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, null);
 
         /**
          * Action to move to the next HTML element of a given type. For example, move
@@ -268,8 +214,7 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_NEXT_HTML_ELEMENT =
                 new AccessibilityActionCompat(
-                        AccessibilityNodeInfoCompat.ACTION_NEXT_HTML_ELEMENT, null,
-                        MoveHtmlArguments.class);
+                        AccessibilityNodeInfoCompat.ACTION_NEXT_HTML_ELEMENT, null);
 
         /**
          * Action to move to the previous HTML element of a given type. For example, move
@@ -290,8 +235,7 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_PREVIOUS_HTML_ELEMENT =
                 new AccessibilityActionCompat(
-                        AccessibilityNodeInfoCompat.ACTION_PREVIOUS_HTML_ELEMENT, null,
-                        MoveHtmlArguments.class);
+                        AccessibilityNodeInfoCompat.ACTION_PREVIOUS_HTML_ELEMENT, null);
 
         /**
          * Action to scroll the node content forward.
@@ -311,19 +255,22 @@ public class AccessibilityNodeInfoCompat {
          * Action to copy the current selection to the clipboard.
          */
         public static final AccessibilityActionCompat ACTION_COPY =
-                new AccessibilityActionCompat(AccessibilityNodeInfoCompat.ACTION_COPY, null);
+                new AccessibilityActionCompat(
+                        AccessibilityNodeInfoCompat.ACTION_COPY, null);
 
         /**
          * Action to paste the current clipboard content.
          */
         public static final AccessibilityActionCompat ACTION_PASTE =
-                new AccessibilityActionCompat(AccessibilityNodeInfoCompat.ACTION_PASTE, null);
+                new AccessibilityActionCompat(
+                        AccessibilityNodeInfoCompat.ACTION_PASTE, null);
 
         /**
          * Action to cut the current selection and place it to the clipboard.
          */
         public static final AccessibilityActionCompat ACTION_CUT =
-                new AccessibilityActionCompat(AccessibilityNodeInfoCompat.ACTION_CUT, null);
+                new AccessibilityActionCompat(
+                        AccessibilityNodeInfoCompat.ACTION_CUT, null);
 
         /**
          * Action to set the selection. Performing this action with no arguments
@@ -350,8 +297,7 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_SET_SELECTION =
                 new AccessibilityActionCompat(
-                        AccessibilityNodeInfoCompat.ACTION_SET_SELECTION, null,
-                        SetSelectionArguments.class);
+                        AccessibilityNodeInfoCompat.ACTION_SET_SELECTION, null);
 
         /**
          * Action to expand an expandable node.
@@ -387,12 +333,12 @@ public class AccessibilityNodeInfoCompat {
          *   Bundle arguments = new Bundle();
          *   arguments.putCharSequence(AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
          *       "android");
-         *  info.performAction(AccessibilityActionCompat.ACTION_SET_TEXT.getId(), arguments);
+         *   info.performAction(AccessibilityActionCompat.ACTION_SET_TEXT.getId(), arguments);
          * </code></pre></p>
          */
         public static final AccessibilityActionCompat ACTION_SET_TEXT =
-                new AccessibilityActionCompat(AccessibilityNodeInfoCompat.ACTION_SET_TEXT, null,
-                        SetTextArguments.class);
+                new AccessibilityActionCompat(
+                        AccessibilityNodeInfoCompat.ACTION_SET_TEXT, null);
 
         /**
          * Action that requests the node make its bounding rectangle visible
@@ -402,8 +348,7 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_SHOW_ON_SCREEN =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 23
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SHOW_ON_SCREEN : null,
-                        android.R.id.accessibilityActionShowOnScreen, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SHOW_ON_SCREEN : null);
 
         /**
          * Action that scrolls the node to make the specified collection
@@ -420,83 +365,42 @@ public class AccessibilityNodeInfoCompat {
         public static final AccessibilityActionCompat ACTION_SCROLL_TO_POSITION =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 23
                         ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_TO_POSITION
-                        : null, android.R.id.accessibilityActionScrollToPosition, null, null,
-                        ScrollToPositionArguments.class);
+                        : null);
 
         /**
          * Action to scroll the node content up.
          */
         public static final AccessibilityActionCompat ACTION_SCROLL_UP =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 23
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_UP : null,
-                        android.R.id.accessibilityActionScrollUp, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_UP : null);
+
         /**
          * Action to scroll the node content left.
          */
         public static final AccessibilityActionCompat ACTION_SCROLL_LEFT =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 23
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_LEFT : null,
-                        android.R.id.accessibilityActionScrollLeft, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_LEFT : null);
 
         /**
          * Action to scroll the node content down.
          */
         public static final AccessibilityActionCompat ACTION_SCROLL_DOWN =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 23
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN : null,
-                        android.R.id.accessibilityActionScrollDown, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN : null);
 
         /**
          * Action to scroll the node content right.
          */
         public static final AccessibilityActionCompat ACTION_SCROLL_RIGHT =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 23
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_RIGHT : null,
-                        android.R.id.accessibilityActionScrollRight, null, null, null);
-
-        /**
-         * Action to move to the page above.
-         */
-        @NonNull
-        public static final AccessibilityActionCompat ACTION_PAGE_UP =
-                new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 29
-                        ?  AccessibilityNodeInfo.AccessibilityAction.ACTION_PAGE_UP : null,
-                        android.R.id.accessibilityActionPageUp, null, null, null);
-
-        /**
-         * Action to move to the page below.
-         */
-        @NonNull
-        public static final AccessibilityActionCompat ACTION_PAGE_DOWN =
-                new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 29
-                        ?  AccessibilityNodeInfo.AccessibilityAction.ACTION_PAGE_DOWN : null,
-                        android.R.id.accessibilityActionPageDown, null, null, null);
-
-        /**
-         * Action to move to the page left.
-         */
-        @NonNull
-        public static final AccessibilityActionCompat ACTION_PAGE_LEFT =
-                new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 29
-                        ?  AccessibilityNodeInfo.AccessibilityAction.ACTION_PAGE_LEFT : null,
-                        android.R.id.accessibilityActionPageLeft, null, null, null);
-
-        /**
-         * Action to move to the page right.
-         */
-        @NonNull
-        public static final AccessibilityActionCompat ACTION_PAGE_RIGHT =
-                new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 29
-                        ?  AccessibilityNodeInfo.AccessibilityAction.ACTION_PAGE_RIGHT : null,
-                        android.R.id.accessibilityActionPageRight, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_RIGHT : null);
 
         /**
          * Action that context clicks the node.
          */
         public static final AccessibilityActionCompat ACTION_CONTEXT_CLICK =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 23
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_CONTEXT_CLICK : null,
-                        android.R.id.accessibilityActionContextClick, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_CONTEXT_CLICK : null);
 
         /**
          * Action that sets progress between {@link  RangeInfoCompat#getMin() RangeInfo.getMin()} and
@@ -510,9 +414,7 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_SET_PROGRESS =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 24
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS : null,
-                        android.R.id.accessibilityActionSetProgress, null, null,
-                        SetProgressArguments.class);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS : null);
 
         /**
          * Action to move a window to a new location.
@@ -523,17 +425,14 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_MOVE_WINDOW =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 26
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_MOVE_WINDOW : null,
-                        android.R.id.accessibilityActionMoveWindow, null, null,
-                        MoveWindowArguments.class);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_MOVE_WINDOW : null);
 
         /**
          * Action to show a tooltip.
          */
         public static final AccessibilityActionCompat ACTION_SHOW_TOOLTIP =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 28
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SHOW_TOOLTIP : null,
-                        android.R.id.accessibilityActionShowTooltip, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SHOW_TOOLTIP : null);
 
         /**
          * Action to hide a tooltip. A node should expose this action only for views that are
@@ -541,19 +440,9 @@ public class AccessibilityNodeInfoCompat {
          */
         public static final AccessibilityActionCompat ACTION_HIDE_TOOLTIP =
                 new AccessibilityActionCompat(Build.VERSION.SDK_INT >= 28
-                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_HIDE_TOOLTIP : null,
-                        android.R.id.accessibilityActionHideTooltip, null, null, null);
+                        ? AccessibilityNodeInfo.AccessibilityAction.ACTION_HIDE_TOOLTIP : null);
 
         final Object mAction;
-        private final int mId;
-        private final CharSequence mLabel;
-        private final Class<? extends CommandArguments> mViewCommandArgumentClass;
-
-        /**
-         * @hide
-         */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
-        protected final AccessibilityViewCommand mCommand;
 
         /**
          * Creates a new instance.
@@ -562,44 +451,12 @@ public class AccessibilityNodeInfoCompat {
          * @param label The action label.
          */
         public AccessibilityActionCompat(int actionId, CharSequence label) {
-            this(null, actionId, label, null, null);
-        }
-
-        /**
-         * Creates a new instance.
-         *
-         * @param actionId The action id.
-         * @param label The action label.
-         * @param command The command performed when the service requests the action
-         * @hide
-         */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
-        public AccessibilityActionCompat(int actionId, CharSequence label,
-                AccessibilityViewCommand command) {
-            this(null, actionId, label, command, null);
+            this(Build.VERSION.SDK_INT >= 21
+                    ? new AccessibilityNodeInfo.AccessibilityAction(actionId, label) : null);
         }
 
         AccessibilityActionCompat(Object action) {
-            this(action, 0, null, null, null);
-        }
-
-        private AccessibilityActionCompat(int actionId, CharSequence label,
-                Class<? extends CommandArguments> viewCommandArgumentClass) {
-            this(null, actionId, label, null, viewCommandArgumentClass);
-        }
-
-        AccessibilityActionCompat(Object action, int id, CharSequence label,
-                AccessibilityViewCommand command,
-                Class<? extends CommandArguments> viewCommandArgumentClass) {
-            mId = id;
-            mLabel = label;
-            mCommand = command;
-            if (Build.VERSION.SDK_INT >= 21 && action == null) {
-                mAction = new AccessibilityNodeInfo.AccessibilityAction(id, label);
-            } else {
-                mAction = action;
-            }
-            mViewCommandArgumentClass = viewCommandArgumentClass;
+            mAction = action;
         }
 
         /**
@@ -627,44 +484,6 @@ public class AccessibilityNodeInfoCompat {
             } else {
                 return null;
             }
-        }
-
-        /**
-         * Performs the action.
-         * @return If the action was handled.
-         * @param view View to act upon.
-         * @param arguments Optional action arguments.
-         * @hide
-         */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
-        public boolean perform(View view, Bundle arguments) {
-            if (mCommand != null) {
-                CommandArguments viewCommandArgument = null;
-                if (mViewCommandArgumentClass != null) {
-                    try {
-                        viewCommandArgument =
-                                mViewCommandArgumentClass.getDeclaredConstructor().newInstance();
-                        viewCommandArgument.setBundle(arguments);
-                    } catch (Exception e) {
-                        final String className = mViewCommandArgumentClass == null
-                                ? "null" : mViewCommandArgumentClass.getName();
-                        Log.e(TAG, "Failed to execute command with argument class "
-                                + "ViewCommandArgument: " + className, e);
-                    }
-                }
-                return mCommand.perform(view, viewCommandArgument);
-            }
-            return false;
-        }
-
-        /**
-         * @hide
-         */
-        @RestrictTo(LIBRARY_GROUP_PREFIX)
-        public AccessibilityActionCompat createReplacementAction(CharSequence label,
-                AccessibilityViewCommand command) {
-            return new AccessibilityActionCompat(null, mId, label, command,
-                    mViewCommandArgumentClass);
         }
     }
 
@@ -925,7 +744,6 @@ public class AccessibilityNodeInfoCompat {
          * @return If the item is a heading.
          * @deprecated Use {@link AccessibilityNodeInfoCompat#isHeading()}
          */
-        @Deprecated
         public boolean isHeading() {
             if (Build.VERSION.SDK_INT >= 19) {
                 return ((AccessibilityNodeInfo.CollectionItemInfo) mInfo).isHeading();
@@ -1040,97 +858,6 @@ public class AccessibilityNodeInfoCompat {
         }
     }
 
-    /**
-     * Class with information of touch delegated views and regions.
-     */
-    public static final class TouchDelegateInfoCompat {
-        final TouchDelegateInfo mInfo;
-
-        /**
-         * Create a new instance of {@link TouchDelegateInfoCompat}.
-         *
-         * @param targetMap A map from regions (in view coordinates) to delegated views.
-         */
-        public TouchDelegateInfoCompat(@NonNull Map<Region, View> targetMap) {
-            if (Build.VERSION.SDK_INT >= 29) {
-                mInfo = new TouchDelegateInfo(targetMap);
-            } else {
-                mInfo = null;
-            }
-        }
-
-        TouchDelegateInfoCompat(@NonNull TouchDelegateInfo info) {
-            mInfo = info;
-        }
-
-        /**
-         * Returns the number of touch delegate target region.
-         * <p>
-         * Compatibility:
-         * <ul>
-         *     <li>API &lt; 29: Always returns {@code 0}</li>
-         * </ul>
-         *
-         * @return Number of touch delegate target region.
-         */
-        public @IntRange(from = 0) int getRegionCount() {
-            if (Build.VERSION.SDK_INT >= 29) {
-                return mInfo.getRegionCount();
-            }
-            return 0;
-        }
-
-        /**
-         * Return the {@link Region} at the given index.
-         * <p>
-         * Compatibility:
-         * <ul>
-         *     <li>API &lt; 29: Always returns {@code null}</li>
-         * </ul>
-         *
-         * @param index The desired index, must be between 0 and {@link #getRegionCount()}-1.
-         * @return Returns the {@link Region} stored at the given index.
-         */
-        @Nullable
-        public Region getRegionAt(@IntRange(from = 0) int index) {
-            if (Build.VERSION.SDK_INT >= 29) {
-                return mInfo.getRegionAt(index);
-            }
-            return null;
-        }
-
-        /**
-         * Return the target {@link AccessibilityNodeInfoCompat} for the given {@link Region}.
-         * <p>
-         *   <strong>Note:</strong> This api can only be called from
-         *   {@link android.accessibilityservice.AccessibilityService}.
-         * </p>
-         * <p>
-         *   <strong>Note:</strong> It is a client responsibility to recycle the
-         *     received info by calling {@link AccessibilityNodeInfo#recycle()}
-         *     to avoid creating of multiple instances.
-         * </p>
-         * <p>
-         * Compatibility:
-         * <ul>
-         *     <li>API &lt; 29: Always returns {@code null}</li>
-         * </ul>
-         *
-         * @param region The region retrieved from {@link #getRegionAt(int)}.
-         * @return The target node associates with the given region.
-         */
-        @Nullable
-        public AccessibilityNodeInfoCompat getTargetForRegion(@NonNull Region region) {
-            if (Build.VERSION.SDK_INT >= 29) {
-                AccessibilityNodeInfo info = mInfo.getTargetForRegion(region);
-                if (info != null) {
-                    return AccessibilityNodeInfoCompat.wrap(info);
-                }
-            }
-            return null;
-        }
-    }
-
     private static final String ROLE_DESCRIPTION_KEY =
             "AccessibilityNodeInfo.roleDescription";
 
@@ -1146,27 +873,11 @@ public class AccessibilityNodeInfoCompat {
     private static final String BOOLEAN_PROPERTY_KEY =
             "androidx.view.accessibility.AccessibilityNodeInfoCompat.BOOLEAN_PROPERTY_KEY";
 
-    private static final String SPANS_ID_KEY =
-            "androidx.view.accessibility.AccessibilityNodeInfoCompat.SPANS_ID_KEY";
-
-    private static final String SPANS_START_KEY =
-            "androidx.view.accessibility.AccessibilityNodeInfoCompat.SPANS_START_KEY";
-
-    private static final String SPANS_END_KEY =
-            "androidx.view.accessibility.AccessibilityNodeInfoCompat.SPANS_END_KEY";
-
-    private static final String SPANS_FLAGS_KEY =
-            "androidx.view.accessibility.AccessibilityNodeInfoCompat.SPANS_FLAGS_KEY";
-
-    private static final String SPANS_ACTION_ID_KEY =
-            "androidx.view.accessibility.AccessibilityNodeInfoCompat.SPANS_ACTION_ID_KEY";
-
     // These don't line up with the internal framework constants, since they are independent
     // and we might as well get all 32 bits of utility here.
     private static final int BOOLEAN_PROPERTY_SCREEN_READER_FOCUSABLE = 0x00000001;
     private static final int BOOLEAN_PROPERTY_IS_HEADING = 0x00000002;
     private static final int BOOLEAN_PROPERTY_IS_SHOWING_HINT = 0x00000004;
-    private static final int BOOLEAN_PROPERTY_IS_TEXT_ENTRY_KEY = 0x00000008;
 
     private final AccessibilityNodeInfo mInfo;
 
@@ -1175,10 +886,8 @@ public class AccessibilityNodeInfoCompat {
      *
      *  @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    public int mParentVirtualDescendantId = NO_ID;
-
-    private int mVirtualDescendantId = NO_ID;
+    @RestrictTo(LIBRARY_GROUP)
+    public int mParentVirtualDescendantId = -1;
 
     // Actions introduced in IceCreamSandwich
 
@@ -1581,8 +1290,6 @@ public class AccessibilityNodeInfoCompat {
      */
     public static final int MOVEMENT_GRANULARITY_PAGE = 0x00000010;
 
-    private static int sClickableSpanId = 0;
-
     /**
      * Creates a wrapper for info implementation.
      *
@@ -1598,7 +1305,7 @@ public class AccessibilityNodeInfoCompat {
 
     /**
      * Creates a new instance wrapping an
-     * {@link android.view.accessibility.AccessibilityNodeInfo}.
+     * {@link AccessibilityNodeInfo}.
      *
      * @param info The info.
      *
@@ -1615,7 +1322,7 @@ public class AccessibilityNodeInfoCompat {
 
     /**
      * Creates a new instance wrapping an
-     * {@link android.view.accessibility.AccessibilityNodeInfo}.
+     * {@link AccessibilityNodeInfo}.
      *
      * @param info The info.
      */
@@ -1624,14 +1331,14 @@ public class AccessibilityNodeInfoCompat {
     }
 
     /**
-     * @return The unwrapped {@link android.view.accessibility.AccessibilityNodeInfo}.
+     * @return The unwrapped {@link AccessibilityNodeInfo}.
      */
     public AccessibilityNodeInfo unwrap() {
         return mInfo;
     }
 
     /**
-     * @return The wrapped {@link android.view.accessibility.AccessibilityNodeInfo}.
+     * @return The wrapped {@link AccessibilityNodeInfo}.
      *
      * @deprecated Use {@link #unwrap()} instead.
      */
@@ -1696,8 +1403,6 @@ public class AccessibilityNodeInfoCompat {
      * @param source The info source.
      */
     public void setSource(View source) {
-        mVirtualDescendantId = NO_ID;
-
         mInfo.setSource(source);
     }
 
@@ -1710,21 +1415,17 @@ public class AccessibilityNodeInfoCompat {
      * hierarchy for accessibility purposes. This enables custom views that draw complex
      * content to report themselves as a tree of virtual views, thus conveying their
      * logical structure.
+     * </p>
      * <p>
-     * <strong>Note:</strong> Cannot be called from an
-     * {@link android.accessibilityservice.AccessibilityService}.
-     * This class is made immutable before being delivered to an AccessibilityService.
-     * <p>
-     * This method is not supported on devices running API level < 16 since the platform did
-     * not support virtual descendants of real views.
+     *   <strong>Note:</strong> Cannot be called from an
+     *   {@link android.accessibilityservice.AccessibilityService}.
+     *   This class is made immutable before being delivered to an AccessibilityService.
+     * </p>
      *
      * @param root The root of the virtual subtree.
      * @param virtualDescendantId The id of the virtual descendant.
      */
     public void setSource(View root, int virtualDescendantId) {
-        // Store the ID anyway, since we may need it for equality checks.
-        mVirtualDescendantId = virtualDescendantId;
-
         if (Build.VERSION.SDK_INT >= 16) {
             mInfo.setSource(root, virtualDescendantId);
         }
@@ -1885,10 +1586,10 @@ public class AccessibilityNodeInfoCompat {
      * Gets the actions that can be performed on the node.
      *
      * @return The bit mask of with actions.
-     * @see android.view.accessibility.AccessibilityNodeInfo#ACTION_FOCUS
-     * @see android.view.accessibility.AccessibilityNodeInfo#ACTION_CLEAR_FOCUS
-     * @see android.view.accessibility.AccessibilityNodeInfo#ACTION_SELECT
-     * @see android.view.accessibility.AccessibilityNodeInfo#ACTION_CLEAR_SELECTION
+     * @see AccessibilityNodeInfo#ACTION_FOCUS
+     * @see AccessibilityNodeInfo#ACTION_CLEAR_FOCUS
+     * @see AccessibilityNodeInfo#ACTION_SELECT
+     * @see AccessibilityNodeInfo#ACTION_CLEAR_SELECTION
      */
     public int getActions() {
         return mInfo.getActions();
@@ -1909,32 +1610,6 @@ public class AccessibilityNodeInfoCompat {
         mInfo.addAction(action);
     }
 
-    private List<CharSequence> extrasCharSequenceList(String key) {
-        if (Build.VERSION.SDK_INT < 19) {
-            return new ArrayList<CharSequence>();
-        }
-        ArrayList<CharSequence> list = mInfo.getExtras()
-                .getCharSequenceArrayList(key);
-        if (list == null) {
-            list = new ArrayList<CharSequence>();
-            mInfo.getExtras().putCharSequenceArrayList(key, list);
-        }
-        return list;
-    }
-
-    private List<Integer> extrasIntList(String key) {
-        if (Build.VERSION.SDK_INT < 19) {
-            return new ArrayList<Integer>();
-        }
-        ArrayList<Integer> list = mInfo.getExtras()
-                .getIntegerArrayList(key);
-        if (list == null) {
-            list = new ArrayList<Integer>();
-            mInfo.getExtras().putIntegerArrayList(key, list);
-        }
-        return list;
-    }
-
     /**
      * Adds an action that can be performed on the node.
      * <p>
@@ -1945,11 +1620,6 @@ public class AccessibilityNodeInfoCompat {
      *
      * @param action The action.
      * @throws IllegalStateException If called from an AccessibilityService.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 21: No-op</li>
-     * </ul>
      */
     public void addAction(AccessibilityActionCompat action) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -1970,11 +1640,6 @@ public class AccessibilityNodeInfoCompat {
      * @return The action removed from the list of actions.
      *
      * @throws IllegalStateException If called from an AccessibilityService.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 21: Always returns {@code false}</li>
-     * </ul>
      */
     public boolean removeAction(AccessibilityActionCompat action) {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -2053,12 +1718,12 @@ public class AccessibilityNodeInfoCompat {
     }
 
     /**
-     * Finds {@link android.view.accessibility.AccessibilityNodeInfo}s by text. The match
+     * Finds {@link AccessibilityNodeInfo}s by text. The match
      * is case insensitive containment. The search is relative to this info i.e. this
      * info is the root of the traversed tree.
      * <p>
      * <strong>Note:</strong> It is a client responsibility to recycle the
-     * received info by calling {@link android.view.accessibility.AccessibilityNodeInfo#recycle()}
+     * received info by calling {@link AccessibilityNodeInfo#recycle()}
      * to avoid creating of multiple instances.
      * </p>
      *
@@ -2080,7 +1745,7 @@ public class AccessibilityNodeInfoCompat {
      * Gets the parent.
      * <p>
      * <strong>Note:</strong> It is a client responsibility to recycle the
-     * received info by calling {@link android.view.accessibility.AccessibilityNodeInfo#recycle()}
+     * received info by calling {@link AccessibilityNodeInfo#recycle()}
      * to avoid creating of multiple instances.
      * </p>
      *
@@ -2102,8 +1767,6 @@ public class AccessibilityNodeInfoCompat {
      * @throws IllegalStateException If called from an AccessibilityService.
      */
     public void setParent(View parent) {
-        mParentVirtualDescendantId = NO_ID;
-
         mInfo.setParent(parent);
     }
 
@@ -2116,49 +1779,34 @@ public class AccessibilityNodeInfoCompat {
      * hierarchy for accessibility purposes. This enables custom views that draw complex
      * content to report them selves as a tree of virtual views, thus conveying their
      * logical structure.
+     * </p>
      * <p>
-     * <strong>Note:</strong> Cannot be called from an
-     * {@link android.accessibilityservice.AccessibilityService}.
-     * This class is made immutable before being delivered to an AccessibilityService.
-     * <p>
-     * This method is not supported on devices running API level < 16 since the platform did
-     * not support virtual descendants of real views.
+     *   <strong>Note:</strong> Cannot be called from an
+     *   {@link android.accessibilityservice.AccessibilityService}.
+     *   This class is made immutable before being delivered to an AccessibilityService.
+     * </p>
      *
      * @param root The root of the virtual subtree.
      * @param virtualDescendantId The id of the virtual descendant.
      */
     public void setParent(View root, int virtualDescendantId) {
-        // Store the ID anyway, since we may need it for equality checks.
         mParentVirtualDescendantId = virtualDescendantId;
-
         if (Build.VERSION.SDK_INT >= 16) {
             mInfo.setParent(root, virtualDescendantId);
         }
     }
 
     /**
-     * Gets the node bounds in the viewParent's coordinates.
-     * {@link #getParent()} does not represent the source's viewParent.
-     * Instead it represents the result of {@link View#getParentForAccessibility()},
-     * which returns the closest ancestor where {@link View#isImportantForAccessibility()} is true.
-     * So this method is not reliable.
+     * Gets the node bounds in parent coordinates.
      *
      * @param outBounds The output node bounds.
-     *
-     * @deprecated Use {@link #getBoundsInScreen(Rect)} instead.
      */
-    @Deprecated
     public void getBoundsInParent(Rect outBounds) {
         mInfo.getBoundsInParent(outBounds);
     }
 
     /**
-     * Sets the node bounds in the viewParent's coordinates.
-     * {@link #getParent()} does not represent the source's viewParent.
-     * Instead it represents the result of {@link View#getParentForAccessibility()},
-     * which returns the closest ancestor where {@link View#isImportantForAccessibility()} is true.
-     * So this method is not reliable.
-     *
+     * Sets the node bounds in parent coordinates.
      * <p>
      * <strong>Note:</strong> Cannot be called from an
      * {@link android.accessibilityservice.AccessibilityService}. This class is
@@ -2167,10 +1815,7 @@ public class AccessibilityNodeInfoCompat {
      *
      * @param bounds The node bounds.
      * @throws IllegalStateException If called from an AccessibilityService.
-     *
-     * @deprecated Accessibility services should not care about these bounds.
      */
-    @Deprecated
     public void setBoundsInParent(Rect bounds) {
         mInfo.setBoundsInParent(bounds);
     }
@@ -2588,22 +2233,7 @@ public class AccessibilityNodeInfoCompat {
      * @return The text.
      */
     public CharSequence getText() {
-        if (hasSpans()) {
-            List<Integer> starts = extrasIntList(SPANS_START_KEY);
-            List<Integer> ends = extrasIntList(SPANS_END_KEY);
-            List<Integer> flags = extrasIntList(SPANS_FLAGS_KEY);
-            List<Integer> ids = extrasIntList(SPANS_ID_KEY);
-            Spannable spannable = new SpannableString(TextUtils.substring(mInfo.getText(),
-                    0, mInfo.getText().length()));
-            for (int i = 0; i < starts.size(); i++) {
-                spannable.setSpan(new AccessibilityClickableSpanCompat(ids.get(i), this,
-                                getExtras().getInt(SPANS_ACTION_ID_KEY)),
-                        starts.get(i), ends.get(i), flags.get(i));
-            }
-            return spannable;
-        } else {
-            return mInfo.getText();
-        }
+        return mInfo.getText();
     }
 
     /**
@@ -2619,103 +2249,6 @@ public class AccessibilityNodeInfoCompat {
      */
     public void setText(CharSequence text) {
         mInfo.setText(text);
-    }
-
-    /**
-     * @hide
-     */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    public void addSpansToExtras(CharSequence text, View view) {
-        if (Build.VERSION.SDK_INT >= 19 && Build.VERSION.SDK_INT < 26) {
-            clearExtrasSpans();
-            removeCollectedSpans(view);
-            ClickableSpan[] spans = getClickableSpans(text);
-            if (spans != null && spans.length > 0) {
-                getExtras().putInt(SPANS_ACTION_ID_KEY, R.id.accessibility_action_clickable_span);
-                SparseArray<WeakReference<ClickableSpan>> tagSpans =
-                        getOrCreateSpansFromViewTags(view);
-                for (int i = 0; spans != null && i < spans.length; i++) {
-                    int id = idForClickableSpan(spans[i], tagSpans);
-                    tagSpans.put(id, new WeakReference<>(spans[i]));
-                    addSpanLocationToExtras(spans[i], (Spanned) text, id);
-                }
-            }
-        }
-    }
-
-    private SparseArray<WeakReference<ClickableSpan>> getOrCreateSpansFromViewTags(View host) {
-        SparseArray<WeakReference<ClickableSpan>> spans = getSpansFromViewTags(host);
-        if (spans == null) {
-            spans = new SparseArray<>();
-            host.setTag(R.id.tag_accessibility_clickable_spans, spans);
-        }
-        return spans;
-    }
-
-    @SuppressWarnings("unchecked")
-    private SparseArray<WeakReference<ClickableSpan>> getSpansFromViewTags(View host) {
-        return (SparseArray<WeakReference<ClickableSpan>>) host.getTag(
-                R.id.tag_accessibility_clickable_spans);
-    }
-
-    /**
-     * @hide
-     */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    public static ClickableSpan[] getClickableSpans(CharSequence text) {
-        if (text instanceof Spanned) {
-            Spanned spanned = (Spanned) text;
-            return spanned.getSpans(0, text.length(), ClickableSpan.class);
-        }
-        return null;
-    }
-
-    private int idForClickableSpan(ClickableSpan span,
-            SparseArray<WeakReference<ClickableSpan>> spans) {
-        if (spans != null) {
-            for (int i = 0; i < spans.size(); i++) {
-                ClickableSpan aSpan = spans.valueAt(i).get();
-                if (span.equals(aSpan)) {
-                    return spans.keyAt(i);
-                }
-            }
-        }
-        return sClickableSpanId++;
-    }
-
-    private boolean hasSpans() {
-        return !extrasIntList(SPANS_START_KEY).isEmpty();
-    }
-
-    private void clearExtrasSpans() {
-        if (Build.VERSION.SDK_INT >= 19) {
-            mInfo.getExtras().remove(SPANS_START_KEY);
-            mInfo.getExtras().remove(SPANS_END_KEY);
-            mInfo.getExtras().remove(SPANS_FLAGS_KEY);
-            mInfo.getExtras().remove(SPANS_ID_KEY);
-        }
-    }
-
-    private void addSpanLocationToExtras(ClickableSpan span, Spanned spanned, int id) {
-        extrasIntList(SPANS_START_KEY).add(spanned.getSpanStart(span));
-        extrasIntList(SPANS_END_KEY).add(spanned.getSpanEnd(span));
-        extrasIntList(SPANS_FLAGS_KEY).add(spanned.getSpanFlags(span));
-        extrasIntList(SPANS_ID_KEY).add(id);
-    }
-
-    private void removeCollectedSpans(View view) {
-        SparseArray<WeakReference<ClickableSpan>> spans = getSpansFromViewTags(view);
-        if (spans != null) {
-            List<Integer> toBeRemovedIndices = new ArrayList<>();
-            for (int i = 0; i < spans.size(); i++) {
-                if (spans.valueAt(i).get() == null) {
-                    toBeRemovedIndices.add(i);
-                }
-            }
-            for (int i = 0; i < toBeRemovedIndices.size(); i++) {
-                spans.remove(toBeRemovedIndices.get(i));
-            }
-        }
     }
 
     /**
@@ -2954,11 +2487,6 @@ public class AccessibilityNodeInfoCompat {
      * Gets the actions that can be performed on the node.
      *
      * @return A list of AccessibilityActions.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 21: Always returns {@code null}</li>
-     * </ul>
      */
     @SuppressWarnings("unchecked")
     public List<AccessibilityActionCompat> getActionList() {
@@ -3417,8 +2945,8 @@ public class AccessibilityNodeInfoCompat {
      *
      * @return The succeeding node if such or <code>null</code>.
      *
-     * @see #setTraversalBefore(android.view.View)
-     * @see #setTraversalBefore(android.view.View, int)
+     * @see #setTraversalBefore(View)
+     * @see #setTraversalBefore(View, int)
      */
     public AccessibilityNodeInfoCompat getTraversalBefore() {
         if (Build.VERSION.SDK_INT >= 22) {
@@ -3482,8 +3010,8 @@ public class AccessibilityNodeInfoCompat {
      *
      * @return The succeeding node if such or <code>null</code>.
      *
-     * @see #setTraversalAfter(android.view.View)
-     * @see #setTraversalAfter(android.view.View, int)
+     * @see #setTraversalAfter(View)
+     * @see #setTraversalAfter(View, int)
      */
     public AccessibilityNodeInfoCompat getTraversalAfter() {
         if (Build.VERSION.SDK_INT >= 22) {
@@ -3823,37 +3351,6 @@ public class AccessibilityNodeInfoCompat {
     }
 
     /**
-     * Returns whether node represents a text entry key that is part of a keyboard or keypad.
-     *
-     * @return {@code true} if the node is a text entry key, {@code false} otherwise.
-     */
-    public boolean isTextEntryKey() {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return mInfo.isTextEntryKey();
-        }
-        return getBooleanProperty(BOOLEAN_PROPERTY_IS_TEXT_ENTRY_KEY);
-    }
-
-    /**
-     * Sets whether the node represents a text entry key that is part of a keyboard or keypad.
-     * <p>This method has no effect below API 19</p>
-     * <p>
-     *   <strong>Note:</strong> Cannot be called from an
-     *   {@link android.accessibilityservice.AccessibilityService}.
-     *   This class is made immutable before being delivered to an AccessibilityService.
-     * </p>
-     *
-     * @param isTextEntryKey {@code true} if the node is a text entry key, {@code false} otherwise.
-     */
-    public void setTextEntryKey(boolean isTextEntryKey) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            mInfo.setTextEntryKey(isTextEntryKey);
-        } else {
-            setBooleanProperty(BOOLEAN_PROPERTY_IS_TEXT_ENTRY_KEY, isTextEntryKey);
-        }
-    }
-
-    /**
      * Refreshes this info with the latest state of the view it represents.
      * <p>
      * <strong>Note:</strong> If this method returns false this info is obsolete
@@ -3887,7 +3384,7 @@ public class AccessibilityNodeInfoCompat {
      *
      * <p>
      *   The role description allows you to customize the name for the view's semantic
-     *   role. For example, if you create a custom subclass of {@link android.view.View}
+     *   role. For example, if you create a custom subclass of {@link View}
      *   to display a menu bar, you could assign it the role description of "menu bar".
      * </p>
      * <p>
@@ -3909,55 +3406,6 @@ public class AccessibilityNodeInfoCompat {
     public void setRoleDescription(@Nullable CharSequence roleDescription) {
         if (Build.VERSION.SDK_INT >= 19) {
             mInfo.getExtras().putCharSequence(ROLE_DESCRIPTION_KEY, roleDescription);
-        }
-    }
-
-    /**
-     * Get the {@link TouchDelegateInfoCompat} for touch delegate behavior with the represented
-     * view. It is possible for the same node to be pointed to by several regions. Use
-     * {@link TouchDelegateInfoCompat#getRegionAt(int)} to get touch delegate target
-     * {@link Region}, and {@link TouchDelegateInfoCompat#getTargetForRegion(Region)}
-     * for {@link AccessibilityNodeInfoCompat} from the given region.
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 29: Always returns {@code null}</li>
-     * </ul>
-     *
-     * @return {@link TouchDelegateInfoCompat} or {@code null} if there are no touch delegates
-     * in this node.
-     */
-    @Nullable
-    public TouchDelegateInfoCompat getTouchDelegateInfo() {
-        if (Build.VERSION.SDK_INT >= 29) {
-            TouchDelegateInfo delegateInfo = mInfo.getTouchDelegateInfo();
-            if (delegateInfo != null) {
-                return new TouchDelegateInfoCompat(delegateInfo);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Set touch delegate info if the represented view has a {@link android.view.TouchDelegate}.
-     * <p>
-     *   <strong>Note:</strong> Cannot be called from an
-     *   {@link android.accessibilityservice.AccessibilityService}.
-     *   This class is made immutable before being delivered to an
-     *   AccessibilityService.
-     * </p>
-     * <p>
-     * Compatibility:
-     * <ul>
-     *     <li>API &lt; 29: No-op</li>
-     * </ul>
-     *
-     * @param delegatedInfo {@link TouchDelegateInfoCompat}
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    public void setTouchDelegateInfo(@NonNull TouchDelegateInfoCompat delegatedInfo) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            mInfo.setTouchDelegateInfo(delegatedInfo.mInfo);
         }
     }
 
@@ -3985,16 +3433,9 @@ public class AccessibilityNodeInfoCompat {
         } else if (!mInfo.equals(other.mInfo)) {
             return false;
         }
-        if (mVirtualDescendantId != other.mVirtualDescendantId) {
-            return false;
-        }
-        if (mParentVirtualDescendantId != other.mParentVirtualDescendantId) {
-            return false;
-        }
         return true;
     }
 
-    @NonNull
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

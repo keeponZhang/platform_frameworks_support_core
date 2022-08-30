@@ -30,13 +30,13 @@ public final class TextDirectionHeuristicsCompat {
     /**
      * Always decides that the direction is left to right.
      */
-    public static final androidx.core.text.TextDirectionHeuristicCompat LTR =
+    public static final TextDirectionHeuristicCompat LTR =
             new TextDirectionHeuristicInternal(null /* no algorithm */, false);
 
     /**
      * Always decides that the direction is right to left.
      */
-    public static final androidx.core.text.TextDirectionHeuristicCompat RTL =
+    public static final TextDirectionHeuristicCompat RTL =
             new TextDirectionHeuristicInternal(null /* no algorithm */, true);
 
     /**
@@ -44,7 +44,7 @@ public final class TextDirectionHeuristicsCompat {
      * format chars, falling back to left to right if it finds none. This is the default behavior
      * of the Unicode Bidirectional Algorithm.
      */
-    public static final androidx.core.text.TextDirectionHeuristicCompat FIRSTSTRONG_LTR =
+    public static final TextDirectionHeuristicCompat FIRSTSTRONG_LTR =
             new TextDirectionHeuristicInternal(FirstStrong.INSTANCE, false);
 
     /**
@@ -52,20 +52,20 @@ public final class TextDirectionHeuristicsCompat {
      * format chars, falling back to right to left if it finds none. This is similar to the default
      * behavior of the Unicode Bidirectional Algorithm, just with different fallback behavior.
      */
-    public static final androidx.core.text.TextDirectionHeuristicCompat FIRSTSTRONG_RTL =
+    public static final TextDirectionHeuristicCompat FIRSTSTRONG_RTL =
             new TextDirectionHeuristicInternal(FirstStrong.INSTANCE, true);
 
     /**
      * If the text contains any strong right to left non-format character, determines that the
      * direction is right to left, falling back to left to right if it finds none.
      */
-    public static final androidx.core.text.TextDirectionHeuristicCompat ANYRTL_LTR =
+    public static final TextDirectionHeuristicCompat ANYRTL_LTR =
             new TextDirectionHeuristicInternal(AnyStrong.INSTANCE_RTL, false);
 
     /**
      * Force the paragraph direction to the Locale direction. Falls back to left to right.
      */
-    public static final androidx.core.text.TextDirectionHeuristicCompat LOCALE =
+    public static final TextDirectionHeuristicCompat LOCALE =
             TextDirectionHeuristicLocale.INSTANCE;
 
     /**
@@ -233,6 +233,7 @@ public final class TextDirectionHeuristicsCompat {
         }
 
         static final AnyStrong INSTANCE_RTL = new AnyStrong(true);
+        static final AnyStrong INSTANCE_LTR = new AnyStrong(false);
     }
 
     /**

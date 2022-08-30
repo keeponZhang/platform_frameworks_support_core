@@ -16,11 +16,12 @@
 
 package androidx.core.graphics;
 
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.graphics.Path;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import java.util.ArrayList;
 
@@ -30,7 +31,7 @@ import java.util.ArrayList;
  *
  * @hide
  */
-// TODO: Make this class public
+@RestrictTo(LIBRARY_GROUP)
 public class PathParser {
     private static final String LOGTAG = "PathParser";
 
@@ -120,7 +121,7 @@ public class PathParser {
         if (source == null) {
             return null;
         }
-        PathDataNode[] copy = new PathParser.PathDataNode[source.length];
+        PathDataNode[] copy = new PathDataNode[source.length];
         for (int i = 0; i < source.length; i++) {
             copy[i] = new PathDataNode(source[i]);
         }
@@ -132,8 +133,7 @@ public class PathParser {
      * @param nodesTo   The target path represented in an array of PathDataNode
      * @return whether the <code>nodesFrom</code> can morph into <code>nodesTo</code>
      */
-    public static boolean canMorph(@Nullable PathDataNode[] nodesFrom,
-            @Nullable PathDataNode[] nodesTo) {
+    public static boolean canMorph(PathDataNode[] nodesFrom, PathDataNode[] nodesTo) {
         if (nodesFrom == null || nodesTo == null) {
             return false;
         }
@@ -157,7 +157,6 @@ public class PathParser {
      *
      * @param target The target path represented in an array of PathDataNode
      * @param source The source path represented in an array of PathDataNode
-     * @hide
      */
     public static void updateNodes(PathDataNode[] target, PathDataNode[] source) {
         for (int i = 0; i < source.length; i++) {
@@ -300,39 +299,6 @@ public class PathParser {
     }
 
     /**
-     * Interpolate between two arrays of PathDataNodes with the given fraction, and store the
-     * results in the first parameter.
-     *
-     * @param target The resulting array of {@link PathDataNode} for the interpolation
-     * @param from The array of {@link PathDataNode} when fraction is 0
-     * @param to The array of {@link PathDataNode} when the fraction is 1
-     * @param fraction A float fraction value in the range of 0 to 1
-     * @return whether it's possible to interpolate between the two arrays of PathDataNodes
-     * @see {@link #canMorph(PathDataNode[], PathDataNode[])}
-     */
-    public static boolean interpolatePathDataNodes(PathDataNode[] target, PathDataNode[] from,
-            PathDataNode[] to, float fraction) {
-        if (target == null || from == null || to == null) {
-            throw new IllegalArgumentException("The nodes to be interpolated and resulting nodes"
-                    + " cannot be null");
-        }
-
-        if (target.length != from.length || from.length != to.length) {
-            throw new IllegalArgumentException("The nodes to be interpolated and resulting nodes"
-                    + " must have the same length");
-        }
-
-        if (!canMorph(from, to)) {
-            return false;
-        }
-        // Now do the interpolation
-        for (int i = 0; i < target.length; i++) {
-            target[i].interpolatePathDataNode(from[i], to[i], fraction);
-        }
-        return true;
-    }
-
-    /**
      * Each PathDataNode represents one command in the "d" attribute of the svg
      * file.
      * An array of PathDataNode can represent the whole "d" attribute.
@@ -342,11 +308,13 @@ public class PathParser {
         /**
          * @hide
          */
+        @RestrictTo(LIBRARY_GROUP)
         public char mType;
 
         /**
          * @hide
          */
+        @RestrictTo(LIBRARY_GROUP)
         public float[] mParams;
 
         PathDataNode(char type, float[] params) {
@@ -383,9 +351,8 @@ public class PathParser {
          * @param nodeTo   The end value as a PathDataNode
          * @param fraction The fraction to interpolate.
          */
-        public void interpolatePathDataNode(PathDataNode nodeFrom, PathDataNode nodeTo,
-                float fraction) {
-            mType = nodeFrom.mType;
+        public void interpolatePathDataNode(PathDataNode nodeFrom,
+                PathDataNode nodeTo, float fraction) {
             for (int i = 0; i < nodeFrom.mParams.length; i++) {
                 mParams[i] = nodeFrom.mParams[i] * (1 - fraction)
                         + nodeTo.mParams[i] * fraction;

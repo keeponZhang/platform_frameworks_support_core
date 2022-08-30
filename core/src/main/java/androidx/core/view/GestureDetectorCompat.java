@@ -139,7 +139,7 @@ public final class GestureDetectorCompat {
         /**
          * Creates a GestureDetector with the supplied listener.
          * You may only use this constructor from a UI thread (this is the usual situation).
-         * @see android.os.Handler#Handler()
+         * @see Handler#Handler()
          *
          * @param context the application's context
          * @param listener the listener invoked for all the callbacks, this must
@@ -496,7 +496,7 @@ public final class GestureDetectorCompat {
     /**
      * Creates a GestureDetectorCompat with the supplied listener.
      * As usual, you may only use this constructor from a UI thread.
-     * @see android.os.Handler#Handler()
+     * @see Handler#Handler()
      *
      * @param context the application's context
      * @param listener the listener invoked for all the callbacks, this must
@@ -509,7 +509,7 @@ public final class GestureDetectorCompat {
     /**
      * Creates a GestureDetectorCompat with the supplied listener.
      * As usual, you may only use this constructor from a UI thread.
-     * @see android.os.Handler#Handler()
+     * @see Handler#Handler()
      *
      * @param context the application's context
      * @param listener the listener invoked for all the callbacks, this must

@@ -22,7 +22,7 @@ import android.os.Parcelable;
 /**
  * Callbacks a {@link Parcelable} creator should implement.
  *
- * @deprecated Use {@link android.os.Parcelable.ClassLoaderCreator} directly.
+ * @deprecated Use {@link Parcelable.ClassLoaderCreator} directly.
  */
 @Deprecated
 public interface ParcelableCompatCreatorCallbacks<T> {

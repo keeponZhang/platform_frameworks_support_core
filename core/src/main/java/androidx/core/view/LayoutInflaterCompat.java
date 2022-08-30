@@ -55,7 +55,6 @@ public final class LayoutInflaterCompat {
             return mDelegateFactory.onCreateView(parent, name, context, attributeSet);
         }
 
-        @NonNull
         @Override
         public String toString() {
             return getClass().getName() + "{" + mDelegateFactory + "}";
@@ -101,7 +100,7 @@ public final class LayoutInflaterCompat {
      * this LayoutInflater. This must not be null, and can only be set once;
      * after setting, you can not change the factory.
      *
-     * @see LayoutInflater#setFactory(android.view.LayoutInflater.Factory)
+     * @see LayoutInflater#setFactory(LayoutInflater.Factory)
      *
      * @deprecated Use {@link #setFactory2(LayoutInflater, LayoutInflater.Factory2)} instead to set
      * and {@link LayoutInflater#getFactory2()} to get the factory.
@@ -133,7 +132,7 @@ public final class LayoutInflaterCompat {
      * this {@link LayoutInflater}. This must not be null, and can only be set once;
      * after setting, you can not change the factory.
      *
-     * @see LayoutInflater#setFactory2(android.view.LayoutInflater.Factory2)
+     * @see LayoutInflater#setFactory2(LayoutInflater.Factory2)
      */
     public static void setFactory2(
             @NonNull LayoutInflater inflater, @NonNull LayoutInflater.Factory2 factory) {

@@ -109,7 +109,7 @@ public abstract class SharedElementCallback {
             List<View> sharedElements, List<View> sharedElementSnapshots) {}
 
     /**
-     * Called after {@link #onMapSharedElements(java.util.List, java.util.Map)} when
+     * Called after {@link #onMapSharedElements(List, Map)} when
      * transferring shared elements in. Any shared elements that have no mapping will be in
      * <var>rejectedSharedElements</var>. The elements remaining in
      * <var>rejectedSharedElements</var> will be transitioned out of the Scene. If a
@@ -146,10 +146,10 @@ public abstract class SharedElementCallback {
 
     /**
      * Creates a snapshot of a shared element to be used by the remote Activity and reconstituted
-     * with {@link #onCreateSnapshotView(android.content.Context, android.os.Parcelable)}. A
+     * with {@link #onCreateSnapshotView(Context, Parcelable)}. A
      * null return value will mean that the remote Activity will have a null snapshot View in
-     * {@link #onSharedElementStart(java.util.List, java.util.List, java.util.List)} and
-     * {@link #onSharedElementEnd(java.util.List, java.util.List, java.util.List)}.
+     * {@link #onSharedElementStart(List, List, List)} and
+     * {@link #onSharedElementEnd(List, List, List)}.
      *
      * <p>This is not called for Fragment Transitions.</p>
      *
@@ -159,9 +159,9 @@ public abstract class SharedElementCallback {
      * @param screenBounds The bounds of shared element in screen coordinate space. This is
      *                     the bounds of the view with the viewToGlobalMatrix applied.
      * @return A snapshot to send to the remote Activity to be reconstituted with
-     * {@link #onCreateSnapshotView(android.content.Context, android.os.Parcelable)} and passed
-     * into {@link #onSharedElementStart(java.util.List, java.util.List, java.util.List)} and
-     * {@link #onSharedElementEnd(java.util.List, java.util.List, java.util.List)}.
+     * {@link #onCreateSnapshotView(Context, Parcelable)} and passed
+     * into {@link #onSharedElementStart(List, List, List)} and
+     * {@link #onSharedElementEnd(List, List, List)}.
      */
     public Parcelable onCaptureSharedElementSnapshot(View sharedElement, Matrix viewToGlobalMatrix,
             RectF screenBounds) {
@@ -238,20 +238,20 @@ public abstract class SharedElementCallback {
 
     /**
      * Reconstitutes a snapshot View from a Parcelable returned in
-     * {@link #onCaptureSharedElementSnapshot(android.view.View, android.graphics.Matrix,
-     * android.graphics.RectF)} to be used in {@link #onSharedElementStart(java.util.List,
-     * java.util.List, java.util.List)} and {@link #onSharedElementEnd(java.util.List,
-     * java.util.List, java.util.List)}. The returned View will be sized and positioned after
+     * {@link #onCaptureSharedElementSnapshot(View, Matrix,
+     * RectF)} to be used in {@link #onSharedElementStart(List,
+     * List, List)} and {@link #onSharedElementEnd(List,
+     * List, List)}. The returned View will be sized and positioned after
      * this call so that it is ready to be added to the decor View's overlay.
      *
      * <p>This is not called for Fragment Transitions.</p>
      *
      * @param context The Context used to create the snapshot View.
      * @param snapshot The Parcelable returned by {@link #onCaptureSharedElementSnapshot(
-     * android.view.View, android.graphics.Matrix, android.graphics.RectF)}.
-     * @return A View to be sent in {@link #onSharedElementStart(java.util.List, java.util.List,
-     * java.util.List)} and {@link #onSharedElementEnd(java.util.List, java.util.List,
-     * java.util.List)}. A null value will produce a null snapshot value for those two methods.
+     * View, Matrix, RectF)}.
+     * @return A View to be sent in {@link #onSharedElementStart(List, List,
+     * List)} and {@link #onSharedElementEnd(List, List,
+     * List)}. A null value will produce a null snapshot value for those two methods.
      */
     public View onCreateSnapshotView(Context context, Parcelable snapshot) {
         ImageView view = null;

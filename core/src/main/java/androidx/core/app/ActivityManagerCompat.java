@@ -22,7 +22,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 
 /**
- * Helper for accessing features in {@link android.app.ActivityManager} in a backwards compatible
+ * Helper for accessing features in {@link ActivityManager} in a backwards compatible
  * fashion.
  */
 public final class ActivityManagerCompat {

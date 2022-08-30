@@ -16,12 +16,8 @@
 
 package androidx.core.view;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
-
 import android.os.Build;
 import android.os.Bundle;
-import android.text.style.ClickableSpan;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
@@ -30,36 +26,28 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.RestrictTo;
-import androidx.core.R;
-import androidx.core.view.accessibility.AccessibilityClickableSpanCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
-
-import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Helper for accessing {@link AccessibilityDelegate}.
  * <p>
  * <strong>Note:</strong> On platform versions prior to
- * {@link android.os.Build.VERSION_CODES#M API 23}, delegate methods on
+ * {@link Build.VERSION_CODES#M API 23}, delegate methods on
  * views in the {@code android.widget.*} package are called <i>before</i>
  * host methods. This prevents certain properties such as class name from
  * being modified by overriding
  * {@link AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo(View, AccessibilityNodeInfoCompat)},
  * as any changes will be overwritten by the host class.
  * <p>
- * Starting in {@link android.os.Build.VERSION_CODES#M API 23}, delegate
+ * Starting in {@link Build.VERSION_CODES#M API 23}, delegate
  * methods are called <i>after</i> host methods, which all properties to be
  * modified without being overwritten by the host class.
  */
 public class AccessibilityDelegateCompat {
 
-    static final class AccessibilityDelegateAdapter extends AccessibilityDelegate {
-        final AccessibilityDelegateCompat mCompat;
+    private static final class AccessibilityDelegateAdapter extends AccessibilityDelegate {
+        private final AccessibilityDelegateCompat mCompat;
 
         AccessibilityDelegateAdapter(AccessibilityDelegateCompat compat) {
             mCompat = compat;
@@ -79,16 +67,8 @@ public class AccessibilityDelegateCompat {
         @Override
         public void onInitializeAccessibilityNodeInfo(
                 View host, AccessibilityNodeInfo info) {
-            AccessibilityNodeInfoCompat nodeInfoCompat = AccessibilityNodeInfoCompat.wrap(info);
-            nodeInfoCompat.setScreenReaderFocusable(ViewCompat.isScreenReaderFocusable(host));
-            nodeInfoCompat.setHeading(ViewCompat.isAccessibilityHeading(host));
-            nodeInfoCompat.setPaneTitle(ViewCompat.getAccessibilityPaneTitle(host));
-            mCompat.onInitializeAccessibilityNodeInfo(host, nodeInfoCompat);
-            nodeInfoCompat.addSpansToExtras(info.getText(), host);
-            List<AccessibilityActionCompat> actions = getActionList(host);
-            for (int i = 0; i < actions.size(); i++) {
-                nodeInfoCompat.addAction(actions.get(i));
-            }
+            mCompat.onInitializeAccessibilityNodeInfo(host,
+                    AccessibilityNodeInfoCompat.wrap(info));
         }
 
         @Override
@@ -128,7 +108,6 @@ public class AccessibilityDelegateCompat {
     }
 
     private static final AccessibilityDelegate DEFAULT_DELEGATE = new AccessibilityDelegate();
-    private final AccessibilityDelegate mOriginalDelegate;
 
     private final AccessibilityDelegate mBridge;
 
@@ -136,15 +115,6 @@ public class AccessibilityDelegateCompat {
      * Creates a new instance.
      */
     public AccessibilityDelegateCompat() {
-        this(DEFAULT_DELEGATE);
-    }
-
-    /**
-     * @hide
-     */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
-    public AccessibilityDelegateCompat(AccessibilityDelegate originalDelegate) {
-        mOriginalDelegate = originalDelegate;
         mBridge = new AccessibilityDelegateAdapter(this);
     }
 
@@ -170,7 +140,7 @@ public class AccessibilityDelegateCompat {
      * @see View#sendAccessibilityEvent(int) View#sendAccessibilityEvent(int)
      */
     public void sendAccessibilityEvent(View host, int eventType) {
-        mOriginalDelegate.sendAccessibilityEvent(host, eventType);
+        DEFAULT_DELEGATE.sendAccessibilityEvent(host, eventType);
     }
 
     /**
@@ -192,7 +162,7 @@ public class AccessibilityDelegateCompat {
      *      View#sendAccessibilityEventUnchecked(AccessibilityEvent)
      */
     public void sendAccessibilityEventUnchecked(View host, AccessibilityEvent event) {
-        mOriginalDelegate.sendAccessibilityEventUnchecked(host, event);
+        DEFAULT_DELEGATE.sendAccessibilityEventUnchecked(host, event);
     }
 
     /**
@@ -213,7 +183,7 @@ public class AccessibilityDelegateCompat {
      *      View#dispatchPopulateAccessibilityEvent(AccessibilityEvent)
      */
     public boolean dispatchPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
-        return mOriginalDelegate.dispatchPopulateAccessibilityEvent(host, event);
+        return DEFAULT_DELEGATE.dispatchPopulateAccessibilityEvent(host, event);
     }
 
     /**
@@ -233,7 +203,7 @@ public class AccessibilityDelegateCompat {
      *      ViewCompat#onPopulateAccessibilityEvent(View, AccessibilityEvent)
      */
     public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
-        mOriginalDelegate.onPopulateAccessibilityEvent(host, event);
+        DEFAULT_DELEGATE.onPopulateAccessibilityEvent(host, event);
     }
 
     /**
@@ -253,7 +223,7 @@ public class AccessibilityDelegateCompat {
      *      ViewCompat#onInitializeAccessibilityEvent(View, AccessibilityEvent)
      */
     public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
-        mOriginalDelegate.onInitializeAccessibilityEvent(host, event);
+        DEFAULT_DELEGATE.onInitializeAccessibilityEvent(host, event);
     }
 
     /**
@@ -272,7 +242,7 @@ public class AccessibilityDelegateCompat {
      *      ViewCompat#onInitializeAccessibilityNodeInfo(View, AccessibilityNodeInfoCompat)
      */
     public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
-        mOriginalDelegate.onInitializeAccessibilityNodeInfo(
+        DEFAULT_DELEGATE.onInitializeAccessibilityNodeInfo(
                 host, info.unwrap());
     }
 
@@ -297,7 +267,7 @@ public class AccessibilityDelegateCompat {
      */
     public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child,
             AccessibilityEvent event) {
-        return mOriginalDelegate.onRequestSendAccessibilityEvent(host, child, event);
+        return DEFAULT_DELEGATE.onRequestSendAccessibilityEvent(host, child, event);
     }
 
     /**
@@ -316,7 +286,7 @@ public class AccessibilityDelegateCompat {
      */
     public AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
         if (Build.VERSION.SDK_INT >= 16) {
-            Object provider = mOriginalDelegate.getAccessibilityNodeProvider(host);
+            Object provider = DEFAULT_DELEGATE.getAccessibilityNodeProvider(host);
             if (provider != null) {
                 return new AccessibilityNodeProviderCompat(provider);
             }
@@ -341,60 +311,9 @@ public class AccessibilityDelegateCompat {
      *      View#performAccessibilityAction(int, Bundle)
      */
     public boolean performAccessibilityAction(View host, int action, Bundle args) {
-        boolean success = false;
-        List<AccessibilityActionCompat> actions = getActionList(host);
-        for (int i = 0; i < actions.size(); i++) {
-            AccessibilityActionCompat actionCompat = actions.get(i);
-            if (actionCompat.getId() == action) {
-                success = actionCompat.perform(host, args);
-                break;
-            }
-        }
-        if (!success && Build.VERSION.SDK_INT >= 16) {
-            success = mOriginalDelegate.performAccessibilityAction(host, action, args);
-        }
-        if (!success && action == R.id.accessibility_action_clickable_span) {
-            success = performClickableSpanAction(
-                    args.getInt(AccessibilityClickableSpanCompat.SPAN_ID, -1), host);
-        }
-        return success;
-    }
-
-    @SuppressWarnings("unchecked")
-    private boolean performClickableSpanAction(int clickableSpanId, View host) {
-        SparseArray<WeakReference<ClickableSpan>> spans =
-                (SparseArray<WeakReference<ClickableSpan>>)
-                        host.getTag(R.id.tag_accessibility_clickable_spans);
-        if (spans != null) {
-            WeakReference<ClickableSpan> reference = spans.get(clickableSpanId);
-            if (reference != null) {
-                ClickableSpan span = reference.get();
-                if (isSpanStillValid(span, host)) {
-                    span.onClick(host);
-                    return true;
-                }
-            }
+        if (Build.VERSION.SDK_INT >= 16) {
+            return DEFAULT_DELEGATE.performAccessibilityAction(host, action, args);
         }
         return false;
-    }
-
-    private boolean isSpanStillValid(ClickableSpan span, View view) {
-        if (span != null) {
-            AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
-            ClickableSpan[] spans = AccessibilityNodeInfoCompat.getClickableSpans(info.getText());
-            for (int i = 0; spans != null && i < spans.length; i++) {
-                if (span.equals(spans[i])) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    static List<AccessibilityActionCompat> getActionList(View view) {
-        List<AccessibilityActionCompat> actions = (List<AccessibilityActionCompat>)
-                view.getTag(R.id.tag_accessibility_actions);
-        return actions == null ? Collections.<AccessibilityActionCompat>emptyList() : actions;
     }
 }

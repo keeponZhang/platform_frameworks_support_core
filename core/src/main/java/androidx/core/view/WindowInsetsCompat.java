@@ -18,21 +18,9 @@ package androidx.core.view;
 
 import static android.os.Build.VERSION.SDK_INT;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY;
-
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.WindowInsets;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.Insets;
-import androidx.core.util.ObjectsCompat;
-
-import java.util.Objects;
 
 /**
  * Describes a set of insets for window content.
@@ -44,12 +32,7 @@ import java.util.Objects;
 public class WindowInsetsCompat {
     private final Object mInsets;
 
-    /**
-     * @hide
-     */
-    @RestrictTo(LIBRARY)
-    @VisibleForTesting
-    WindowInsetsCompat(@Nullable Object insets) {
+    private WindowInsetsCompat(Object insets) {
         mInsets = insets;
     }
 
@@ -173,7 +156,7 @@ public class WindowInsetsCompat {
      * to propagate down to child views.</p>
      *
      * <p>The result of this method is equivalent to the return value of
-     * {@link android.view.View#fitSystemWindows(android.graphics.Rect)}.</p>
+     * {@link android.view.View#fitSystemWindows(Rect)}.</p>
      *
      * @return true if the insets have been fully consumed.
      */
@@ -389,119 +372,6 @@ public class WindowInsetsCompat {
         }
     }
 
-    /**
-     * Returns the system window insets in pixels.
-     *
-     * <p>The system window inset represents the area of a full-screen window that is
-     * partially or fully obscured by the status bar, navigation bar, IME or other system windows.
-     * </p>
-     *
-     * @return The system window insets
-     * @see #getSystemWindowInsetLeft()
-     * @see #getSystemWindowInsetTop()
-     * @see #getSystemWindowInsetRight()
-     * @see #getSystemWindowInsetBottom()
-     */
-    @NonNull
-    public Insets getSystemWindowInsets() {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return Insets.wrap(((WindowInsets) mInsets).getSystemWindowInsets());
-        } else {
-            // Else we'll create a copy from the getters
-            return Insets.of(getSystemWindowInsetLeft(), getSystemWindowInsetTop(),
-                    getSystemWindowInsetRight(), getSystemWindowInsetBottom());
-        }
-    }
-
-    /**
-     * Returns the stable insets in pixels.
-     *
-     * <p>The stable inset represents the area of a full-screen window that <b>may</b> be
-     * partially or fully obscured by the system UI elements.  This value does not change
-     * based on the visibility state of those elements; for example, if the status bar is
-     * normally shown, but temporarily hidden, the stable inset will still provide the inset
-     * associated with the status bar being shown.</p>
-     *
-     * @return The stable insets
-     * @see #getStableInsetLeft()
-     * @see #getStableInsetTop()
-     * @see #getStableInsetRight()
-     * @see #getStableInsetBottom()
-     */
-    @NonNull
-    public Insets getStableInsets() {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return Insets.wrap(((WindowInsets) mInsets).getStableInsets());
-        } else {
-            // Else we'll create a copy from the getters
-            return Insets.of(getStableInsetLeft(), getStableInsetTop(),
-                    getStableInsetRight(), getStableInsetBottom());
-        }
-    }
-
-    /**
-     * Returns the mandatory system gesture insets.
-     *
-     * <p>The mandatory system gesture insets represent the area of a window where mandatory system
-     * gestures have priority and may consume some or all touch input, e.g. due to the a system bar
-     * occupying it, or it being reserved for touch-only gestures.
-     *
-     * @see WindowInsets#getMandatorySystemGestureInsets
-     */
-    @NonNull
-    public Insets getMandatorySystemGestureInsets() {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return Insets.wrap(((WindowInsets) mInsets).getMandatorySystemGestureInsets());
-        } else {
-            // Before Q, the mandatory system gesture insets == system window insets
-            return getSystemWindowInsets();
-        }
-    }
-
-    /**
-     * Returns the tappable element insets.
-     *
-     * <p>The tappable element insets represent how much tappable elements <b>must at least</b> be
-     * inset to remain both tappable and visually unobstructed by persistent system windows.
-     *
-     * <p>This may be smaller than {@link #getSystemWindowInsets()} if the system window is
-     * largely transparent and lets through simple taps (but not necessarily more complex gestures).
-     *
-     * @see WindowInsets#getTappableElementInsets
-     */
-    @NonNull
-    public Insets getTappableElementInsets() {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return Insets.wrap(((WindowInsets) mInsets).getTappableElementInsets());
-        } else {
-            // Before Q, the tappable elements insets == system window insets
-            return getSystemWindowInsets();
-        }
-    }
-
-    /**
-     * Returns the system gesture insets.
-     *
-     * <p>The system gesture insets represent the area of a window where system gestures have
-     * priority and may consume some or all touch input, e.g. due to the a system bar
-     * occupying it, or it being reserved for touch-only gestures.
-     *
-     * <p>An app can declare priority over system gestures with
-     * {@link android.view.View#setSystemGestureExclusionRects} outside of the
-     * {@link #getMandatorySystemGestureInsets() mandatory system gesture insets}.
-     *
-     * @see WindowInsets#getSystemGestureInsets
-     */
-    @NonNull
-    public Insets getSystemGestureInsets() {
-        if (Build.VERSION.SDK_INT >= 29) {
-            return Insets.wrap(((WindowInsets) mInsets).getSystemGestureInsets());
-        } else {
-            // Before Q, the system gesture insets == system window insets
-            return getSystemWindowInsets();
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -511,7 +381,7 @@ public class WindowInsetsCompat {
             return false;
         }
         WindowInsetsCompat other = (WindowInsetsCompat) o;
-        return ObjectsCompat.equals(mInsets, other.mInsets);
+        return mInsets == null ? other.mInsets == null : mInsets.equals(other.mInsets);
     }
 
     @Override
@@ -519,26 +389,11 @@ public class WindowInsetsCompat {
         return mInsets == null ? 0 : mInsets.hashCode();
     }
 
-    /**
-     * Return the source {@link WindowInsets} instance used in this {@link WindowInsetsCompat}.
-     *
-     * @return the wrapped WindowInsets instance
-     */
-    @Nullable
-    @RequiresApi(20)
-    public WindowInsets toWindowInsets() {
-        return (WindowInsets) mInsets;
+    static WindowInsetsCompat wrap(Object insets) {
+        return insets == null ? null : new WindowInsetsCompat(insets);
     }
 
-    /**
-     * Wrap an instance of {@link WindowInsets} into a {@link WindowInsetsCompat}.
-     *
-     * @param insets source insets to wrap
-     * @return the wrapped instance
-     */
-    @NonNull
-    @RequiresApi(20)
-    public static WindowInsetsCompat toWindowInsetsCompat(@NonNull WindowInsets insets) {
-        return new WindowInsetsCompat(Objects.requireNonNull(insets));
+    static Object unwrap(WindowInsetsCompat insets) {
+        return insets == null ? null : insets.mInsets;
     }
 }

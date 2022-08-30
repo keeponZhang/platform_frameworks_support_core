@@ -30,7 +30,7 @@ import android.view.View;
  * It also keeps track of the screen location where the drag started, and helps determining
  * the hot spot position for a drag shadow.
  * <p>
- * Implement {@link DragStartHelper.OnDragStartListener} to start the drag operation:
+ * Implement {@link OnDragStartListener} to start the drag operation:
  * <pre>
  * DragStartHelper.OnDragStartListener listener = new DragStartHelper.OnDragStartListener {
  *     protected void onDragStart(View view, DragStartHelper helper) {

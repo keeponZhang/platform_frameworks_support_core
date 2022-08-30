@@ -17,7 +17,7 @@
 package androidx.core.app;
 
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.app.Activity;
 import android.os.Build;
@@ -50,6 +50,9 @@ import java.util.ArrayList;
  * guide</a>.
  */
 public class FrameMetricsAggregator {
+
+    private static final String TAG = "FrameMetrics";
+    private static final boolean DBG = false;
 
     /**
      * The index in the metrics array where the data for {@link #TOTAL_DURATION}
@@ -172,7 +175,7 @@ public class FrameMetricsAggregator {
     private FrameMetricsBaseImpl mInstance;
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(
             flag = true,

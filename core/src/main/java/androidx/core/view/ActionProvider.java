@@ -16,7 +16,7 @@
 
 package androidx.core.view;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.Context;
 import android.util.Log;
@@ -38,7 +38,7 @@ import androidx.annotation.RestrictTo;
  * class.</p>
  *
  * <p>An ActionProvider can be
- * optionally specified for a {@link android.view.MenuItem} and in such a case it will be
+ * optionally specified for a {@link MenuItem} and in such a case it will be
  * responsible for
  * creating the action view that appears in the {@link android.app.ActionBar} as a substitute for
  * the menu item when the item is displayed as an action item. Also the provider is responsible for
@@ -48,9 +48,9 @@ import androidx.annotation.RestrictTo;
  *
  * <p>There are two ways for using an action provider for creating and handling of action views:
  *
- * <ul><li> Setting the action provider on a {@link android.view.MenuItem} directly by
+ * <ul><li> Setting the action provider on a {@link MenuItem} directly by
  * calling {@link
- * androidx.core.view.MenuItemCompat#setActionProvider(android.view.MenuItem, ActionProvider)}.
+ * MenuItemCompat#setActionProvider(MenuItem, ActionProvider)}.
  * </li>
  *
  * <li>Declaring the action provider in the menu XML resource. For example:
@@ -121,8 +121,8 @@ import androidx.annotation.RestrictTo;
  * </dl>
  *
  *
- * @see androidx.core.view.MenuItemCompat#setActionProvider(android.view.MenuItem, ActionProvider)
- * @see androidx.core.view.MenuItemCompat#getActionProvider(android.view.MenuItem)
+ * @see MenuItemCompat#setActionProvider(MenuItem, ActionProvider)
+ * @see MenuItemCompat#getActionProvider(MenuItem)
  */
 public abstract class ActionProvider {
     private static final String TAG = "ActionProvider(support)";
@@ -218,20 +218,20 @@ public abstract class ActionProvider {
      * <p> A menu item selection is processed in the following order:
      *
      * <ul><li>Receiving a call to
-     * {@link android.view.MenuItem.OnMenuItemClickListener#onMenuItemClick
+     * {@link MenuItem.OnMenuItemClickListener#onMenuItemClick
      * MenuItem.OnMenuItemClickListener.onMenuItemClick}.</li>
      *
      * <li>Receiving a call to
-     * {@link android.app.Activity#onOptionsItemSelected(android.view.MenuItem)}
+     * {@link android.app.Activity#onOptionsItemSelected(MenuItem)}
      * FragmentActivity.onOptionsItemSelected(MenuItem)}
      * </li>
      *
      * <li>Receiving a call to
-     * {@link androidx.fragment.app.Fragment#onOptionsItemSelected(android.view.MenuItem)}
+     * {@link androidx.fragment.app.Fragment#onOptionsItemSelected(MenuItem)}
      * Fragment.onOptionsItemSelected(MenuItem)}</li>
      *
      * <li>Launching the {@link android.content.Intent} set via
-     * {@link android.view.MenuItem#setIntent(android.content.Intent)
+     * {@link MenuItem#setIntent(android.content.Intent)
      * MenuItem.setIntent(android.content.Intent)}
      * </li>
      *
@@ -274,7 +274,7 @@ public abstract class ActionProvider {
      *
      * @hide Pending future API approval
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public void subUiVisibilityChanged(boolean isVisible) {
         if (mSubUiVisibilityListener != null) {
             mSubUiVisibilityListener.onSubUiVisibilityChanged(isVisible);
@@ -284,7 +284,7 @@ public abstract class ActionProvider {
     /**
      * @hide Internal use only
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public void setSubUiVisibilityListener(SubUiVisibilityListener listener) {
         mSubUiVisibilityListener = listener;
     }
@@ -307,7 +307,7 @@ public abstract class ActionProvider {
     /**
      * @hide
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public void reset() {
         mVisibilityListener = null;
         mSubUiVisibilityListener = null;
@@ -316,7 +316,7 @@ public abstract class ActionProvider {
     /**
      * @hide Internal use only
      */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     public interface SubUiVisibilityListener {
 
         void onSubUiVisibilityChanged(boolean isVisible);

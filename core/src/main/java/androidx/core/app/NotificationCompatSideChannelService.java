@@ -26,7 +26,7 @@ import android.support.v4.app.INotificationSideChannel;
 
 /**
  * Abstract service to receive side channel notifications sent from
- * {@link androidx.core.app.NotificationManagerCompat}.
+ * {@link NotificationManagerCompat}.
  *
  * <p>To receive side channel notifications, extend this service and register it in your
  * android manifest with an intent filter for the BIND_NOTIFICATION_SIDE_CHANNEL action.

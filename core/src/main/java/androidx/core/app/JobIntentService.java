@@ -40,10 +40,10 @@ import java.util.HashMap;
 
 /**
  * Helper for processing work that has been enqueued for a job/service.  When running on
- * {@link android.os.Build.VERSION_CODES#O Android O} or later, the work will be dispatched
- * as a job via {@link android.app.job.JobScheduler#enqueue JobScheduler.enqueue}.  When running
+ * {@link Build.VERSION_CODES#O Android O} or later, the work will be dispatched
+ * as a job via {@link JobScheduler#enqueue JobScheduler.enqueue}.  When running
  * on older versions of the platform, it will use
- * {@link android.content.Context#startService Context.startService}.
+ * {@link Context#startService Context.startService}.
  *
  * <p>You must publish your subclass in your manifest for the system to interact with.  This
  * should be published as a {@link android.app.job.JobService}, as described for that class,
@@ -54,7 +54,7 @@ import java.util.HashMap;
  * {@link #onHandleWork(Intent)}.</p>
  *
  * <p>You do not need to use {@link androidx.legacy.content.WakefulBroadcastReceiver}
- * when using this class.  When running on {@link android.os.Build.VERSION_CODES#O Android O},
+ * when using this class.  When running on {@link Build.VERSION_CODES#O Android O},
  * the JobScheduler will take care of wake locks for you (holding a wake lock from the time
  * you enqueue work until the job has been dispatched and while it is running).  When running
  * on previous versions of the platform, this wake lock handling is emulated in the class here
@@ -62,13 +62,13 @@ import java.util.HashMap;
  * {@link android.Manifest.permission#WAKE_LOCK} permission.</p>
  *
  * <p>There are a few important differences in behavior when running on
- * {@link android.os.Build.VERSION_CODES#O Android O} or later as a Job vs. pre-O:</p>
+ * {@link Build.VERSION_CODES#O Android O} or later as a Job vs. pre-O:</p>
  *
  * <ul>
  *     <li><p>When running as a pre-O service, the act of enqueueing work will generally start
  *     the service immediately, regardless of whether the device is dozing or in other
  *     conditions.  When running as a Job, it will be subject to standard JobScheduler
- *     policies for a Job with a {@link android.app.job.JobInfo.Builder#setOverrideDeadline(long)}
+ *     policies for a Job with a {@link JobInfo.Builder#setOverrideDeadline(long)}
  *     of 0: the job will not run while the device is dozing, it may get delayed more than
  *     a service if the device is under strong memory pressure with lots of demand to run
  *     jobs.</p></li>
@@ -115,7 +115,7 @@ public abstract class JobIntentService extends Service {
         boolean mHasJobId;
         int mJobId;
 
-        WorkEnqueuer(ComponentName cn) {
+        WorkEnqueuer(Context context, ComponentName cn) {
             mComponentName = cn;
         }
 
@@ -160,7 +160,7 @@ public abstract class JobIntentService extends Service {
         boolean mServiceProcessing;
 
         CompatWorkEnqueuer(Context context, ComponentName cn) {
-            super(cn);
+            super(context, cn);
             mContext = context.getApplicationContext();
             // Make wake locks.  We need two, because the launch wake lock wants to have
             // a timeout, and the system does not do the right thing if you mix timeout and
@@ -240,7 +240,7 @@ public abstract class JobIntentService extends Service {
      */
     @RequiresApi(26)
     static final class JobServiceEngineImpl extends JobServiceEngine
-            implements JobIntentService.CompatJobEngine {
+            implements CompatJobEngine {
         static final String TAG = "JobServiceEngineImpl";
 
         static final boolean DEBUG = false;
@@ -249,7 +249,7 @@ public abstract class JobIntentService extends Service {
         final Object mLock = new Object();
         JobParameters mParams;
 
-        final class WrapperWorkItem implements JobIntentService.GenericWorkItem {
+        final class WrapperWorkItem implements GenericWorkItem {
             final JobWorkItem mJobWork;
 
             WrapperWorkItem(JobWorkItem jobWork) {
@@ -306,7 +306,7 @@ public abstract class JobIntentService extends Service {
          * Dequeue some work.
          */
         @Override
-        public JobIntentService.GenericWorkItem dequeueWork() {
+        public GenericWorkItem dequeueWork() {
             JobWorkItem work;
             synchronized (mLock) {
                 if (mParams == null) {
@@ -324,12 +324,12 @@ public abstract class JobIntentService extends Service {
     }
 
     @RequiresApi(26)
-    static final class JobWorkEnqueuer extends JobIntentService.WorkEnqueuer {
+    static final class JobWorkEnqueuer extends WorkEnqueuer {
         private final JobInfo mJobInfo;
         private final JobScheduler mJobScheduler;
 
         JobWorkEnqueuer(Context context, ComponentName cn, int jobId) {
-            super(cn);
+            super(context, cn);
             ensureJobId(jobId);
             JobInfo.Builder b = new JobInfo.Builder(jobId, mComponentName);
             mJobInfo = b.setOverrideDeadline(0).build();
@@ -457,7 +457,7 @@ public abstract class JobIntentService extends Service {
     }
 
     /**
-     * Returns the IBinder for the {@link android.app.job.JobServiceEngine} when
+     * Returns the IBinder for the {@link JobServiceEngine} when
      * running as a JobService on O and later platforms.
      */
     @Override
@@ -496,7 +496,7 @@ public abstract class JobIntentService extends Service {
      * enqueued for the same class.
      * @param work The Intent of work to enqueue.
      */
-    public static void enqueueWork(@NonNull Context context, @NonNull Class<?> cls, int jobId,
+    public static void enqueueWork(@NonNull Context context, @NonNull Class cls, int jobId,
             @NonNull Intent work) {
         enqueueWork(context, new ComponentName(context, cls), jobId, work);
     }

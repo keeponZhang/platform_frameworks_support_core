@@ -32,7 +32,7 @@ public final class PopupMenuCompat {
     }
 
     /**
-     * On API {@link android.os.Build.VERSION_CODES#KITKAT} and higher, returns
+     * On API {@link Build.VERSION_CODES#KITKAT} and higher, returns
      * an {@link OnTouchListener} that can be added to the anchor view to
      * implement drag-to-open behavior.
      * <p>

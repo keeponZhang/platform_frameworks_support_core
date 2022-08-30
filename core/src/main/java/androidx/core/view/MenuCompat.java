@@ -24,7 +24,7 @@ import android.view.MenuItem;
 import androidx.core.internal.view.SupportMenu;
 
 /**
- * Helper for accessing features in {@link android.view.Menu}.
+ * Helper for accessing features in {@link Menu}.
  */
 public final class MenuCompat {
     /**

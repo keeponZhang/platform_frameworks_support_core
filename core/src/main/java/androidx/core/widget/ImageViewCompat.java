@@ -54,7 +54,9 @@ public class ImageViewCompat {
                 // Work around a bug in L that did not update the state of the image source
                 // after applying the tint
                 Drawable imageViewDrawable = view.getDrawable();
-                if ((imageViewDrawable != null) && (view.getImageTintList() != null)) {
+                boolean hasTint = (view.getImageTintList() != null)
+                        && (view.getImageTintMode() != null);
+                if ((imageViewDrawable != null) && hasTint) {
                     if (imageViewDrawable.isStateful()) {
                         imageViewDrawable.setState(view.getDrawableState());
                     }
@@ -81,7 +83,7 @@ public class ImageViewCompat {
 
     /**
      * Specifies the blending mode used to apply the tint specified by
-     * {@link #setImageTintList(android.widget.ImageView, android.content.res.ColorStateList)}
+     * {@link #setImageTintList(ImageView, ColorStateList)}
      * to the image drawable. The default mode is {@link PorterDuff.Mode#SRC_IN}.
      */
     public static void setImageTintMode(@NonNull ImageView view, @Nullable PorterDuff.Mode mode) {
@@ -92,7 +94,9 @@ public class ImageViewCompat {
                 // Work around a bug in L that did not update the state of the image source
                 // after applying the tint
                 Drawable imageViewDrawable = view.getDrawable();
-                if ((imageViewDrawable != null) && (view.getImageTintList() != null)) {
+                boolean hasTint = (view.getImageTintList() != null)
+                        && (view.getImageTintMode() != null);
+                if ((imageViewDrawable != null) && hasTint) {
                     if (imageViewDrawable.isStateful()) {
                         imageViewDrawable.setState(view.getDrawableState());
                     }

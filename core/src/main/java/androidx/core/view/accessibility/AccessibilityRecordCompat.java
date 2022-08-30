@@ -35,7 +35,7 @@ public class AccessibilityRecordCompat {
     /**
      * @deprecated This is not type safe. If you want to modify an
      * {@link AccessibilityEvent}'s properties defined in
-     * {@link android.view.accessibility.AccessibilityRecord} use
+     * {@link AccessibilityRecord} use
      * {@link AccessibilityEventCompat#asRecord(AccessibilityEvent)}. This method will be removed
      * in a subsequent release of the support library.
      */

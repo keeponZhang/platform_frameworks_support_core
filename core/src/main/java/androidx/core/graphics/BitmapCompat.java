@@ -21,7 +21,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 
 /**
- * Helper for accessing features in {@link android.graphics.Bitmap}.
+ * Helper for accessing features in {@link Bitmap}.
  */
 public final class BitmapCompat {
     public static boolean hasMipMap(@NonNull Bitmap bitmap) {

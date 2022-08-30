@@ -26,7 +26,7 @@ import androidx.core.os.CancellationSignal;
 import androidx.core.os.OperationCanceledException;
 
 /**
- * Helper for accessing features in {@link android.content.ContentResolver} in a backwards
+ * Helper for accessing features in {@link ContentResolver} in a backwards
  * compatible fashion.
  */
 public final class ContentResolverCompat {

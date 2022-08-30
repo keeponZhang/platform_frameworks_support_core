@@ -16,7 +16,7 @@
 
 package androidx.core.app;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.app.Notification;
 import android.app.Service;
@@ -30,7 +30,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Helper for accessing features in {@link android.app.Service}.
+ * Helper for accessing features in {@link Service}.
  */
 public final class ServiceCompat {
 
@@ -39,12 +39,12 @@ public final class ServiceCompat {
     }
 
     /**
-     * Constant to return from {@link android.app.Service#onStartCommand}: if this
+     * Constant to return from {@link Service#onStartCommand}: if this
      * service's process is killed while it is started (after returning from
-     * {@link android.app.Service#onStartCommand}), then leave it in the started
+     * {@link Service#onStartCommand}), then leave it in the started
      * state but don't retain this delivered intent.  Later the system will try to
      * re-create the service.  Because it is in the started state, it will
-     * guarantee to call {@link android.app.Service#onStartCommand} after creating
+     * guarantee to call {@link Service#onStartCommand} after creating
      * the new service instance; if there are not any pending start commands to be
      * delivered to the service, it will be called with a null intent
      * object, so you must take care to check for this.
@@ -72,13 +72,13 @@ public final class ServiceCompat {
      * notification manager.
      * <p>
      * This flag will only work on
-     * {@link android.os.Build.VERSION_CODES#N} and later. It doesn't have any effect on earlier
+     * {@link Build.VERSION_CODES#N} and later. It doesn't have any effect on earlier
      * platform versions.
      */
     public static final int STOP_FOREGROUND_DETACH = 1<<1;
 
     /** @hide */
-    @RestrictTo(LIBRARY_GROUP_PREFIX)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef(flag = true,
             value = {
                     STOP_FOREGROUND_REMOVE,

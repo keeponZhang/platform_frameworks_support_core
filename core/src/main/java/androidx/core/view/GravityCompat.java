@@ -23,7 +23,7 @@ import android.graphics.Rect;
 import android.view.Gravity;
 
 /**
- * Compatibility shim for accessing newer functionality from {@link android.view.Gravity}.
+ * Compatibility shim for accessing newer functionality from {@link Gravity}.
  */
 public final class GravityCompat {
     /** Raw bit controlling whether the layout direction is relative or not (START/END instead of
@@ -105,11 +105,11 @@ public final class GravityCompat {
     /**
      * Apply additional gravity behavior based on the overall "display" that an
      * object exists in.  This can be used after
-     * {@link android.view.Gravity#apply(int, int, int, Rect, int, int, Rect)} to place the object
+     * {@link Gravity#apply(int, int, int, Rect, int, int, Rect)} to place the object
      * within a visible display.  By default this moves or clips the object
      * to be visible in the display; the gravity flags
-     * {@link android.view.Gravity#DISPLAY_CLIP_HORIZONTAL} and
-     * {@link android.view.Gravity#DISPLAY_CLIP_VERTICAL} can be used to change this behavior.
+     * {@link Gravity#DISPLAY_CLIP_HORIZONTAL} and
+     * {@link Gravity#DISPLAY_CLIP_VERTICAL} can be used to change this behavior.
      *
      * @param gravity Gravity constants to modify the placement within the
      * display.

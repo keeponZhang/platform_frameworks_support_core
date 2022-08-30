@@ -15,10 +15,9 @@
  */
 package androidx.core.content.res;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP_PREFIX;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -45,7 +44,7 @@ import org.xmlpull.v1.XmlPullParser;
  *
  * @hide
  */
-@RestrictTo(LIBRARY_GROUP_PREFIX)
+@RestrictTo(LIBRARY_GROUP)
 public class TypedArrayUtils {
 
     private static final String NAMESPACE = "http://schemas.android.com/apk/res/android";
@@ -152,42 +151,6 @@ public class TypedArrayUtils {
             if (complexColor != null) return complexColor;
         }
         return ComplexColorCompat.from(defaultValue);
-    }
-
-    /**
-     * Retrieves a color state list object. In addition to the styleable resource ID, we also
-     * make sure that the attribute name matches.
-     *
-     * @return a color state list object form the {@link TypedArray} with the specified
-     * {@code resId}, or null if it does not exist.
-     */
-    @Nullable
-    public static ColorStateList getNamedColorStateList(@NonNull TypedArray a,
-            @NonNull XmlPullParser parser, @Nullable Resources.Theme theme,
-            @NonNull String attrName, @StyleableRes int resId) {
-        if (hasAttribute(parser, attrName)) {
-            final TypedValue value = new TypedValue();
-            a.getValue(resId, value);
-            if (value.type == TypedValue.TYPE_ATTRIBUTE) {
-                throw new UnsupportedOperationException(
-                        "Failed to resolve attribute at index " + resId + ": " + value);
-            } else if (value.type >= TypedValue.TYPE_FIRST_COLOR_INT
-                    && value.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                // Handle inline color definitions.
-                return getNamedColorStateListFromInt(value);
-            }
-            return ColorStateListInflaterCompat.inflate(a.getResources(),
-                    a.getResourceId(resId, 0), theme);
-        }
-        return null;
-    }
-
-    @NonNull
-    private static ColorStateList getNamedColorStateListFromInt(@NonNull TypedValue value) {
-        // This is copied from ResourcesImpl#getNamedColorStateListFromInt in the platform, but the
-        // ComplexColor caching mechanism has been removed. The practical implication of this is
-        // minimal, since platform caching is only used by Zygote-preloaded resources.
-        return ColorStateList.valueOf(value.data);
     }
 
     /**
