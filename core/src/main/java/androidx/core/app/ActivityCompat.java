@@ -493,8 +493,9 @@ public class ActivityCompat extends ContextCompat {
             // Delegate has handled the permission request.
             return;
         }
-
+        //6.0以上才需要动态权限申请
         if (Build.VERSION.SDK_INT >= 23) {
+            //满足进入这个条件
             if (activity instanceof RequestPermissionsRequestCodeValidator) {
                 ((RequestPermissionsRequestCodeValidator) activity)
                         .validateRequestPermissionsRequestCode(requestCode);
